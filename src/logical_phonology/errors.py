@@ -4,42 +4,25 @@ class LogicalPhonologyError(Exception):
     pass
 
 
-class ConfigError(LogicalPhonologyError):
-    """Base exception for config errors."""
+class ValidationError(LogicalPhonologyError):
+    """Base exception for validation errors."""
 
     pass
 
 
-class MissingKeyError(ConfigError):
-    def __init__(self, key: str) -> None:
-        self.key = key
-        super().__init__(f"Config missing '{key}' key.")
+class InvalidFeatureValueError(ValidationError):
+    def __init__(self, s: str):
+        self.value = s
+        super().__init__(f"Invalid feature value '{s}'")
 
 
-class InvalidTypeError(ConfigError):
-    def __init__(self, key: str, expected: type) -> None:
-        self.key = key
-        self.expected = expected
-        super().__init__(f"'{key}' must be a {expected.__name__}.")
+class UnknownFeatureError(ValidationError):
+    def __init__(self, unknown: set[str]):
+        self.unknown = unknown
+        super().__init__(f"Unknown features '{unknown}'")
 
 
-class InvalidElementTypeError(ConfigError):
-    def __init__(
-        self, key: str, expected: type, invalid: list[object]
-    ) -> None:
-        self.key = key
-        self.expected = expected
-        self.invalid = invalid
-        super().__init__(
-            f"All elements of '{key}' must be {expected.__name__}. "
-            f"Invalid values: {invalid}"
-        )
-
-
-class DuplicateFeaturesError(ConfigError):
-    def __init__(self, duplicates: frozenset[str]) -> None:
-        self.duplicates = duplicates
-        super().__init__(
-            f"All features must be unique. "
-            f"Found multiple occurrences of: {duplicates}"
-        )
+class InvalidSegmentNameError(ValidationError):
+    def __init__(self, s: str):
+        self.value = s
+        super().__init__("Segment names cannot be the empty string")
