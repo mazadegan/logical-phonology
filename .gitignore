@@ -1,0 +1,28 @@
+# Build artifacts
+dist/
+build/
+*.egg-info/
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+# Virtual environments
+.venv/
+venv/
+env/
+# mypy
+.mypy_cache/
+# pytest
+.pytest_cache/
+# hypothesis
+.hypothesis/
+# editors
+.vscode/
+.idea/
+*.swp
+*.swo
+# OS
+.DS_Store
+Thumbs.db
+# environment variables
+.env
