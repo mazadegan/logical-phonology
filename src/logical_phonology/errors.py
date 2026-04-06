@@ -20,9 +20,3 @@ class UnknownFeatureError(ValidationError):
     def __init__(self, unknown: set[str]):
         self.unknown = unknown
         super().__init__(f"Unknown features '{unknown}'")
-
-
-class InvalidSegmentNameError(ValidationError):
-    def __init__(self, s: str):
-        self.value = s
-        super().__init__("Segment names cannot be the empty string")

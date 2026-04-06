@@ -3,7 +3,6 @@ import pytest
 from logical_phonology import (
     FeatureValue,
     InvalidFeatureValueError,
-    InvalidSegmentNameError,
     SegmentFactory,
     UnknownFeatureError,
 )
@@ -50,54 +49,39 @@ def test_invalid_feature_value() -> None:
 
 
 def test_fully_underspecified_segment(segment_factory: SegmentFactory) -> None:
-    segment = segment_factory.create("x", {})
+    segment = segment_factory.create({})
     assert segment.features["F1"] is FeatureValue.UND
     assert segment.features["F2"] is FeatureValue.UND
     assert segment.features["F3"] is FeatureValue.UND
 
 
 def test_segments_hashable(segment_factory: SegmentFactory) -> None:
-    segment = segment_factory.create("x", {})
+    segment = segment_factory.create({})
     assert segment in {segment}
 
 
 def test_segment_equality(segment_factory: SegmentFactory) -> None:
-    s1 = segment_factory.create("x", {})
-    s2 = segment_factory.create("x", {})
-    s3 = segment_factory.create("y", {})
-    s4 = segment_factory.create(
-        "x",
-        {
-            "F1": FeatureValue.POS,
-        },
-    )
+    s1 = segment_factory.create({})
+    s2 = segment_factory.create({})
+    s3 = segment_factory.create({"F1": FeatureValue.POS})
     assert s1 == s2
     assert s1 != s3
-    assert s1 != s4
 
 
 def test_equal_segments_same_hash(segment_factory: SegmentFactory) -> None:
-    s1 = segment_factory.create("x", {})
-    s2 = segment_factory.create("x", {})
+    s1 = segment_factory.create({})
+    s2 = segment_factory.create({})
     assert hash(s1) == hash(s2)
-
-
-def test_empty_string_invalid_segment_name(
-    segment_factory: SegmentFactory,
-) -> None:
-    with pytest.raises(InvalidSegmentNameError) as exc_info:
-        segment_factory.create("", {})
-    assert exc_info.value.value == ""
 
 
 def test_segment_unknown_feature(segment_factory: SegmentFactory) -> None:
     with pytest.raises(UnknownFeatureError) as exc_info:
-        segment_factory.create("x", {"Z": FeatureValue.POS})
+        segment_factory.create({"Z": FeatureValue.POS})
     assert "Z" in exc_info.value.unknown
 
 
 def test_explicit_underspecification(segment_factory: SegmentFactory) -> None:
-    segment = segment_factory.create("x", {"F1": FeatureValue.POS})
+    segment = segment_factory.create({"F1": FeatureValue.POS})
     assert segment.features["F1"] is FeatureValue.POS
     assert segment.features["F2"] is FeatureValue.UND
     assert segment.features["F3"] is FeatureValue.UND

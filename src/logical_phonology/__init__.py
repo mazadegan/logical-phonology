@@ -2,11 +2,11 @@ __version__ = "0.1.0"
 
 from .errors import (
     InvalidFeatureValueError,
-    InvalidSegmentNameError,
     LogicalPhonologyError,
     UnknownFeatureError,
     ValidationError,
 )
+from .natural_class import NaturalClassFactory
 from .segment import FeatureValue, SegmentFactory
 
 __all__ = [
@@ -15,7 +15,7 @@ __all__ = [
     "ValidationError",
     "FeatureValue",
     "InvalidFeatureValueError",
-    "InvalidSegmentNameError",
     "SegmentFactory",
     "UnknownFeatureError",
+    "NaturalClassFactory",
 ]
