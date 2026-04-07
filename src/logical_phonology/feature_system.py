@@ -28,7 +28,7 @@ class FeatureSystem:
         return Segment({"EOS": FeatureValue.POS})
 
     def segment(self, features: dict[str, FeatureValue]) -> Segment:
-        unknown = features.keys() - self.valid_features
+        unknown = (features.keys() - self.valid_features) - RESERVED_FEATURES
         if unknown:
             raise UnknownFeatureError(unknown)
         return Segment(features)
@@ -40,7 +40,7 @@ class FeatureSystem:
         return Word(tuple([self.BOS, *word, self.EOS]))
 
     def natural_class(self, features: dict[str, FeatureValue]) -> NaturalClass:
-        unknown = features.keys() - self.valid_features
+        unknown = (features.keys() - self.valid_features) - RESERVED_FEATURES
         if unknown:
             raise UnknownFeatureError(unknown)
         return NaturalClass(features)

@@ -9,6 +9,18 @@ from .word import Word
 class NaturalClassSequence:
     sequence: tuple[NaturalClass, ...]
 
+    def matches_at(self, word: Word, position: int) -> bool:
+        """Return True if the sequence matches the word starting at position."""  # noqa: E501
+        return word[position : position + len(self)] in self
+
+    def find_all(self, word: Word) -> list[int]:
+        """Return all positions in the word where the sequence matches."""
+        return [
+            i
+            for i in range(len(word) - len(self) + 1)
+            if self.matches_at(word, i)
+        ]
+
     def __len__(self) -> int:
         return len(self.sequence)
 

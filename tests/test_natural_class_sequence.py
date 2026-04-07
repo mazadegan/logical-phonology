@@ -56,3 +56,72 @@ def test_empty_natural_class_matches_all(
     nc = fs.natural_class({})
     seg = fs.segment(feature_spec)
     assert seg in nc
+
+
+def test_matches_at(fs: lp.FeatureSystem) -> None:
+    ncs1 = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
+    ncs2 = fs.natural_class_sequence(
+        [
+            fs.natural_class({"F1": lp.POS}),
+            fs.natural_class({"F1": lp.NEG}),
+        ]
+    )
+    w = fs.word(
+        [
+            fs.segment({"F1": lp.POS}),
+            fs.segment({"F1": lp.NEG}),
+            fs.segment({"F1": lp.POS}),
+        ]
+    )
+    assert ncs1.matches_at(w, 0)
+    assert not ncs1.matches_at(w, 1)
+    assert ncs1.matches_at(w, 2)
+    assert ncs2.matches_at(w, 0)
+    assert not ncs2.matches_at(w, 1)
+
+
+def test_find_all(fs: lp.FeatureSystem) -> None:
+    ncs1 = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
+    ncs2 = fs.natural_class_sequence(
+        [
+            fs.natural_class({"F1": lp.POS}),
+            fs.natural_class({"F1": lp.NEG}),
+        ]
+    )
+    w = fs.word(
+        [
+            fs.segment({"F1": lp.POS}),
+            fs.segment({"F1": lp.NEG}),
+            fs.segment({"F1": lp.POS}),
+        ]
+    )
+    assert ncs1.find_all(w) == [0, 2]
+    assert ncs2.find_all(w) == [0]
+
+
+def test_matches_at_with_boundaries(fs: lp.FeatureSystem) -> None:
+    ncs = fs.natural_class_sequence(
+        [fs.natural_class({"BOS": lp.POS}), fs.natural_class({"F1": lp.POS})]
+    )
+    w = fs.add_boundaries(
+        fs.word([fs.segment({"F1": lp.POS}), fs.segment({"F1": lp.NEG})])
+    )
+    assert ncs.matches_at(w, 0)
+    assert not ncs.matches_at(w, 1)
+
+
+def test_find_all_with_boundaries(fs: lp.FeatureSystem) -> None:
+    ncs1 = fs.natural_class_sequence([fs.natural_class({"EOS": lp.POS})])
+    ncs2 = fs.natural_class_sequence(
+        [fs.natural_class({"F1": lp.NEG}), fs.natural_class({"EOS": lp.POS})]
+    )
+    w = fs.add_boundaries(
+        fs.word(
+            [
+                fs.segment({"F1": lp.POS}),
+                fs.segment({"F1": lp.NEG}),
+            ]
+        )
+    )
+    assert ncs1.find_all(w) == [3]
+    assert ncs2.find_all(w) == [2]
