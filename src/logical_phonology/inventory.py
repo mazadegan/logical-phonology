@@ -11,6 +11,7 @@ from .errors import AliasError, UnknownNameError, UnknownSegmentError
 if TYPE_CHECKING:
     from .feature_system import FeatureSystem
 from .segment import Segment
+from .word import Word
 
 
 @dataclass(frozen=True)
@@ -69,6 +70,9 @@ class Inventory:
     @property
     def EOS(self) -> Segment:
         return self.feature_system.EOS
+
+    def render(self, word: Word) -> str:
+        return "".join(self.name_of(seg) for seg in word)
 
     def __contains__(self, item: object) -> bool:
         if isinstance(item, str):

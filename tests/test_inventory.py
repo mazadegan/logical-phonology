@@ -14,9 +14,13 @@ feature_spec_strategy = st.dictionaries(
 
 
 @pytest.fixture
-def inv() -> lp.Inventory:
+def fs() -> lp.FeatureSystem:
     valid_features = frozenset(["F1", "F2"])
-    fs = lp.FeatureSystem(valid_features)
+    return lp.FeatureSystem(valid_features)
+
+
+@pytest.fixture
+def inv(fs: lp.FeatureSystem) -> lp.Inventory:
     names = ["A", "B", "C", "D"]
     values = list(product([lp.POS, lp.NEG], repeat=2))
     segments = {
@@ -60,3 +64,22 @@ def test_aliased_segment_name_of() -> None:
     assert inv.name_of(seg) == str(seg)
     # canonical form can be looked up
     assert inv[inv.name_of(seg)] == seg
+
+
+def test_render(inv: lp.Inventory, fs: lp.FeatureSystem) -> None:
+    word = fs.word([inv["A"], inv["B"]])
+    assert inv.render(word) == "AB"
+
+
+def test_render_with_boundaries(
+    inv: lp.Inventory, fs: lp.FeatureSystem
+) -> None:
+    word = fs.add_boundaries(fs.word([inv["A"], inv["B"]]))
+    assert inv.render(word) == "⋉AB⋊"
+
+
+def test_render_aliased_segment(fs: lp.FeatureSystem) -> None:
+    seg = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    inv_alias = fs.inventory({"A": seg, "B": seg})
+    word = fs.word([seg])
+    assert inv_alias.render(word) == str(seg)
