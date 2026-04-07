@@ -15,6 +15,13 @@ def test_natural_class_unknown_feature(fs: lp.FeatureSystem) -> None:
     assert "F4" in exc_info.value.unknown
 
 
+def test_natural_class_spec_immutable(fs: lp.FeatureSystem) -> None:
+    nc = fs.natural_class({"F1": lp.POS})
+    with pytest.raises(TypeError):
+        # mypy knows Mapping is immutable
+        nc.feature_specification["F1"] = lp.NEG  # type: ignore
+
+
 def test_equality(fs: lp.FeatureSystem) -> None:
     nc1 = fs.natural_class({"F1": lp.POS})
     nc2 = fs.natural_class({"F1": lp.POS})

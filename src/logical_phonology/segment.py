@@ -1,4 +1,6 @@
+from collections.abc import Mapping
 from dataclasses import dataclass
+from types import MappingProxyType
 
 from .errors import UnificationError
 from .feature_value import FeatureValue
@@ -10,7 +12,12 @@ class Segment:
     A consistent feature bundle. Use FeatureSystem.segment() to construct.
     """
 
-    features: dict[str, FeatureValue]
+    features: Mapping[str, FeatureValue]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self, "features", MappingProxyType(dict(self.features))
+        )
 
     def subtract(self, other: "Segment") -> "Segment":
         """A \\ B = {cF | cF ∈ A ∧ cF ∉ B}"""

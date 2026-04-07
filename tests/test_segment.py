@@ -98,6 +98,13 @@ def test_reserved_features_not_allowed_in_segments(
     assert "BOS" in exc_info.value.features
 
 
+def test_segment_features_immutable(fs: lp.FeatureSystem) -> None:
+    segment = fs.segment({"F1": lp.POS})
+    with pytest.raises(TypeError):
+        # must ignore type error because mypy knows Mappings are immutable
+        segment.features["F1"] = lp.NEG  # type: ignore
+
+
 def test_subtract(fs: lp.FeatureSystem) -> None:
     s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
     s2 = fs.segment({"F1": lp.POS})
