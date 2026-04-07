@@ -14,6 +14,8 @@ env/
 .mypy_cache/
 # pytest
 .pytest_cache/
+# ruff
+.ruff_cache/
 # hypothesis
 .hypothesis/
 # editors

@@ -6,16 +6,24 @@ from .errors import (
     UnknownFeatureError,
     ValidationError,
 )
-from .natural_class import NaturalClassFactory
-from .segment import FeatureValue, SegmentFactory
+from .feature_system import FeatureSystem
+from .feature_value import NEG, POS, FeatureValue
+from .natural_class import NaturalClass
+from .segment import Segment
+from .word import ReservedSymbol, Word
 
 __all__ = [
     "__version__",
     "LogicalPhonologyError",
     "ValidationError",
-    "FeatureValue",
     "InvalidFeatureValueError",
-    "SegmentFactory",
     "UnknownFeatureError",
-    "NaturalClassFactory",
+    "FeatureValue",
+    "POS",
+    "NEG",
+    "FeatureSystem",
+    "ReservedSymbol",
+    "Segment",
+    "NaturalClass",
+    "Word",
 ]
