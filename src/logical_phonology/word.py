@@ -1,18 +1,27 @@
 from dataclasses import dataclass
-from enum import Enum
+from typing import Iterator, cast, overload
 
 from .segment import Segment
 
 
-class ReservedSymbol(Enum):
-    BOS = "⋉"
-    EOS = "⋊"
-
-
 @dataclass(frozen=True)
 class Word:
-    segments: tuple[Segment | ReservedSymbol, ...]
+    segments: tuple[Segment, ...]
 
     def __len__(self) -> int:
-        # return length of word excluding BOS/EOS symbols
-        return sum(1 for s in self.segments if isinstance(s, Segment))
+        return len(self.segments)
+
+    def __iter__(self) -> Iterator[Segment]:
+        return iter(self.segments)
+
+    @overload
+    def __getitem__(self, index: int) -> Segment: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> "Word": ...
+
+    def __getitem__(self, index: int | slice) -> "Segment | Word":
+        result = self.segments[index]
+        if isinstance(index, slice):
+            return Word(cast(tuple[Segment, ...], result))
+        return cast(Segment, result)

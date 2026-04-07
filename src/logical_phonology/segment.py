@@ -5,6 +5,10 @@ from .feature_value import FeatureValue
 
 @dataclass(frozen=True)
 class Segment:
+    """
+    A consistent feature bundle. Use FeatureSystem.segment() to construct.
+    """
+
     features: dict[str, FeatureValue]
 
     # dict are not hashable, must use frozenset of features' items

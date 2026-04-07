@@ -20,3 +20,11 @@ class UnknownFeatureError(ValidationError):
     def __init__(self, unknown: set[str]):
         self.unknown = unknown
         super().__init__(f"Unknown features '{unknown}'")
+
+
+class ReservedFeatureError(ValidationError):
+    def __init__(self, conflicts: frozenset[str]) -> None:
+        self.conflicts = conflicts
+        super().__init__(
+            f"Feature names {conflicts} are reserved and cannot be used."
+        )

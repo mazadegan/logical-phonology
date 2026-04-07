@@ -3,6 +3,7 @@ __version__ = "0.1.0"
 from .errors import (
     InvalidFeatureValueError,
     LogicalPhonologyError,
+    ReservedFeatureError,
     UnknownFeatureError,
     ValidationError,
 )
@@ -10,7 +11,7 @@ from .feature_system import FeatureSystem
 from .feature_value import NEG, POS, FeatureValue
 from .natural_class import NaturalClass
 from .segment import Segment
-from .word import ReservedSymbol, Word
+from .word import Word
 
 __all__ = [
     "__version__",
@@ -22,8 +23,8 @@ __all__ = [
     "POS",
     "NEG",
     "FeatureSystem",
-    "ReservedSymbol",
     "Segment",
     "NaturalClass",
     "Word",
+    "ReservedFeatureError",
 ]

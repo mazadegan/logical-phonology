@@ -1,12 +1,26 @@
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 import logical_phonology as lp
+
+feature_value_strategy = st.sampled_from([lp.POS, lp.NEG])
+feature_spec_strategy = st.dictionaries(
+    keys=st.sampled_from(["F1", "F2", "F3"]),
+    values=feature_value_strategy,
+)
 
 
 @pytest.fixture
 def fs() -> lp.FeatureSystem:
     valid_features = frozenset(["F1", "F2", "F3"])
     return lp.FeatureSystem(valid_features)
+
+
+def test_fail_on_reserved_features() -> None:
+    with pytest.raises(lp.ReservedFeatureError) as exc_info:
+        lp.FeatureSystem(frozenset(["EOS"]))
+    assert "EOS" in exc_info.value.conflicts
 
 
 @pytest.mark.parametrize("s,expected", [("+", lp.POS), ("-", lp.NEG)])
@@ -34,9 +48,13 @@ def test_fully_underspecified_segment(fs: lp.FeatureSystem) -> None:
     assert "F3" not in segment
 
 
-def test_segments_hashable(fs: lp.FeatureSystem) -> None:
-    segment = fs.segment({})
-    assert segment in {segment}
+@given(feature_spec_strategy)
+def test_segments_always_hashable(
+    feature_spec: dict[str, lp.FeatureValue],
+) -> None:
+    fs = lp.FeatureSystem(frozenset(["F1", "F2", "F3"]))
+    seg = fs.segment(feature_spec)
+    assert seg in {seg}
 
 
 def test_segment_equality(fs: lp.FeatureSystem) -> None:
@@ -47,9 +65,13 @@ def test_segment_equality(fs: lp.FeatureSystem) -> None:
     assert s1 != s3
 
 
-def test_equal_segments_same_hash(fs: lp.FeatureSystem) -> None:
-    s1 = fs.segment({})
-    s2 = fs.segment({})
+@given(feature_spec_strategy)
+def test_equal_segments_have_equal_hashes(
+    feature_spec: dict[str, lp.FeatureValue],
+) -> None:
+    fs = lp.FeatureSystem(frozenset(["F1", "F2", "F3"]))
+    s1 = fs.segment(feature_spec)
+    s2 = fs.segment(feature_spec)
     assert hash(s1) == hash(s2)
 
 
@@ -57,3 +79,12 @@ def test_segment_unknown_feature(fs: lp.FeatureSystem) -> None:
     with pytest.raises(lp.UnknownFeatureError) as exc_info:
         fs.segment({"Z": lp.POS})
     assert "Z" in exc_info.value.unknown
+
+
+def test_reserved_segments(fs: lp.FeatureSystem) -> None:
+    assert isinstance(fs.BOS, lp.Segment)
+    assert isinstance(fs.EOS, lp.Segment)
+    assert "BOS" in fs.BOS
+    assert "EOS" in fs.EOS
+    assert fs.BOS != fs.EOS
+    assert fs.BOS != fs.segment({})
