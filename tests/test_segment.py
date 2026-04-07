@@ -88,3 +88,43 @@ def test_reserved_segments(fs: lp.FeatureSystem) -> None:
     assert "EOS" in fs.EOS
     assert fs.BOS != fs.EOS
     assert fs.BOS != fs.segment({})
+
+
+def test_subtract(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    s2 = fs.segment({"F1": lp.POS})
+    result = s1 - s2
+    assert "F1" not in result
+    assert "F2" in result
+    assert result["F2"] == lp.NEG
+
+
+def test_project(fs: lp.FeatureSystem) -> None:
+    s = fs.segment({"F1": lp.POS, "F2": lp.NEG, "F3": lp.POS})
+    result = s & frozenset(["F1", "F2"])
+    assert "F1" in result
+    assert "F2" in result
+    assert "F3" not in result
+
+
+def test_unify(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS})
+    s2 = fs.segment({"F2": lp.NEG})
+    result = s1 | s2
+    assert result["F1"] == lp.POS
+    assert result["F2"] == lp.NEG
+
+
+def test_unify_conflict(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS})
+    s2 = fs.segment({"F1": lp.NEG})
+    result = s1 | s2
+    assert result["F1"] == lp.POS  # conflict — feature value stays the same
+
+
+def test_unify_strict(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS})
+    s2 = fs.segment({"F1": lp.NEG})
+    with pytest.raises(lp.UnificationError) as exc_info:
+        s1.unify_strict(s2)
+    assert exc_info.value.feature == "F1"

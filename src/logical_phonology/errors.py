@@ -1,3 +1,11 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .feature_value import FeatureValue
+
+
 class LogicalPhonologyError(Exception):
     """Base exception for all logical phonology errors."""
 
@@ -27,4 +35,16 @@ class ReservedFeatureError(ValidationError):
         self.conflicts = conflicts
         super().__init__(
             f"Feature names {conflicts} are reserved and cannot be used."
+        )
+
+
+class UnificationError(ValidationError):
+    def __init__(
+        self, feature: str, v1: FeatureValue, v2: FeatureValue
+    ) -> None:
+        self.feature = feature
+        self.v1 = v1
+        self.v2 = v2
+        super().__init__(
+            f"Unification failed on feature '{feature}': {v1} conflicts with {v2}."  # noqa: E501
         )
