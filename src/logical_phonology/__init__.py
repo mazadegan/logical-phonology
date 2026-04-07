@@ -11,6 +11,7 @@ from .errors import (
 from .feature_system import FeatureSystem
 from .feature_value import NEG, POS, FeatureValue
 from .natural_class import NaturalClass
+from .natural_class_sequence import NaturalClassSequence
 from .segment import Segment
 from .word import Word
 
@@ -26,6 +27,7 @@ __all__ = [
     "FeatureSystem",
     "Segment",
     "NaturalClass",
+    "NaturalClassSequence",
     "Word",
     "ReservedFeatureError",
     "UnificationError",

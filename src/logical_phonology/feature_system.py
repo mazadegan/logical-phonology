@@ -43,8 +43,7 @@ class FeatureSystem:
         unknown = features.keys() - self.valid_features
         if unknown:
             raise UnknownFeatureError(unknown)
-        size = 3 ** (len(self.valid_features) - len(features))
-        return NaturalClass(features, size)
+        return NaturalClass(features)
 
     def natural_class_sequence(
         self, classes: list[NaturalClass]

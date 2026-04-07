@@ -15,24 +15,6 @@ def test_natural_class_unknown_feature(fs: lp.FeatureSystem) -> None:
     assert "F4" in exc_info.value.unknown
 
 
-@pytest.mark.parametrize(
-    "feature_spec, expected",
-    [
-        ({f: lp.POS for f in ["F1", "F2", "F3"]}, 1),
-        ({f: lp.POS for f in ["F1", "F2"]}, 3),
-        ({f: lp.POS for f in ["F1"]}, 9),
-        ({}, 27),
-    ],
-)
-def test_natural_class_size(
-    feature_spec: dict[str, lp.FeatureValue],
-    expected: int,
-    fs: lp.FeatureSystem,
-) -> None:
-    nc = fs.natural_class(feature_spec)
-    assert nc.size == expected
-
-
 def test_equality(fs: lp.FeatureSystem) -> None:
     nc1 = fs.natural_class({"F1": lp.POS})
     nc2 = fs.natural_class({"F1": lp.POS})
