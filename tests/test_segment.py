@@ -90,6 +90,14 @@ def test_reserved_segments(fs: lp.FeatureSystem) -> None:
     assert fs.BOS != fs.segment({})
 
 
+def test_reserved_features_not_allowed_in_segments(
+    fs: lp.FeatureSystem,
+) -> None:
+    with pytest.raises(lp.ReservedFeatureUsageError) as exc_info:
+        fs.segment({"BOS": lp.POS})
+    assert "BOS" in exc_info.value.features
+
+
 def test_subtract(fs: lp.FeatureSystem) -> None:
     s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
     s2 = fs.segment({"F1": lp.POS})

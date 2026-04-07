@@ -48,3 +48,11 @@ class UnificationError(ValidationError):
         super().__init__(
             f"Unification failed on feature '{feature}': {v1} conflicts with {v2}."  # noqa: E501
         )
+
+
+class ReservedFeatureUsageError(ValidationError):
+    def __init__(self, features: frozenset[str]) -> None:
+        self.features = features
+        super().__init__(
+            f"Features {features} are reserved and cannot be used in user-defined segments."  # noqa: E501
+        )

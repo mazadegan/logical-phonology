@@ -4,6 +4,7 @@ from .errors import (
     InvalidFeatureValueError,
     LogicalPhonologyError,
     ReservedFeatureError,
+    ReservedFeatureUsageError,
     UnificationError,
     UnknownFeatureError,
     ValidationError,
@@ -30,5 +31,6 @@ __all__ = [
     "NaturalClassSequence",
     "Word",
     "ReservedFeatureError",
+    "ReservedFeatureUsageError",
     "UnificationError",
 ]

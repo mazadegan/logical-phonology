@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 
-from .errors import ReservedFeatureError, UnknownFeatureError
+from .errors import (
+    ReservedFeatureError,
+    ReservedFeatureUsageError,
+    UnknownFeatureError,
+)
 from .feature_value import FeatureValue
 from .natural_class import NaturalClass
 from .natural_class_sequence import NaturalClassSequence
@@ -28,7 +32,10 @@ class FeatureSystem:
         return Segment({"EOS": FeatureValue.POS})
 
     def segment(self, features: dict[str, FeatureValue]) -> Segment:
-        unknown = (features.keys() - self.valid_features) - RESERVED_FEATURES
+        reserved_used = features.keys() & RESERVED_FEATURES
+        if reserved_used:
+            raise ReservedFeatureUsageError(frozenset(reserved_used))
+        unknown = features.keys() - self.valid_features
         if unknown:
             raise UnknownFeatureError(unknown)
         return Segment(features)
