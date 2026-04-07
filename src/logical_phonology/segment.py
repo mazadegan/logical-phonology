@@ -78,4 +78,4 @@ class Segment:
 
     def __str__(self) -> str:
         parts = sorted(f"{v}{f}" for f, v in self.features.items())
-        return "{" + " ".join(parts) + "}"
+        return "{" + "".join(parts) + "}"

@@ -2,12 +2,14 @@ __version__ = "0.1.0"
 
 from .errors import (
     AliasError,
+    AmbiguousTokenizationError,
     InvalidFeatureValueError,
     LogicalPhonologyError,
     ReservedFeatureError,
     ReservedFeatureUsageError,
     UnificationError,
     UnknownFeatureError,
+    UntokenizableInputError,
     ValidationError,
 )
 from .feature_system import FeatureSystem
@@ -37,4 +39,6 @@ __all__ = [
     "UnificationError",
     "Inventory",
     "AliasError",
+    "UntokenizableInputError",
+    "AmbiguousTokenizationError",
 ]

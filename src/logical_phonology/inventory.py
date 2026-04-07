@@ -6,7 +6,13 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
-from .errors import AliasError, UnknownNameError, UnknownSegmentError
+from .errors import (
+    AliasError,
+    AmbiguousTokenizationError,
+    UnknownNameError,
+    UnknownSegmentError,
+    UntokenizableInputError,
+)
 
 if TYPE_CHECKING:
     from .feature_system import FeatureSystem
@@ -73,6 +79,36 @@ class Inventory:
 
     def render(self, word: Word) -> str:
         return "".join(self.name_of(seg) for seg in word)
+
+    def tokenize(
+        self, input_str: str, allow_ambiguity: bool = False
+    ) -> Word | list[Word]:
+        if " " in input_str:
+            split = input_str.split(" ")
+            if not all(tok in self for tok in split):
+                raise UntokenizableInputError(input_str)
+            return Word(tuple([self[tok] for tok in split]))
+
+        all_tokenizations: list[Word] = []
+
+        def recurse(input_str: str, current_parse: list[Segment]) -> None:
+            if input_str == "":
+                all_tokenizations.append(Word(tuple(current_parse)))
+                return
+            for name in self.names_in_order:
+                if input_str.startswith(name):
+                    next_parse = [seg for seg in current_parse] + [self[name]]
+                    recurse(input_str[len(name) :], next_parse)
+
+        recurse(input_str, [])
+
+        if len(all_tokenizations) > 1:
+            if not allow_ambiguity:
+                raise AmbiguousTokenizationError(input_str, all_tokenizations)
+            return all_tokenizations
+        if len(all_tokenizations) == 0:
+            raise UntokenizableInputError(input_str)
+        return all_tokenizations[0]
 
     def __contains__(self, item: object) -> bool:
         if isinstance(item, str):

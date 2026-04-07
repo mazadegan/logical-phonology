@@ -83,3 +83,76 @@ def test_render_aliased_segment(fs: lp.FeatureSystem) -> None:
     inv_alias = fs.inventory({"A": seg, "B": seg})
     word = fs.word([seg])
     assert inv_alias.render(word) == str(seg)
+
+
+def test_simple_tokenize(inv: lp.Inventory) -> None:
+    word = inv.tokenize("ABCD")
+    assert len(word) == 4
+    assert word[0] == inv["A"]
+    assert word[1] == inv["B"]
+    assert word[2] == inv["C"]
+    assert word[3] == inv["D"]
+
+
+def test_tokenize_with_boundaries(inv: lp.Inventory) -> None:
+    word = inv.tokenize("⋉AB⋊")
+    assert len(word) == 4
+    assert word[0] == inv["⋉"]
+    assert word[1] == inv["A"]
+    assert word[2] == inv["B"]
+    assert word[3] == inv["⋊"]
+
+
+def test_tokenize_empty_string(inv: lp.Inventory) -> None:
+    word = inv.tokenize("")
+    assert len(word) == 0
+
+
+def test_untokenizable_input(inv: lp.Inventory) -> None:
+    with pytest.raises(lp.UntokenizableInputError) as exc_info:
+        inv.tokenize("ABCDE")
+    assert "E" in exc_info.value.input_str
+
+
+def test_ambiguous_tokenization() -> None:
+    valid_features = frozenset(["F1", "F2"])
+    fs = lp.FeatureSystem(valid_features)
+    names = ["A", "AA", "AAA", "AAAA"]
+    values = list(product([lp.POS, lp.NEG], repeat=2))
+    segments = {
+        name: fs.segment({"F1": f1, "F2": f2})
+        for name, (f1, f2) in zip(names, values)
+    }
+    inv = fs.inventory(segments)
+    tokenizations = inv.tokenize("AAAA", allow_ambiguity=True)
+    assert len(tokenizations) == 8
+
+
+def test_delimited_tokenization(inv: lp.Inventory) -> None:
+    word = inv.tokenize("A B C D")
+    assert len(word) == 4
+    assert word[0] == inv["A"]
+    assert word[1] == inv["B"]
+    assert word[2] == inv["C"]
+    assert word[3] == inv["D"]
+
+
+def test_fail_delimited_tokenization_with_bad_input(inv: lp.Inventory) -> None:
+    with pytest.raises(lp.UntokenizableInputError) as exc_info:
+        inv.tokenize("A B C DD")
+    assert "DD" in exc_info.value.input_str
+
+
+def test_render_tokenize_roundtrip(
+    inv: lp.Inventory, fs: lp.FeatureSystem
+) -> None:
+    word = fs.word([inv["A"], inv["B"], inv["C"]])
+    assert inv.tokenize(inv.render(word)) == word
+
+
+def test_render_tokenize_roundtrip_aliased(fs: lp.FeatureSystem) -> None:
+    seg = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    inv_alias = fs.inventory({"A": seg, "B": seg})
+    word = fs.word([seg])
+    # render produces canonical form, tokenize can parse it back
+    assert inv_alias.tokenize(inv_alias.render(word)) == word

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .feature_value import FeatureValue
     from .segment import Segment
+    from .word import Word
 
 
 class LogicalPhonologyError(Exception):
@@ -81,4 +82,22 @@ class AliasError(ValidationError):
         super().__init__(
             f"Aliases have been disabled. "
             f"The following segments have multiple names: {aliased}"
+        )
+
+
+class UntokenizableInputError(ValidationError):
+    def __init__(self, input_str: str) -> None:
+        self.input_str = input_str
+        super().__init__(f"Could not tokenize input: '{input_str}'")
+
+
+class AmbiguousTokenizationError(ValidationError):
+    def __init__(self, input_str: str, tokenizations: list[Word]) -> None:
+        self.input_str = input_str
+        self.tokenizations = tokenizations
+        rendered = [" ".join(str(s) for s in w) for w in tokenizations]
+        super().__init__(
+            f"Ambiguous tokenization for input: '{input_str}'. "
+            f"Found {len(tokenizations)} possible parses:\n"
+            + "\n".join(rendered)
         )
