@@ -6,6 +6,7 @@ from .errors import (
     UnknownFeatureError,
 )
 from .feature_value import FeatureValue
+from .inventory import Inventory
 from .natural_class import NaturalClass
 from .natural_class_sequence import NaturalClassSequence
 from .segment import Segment
@@ -56,3 +57,8 @@ class FeatureSystem:
         self, classes: list[NaturalClass]
     ) -> NaturalClassSequence:
         return NaturalClassSequence(tuple(classes))
+
+    def inventory(
+        self, name_to_segment: dict[str, Segment], allow_aliases: bool = True
+    ) -> Inventory:
+        return Inventory(self, name_to_segment, allow_aliases=allow_aliases)

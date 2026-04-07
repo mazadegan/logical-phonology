@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .feature_value import FeatureValue
+    from .segment import Segment
 
 
 class LogicalPhonologyError(Exception):
@@ -55,4 +56,29 @@ class ReservedFeatureUsageError(ValidationError):
         self.features = features
         super().__init__(
             f"Features {features} are reserved and cannot be used in user-defined segments."  # noqa: E501
+        )
+
+
+class UnknownNameError(ValidationError):
+    def __init__(self, name: str) -> None:
+        self.name = name
+        super().__init__(
+            f"Unknown symbol name '{name}' not found in inventory."
+        )
+
+
+class UnknownSegmentError(ValidationError):
+    def __init__(self, segment: Segment) -> None:
+        self.segment = segment
+        super().__init__(
+            f"Unknown segment '{segment}' not found in inventory."
+        )
+
+
+class AliasError(ValidationError):
+    def __init__(self, aliased: dict[str, list[str]]) -> None:
+        self.aliased = aliased
+        super().__init__(
+            f"Aliases have been disabled. "
+            f"The following segments have multiple names: {aliased}"
         )

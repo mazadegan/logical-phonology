@@ -75,3 +75,7 @@ class Segment:
 
     def __contains__(self, item: str) -> bool:
         return item in self.features
+
+    def __str__(self) -> str:
+        parts = sorted(f"{v}{f}" for f, v in self.features.items())
+        return "{" + " ".join(parts) + "}"

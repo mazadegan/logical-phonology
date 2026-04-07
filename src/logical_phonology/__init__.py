@@ -1,6 +1,7 @@
 __version__ = "0.1.0"
 
 from .errors import (
+    AliasError,
     InvalidFeatureValueError,
     LogicalPhonologyError,
     ReservedFeatureError,
@@ -11,6 +12,7 @@ from .errors import (
 )
 from .feature_system import FeatureSystem
 from .feature_value import NEG, POS, FeatureValue
+from .inventory import Inventory
 from .natural_class import NaturalClass
 from .natural_class_sequence import NaturalClassSequence
 from .segment import Segment
@@ -33,4 +35,6 @@ __all__ = [
     "ReservedFeatureError",
     "ReservedFeatureUsageError",
     "UnificationError",
+    "Inventory",
+    "AliasError",
 ]
