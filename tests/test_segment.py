@@ -9,24 +9,12 @@ def fs() -> lp.FeatureSystem:
     return lp.FeatureSystem(valid_features)
 
 
-@pytest.mark.parametrize(
-    "s,expected",
-    [
-        ("+", lp.POS),
-        ("-", lp.NEG),
-    ],
-)
+@pytest.mark.parametrize("s,expected", [("+", lp.POS), ("-", lp.NEG)])
 def test_valid_feature_value(s: str, expected: lp.FeatureValue) -> None:
     assert lp.FeatureValue.from_str(s) == expected
 
 
-@pytest.mark.parametrize(
-    "fv,expected",
-    [
-        (lp.POS, "+"),
-        (lp.NEG, "-"),
-    ],
-)
+@pytest.mark.parametrize("fv,expected", [(lp.POS, "+"), (lp.NEG, "-")])
 def test_valid_feature_value_string(
     fv: lp.FeatureValue, expected: str
 ) -> None:
@@ -41,9 +29,9 @@ def test_invalid_feature_value() -> None:
 
 def test_fully_underspecified_segment(fs: lp.FeatureSystem) -> None:
     segment = fs.segment({})
-    assert "F1" not in segment.features
-    assert "F2" not in segment.features
-    assert "F3" not in segment.features
+    assert "F1" not in segment
+    assert "F2" not in segment
+    assert "F3" not in segment
 
 
 def test_segments_hashable(fs: lp.FeatureSystem) -> None:
