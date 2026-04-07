@@ -9,6 +9,8 @@ from .errors import (
     ReservedFeatureUsageError,
     UnificationError,
     UnknownFeatureError,
+    UnknownNameError,
+    UnknownSegmentError,
     UntokenizableInputError,
     ValidationError,
 )
@@ -41,4 +43,6 @@ __all__ = [
     "AliasError",
     "UntokenizableInputError",
     "AmbiguousTokenizationError",
+    "UnknownNameError",
+    "UnknownSegmentError",
 ]
