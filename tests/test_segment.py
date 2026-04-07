@@ -94,9 +94,17 @@ def test_subtract(fs: lp.FeatureSystem) -> None:
     s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
     s2 = fs.segment({"F1": lp.POS})
     result = s1 - s2
-    assert "F1" not in result
+    assert "F1" not in result  # same value, is removed
     assert "F2" in result
     assert result["F2"] == lp.NEG
+
+
+def test_subtract_different_value(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS})
+    s2 = fs.segment({"F1": lp.NEG})
+    result = s1 - s2
+    assert "F1" in result  # different value, is kept
+    assert result["F1"] == lp.POS
 
 
 def test_project(fs: lp.FeatureSystem) -> None:
@@ -119,7 +127,7 @@ def test_unify_conflict(fs: lp.FeatureSystem) -> None:
     s1 = fs.segment({"F1": lp.POS})
     s2 = fs.segment({"F1": lp.NEG})
     result = s1 | s2
-    assert result["F1"] == lp.POS  # conflict — feature value stays the same
+    assert result["F1"] == lp.POS  # conflict, so feature value stays the same
 
 
 def test_unify_strict(fs: lp.FeatureSystem) -> None:
@@ -140,7 +148,7 @@ def test_subtract_is_subset(
     s2 = fs.segment(spec2)
     result = s1 - s2
     assert all(f in s1 for f in result.features)
-    assert all(f not in s2 for f in result.features)
+    assert all(f not in s2 or s2[f] != v for f, v in result.features.items())
 
 
 @given(feature_spec_strategy, feature_spec_strategy)
@@ -165,9 +173,9 @@ def test_unify_contains_non_conflicting(
     s1 = fs.segment(spec1)
     s2 = fs.segment(spec2)
     result = s1 | s2
-    # all features from s1 should be in result
+    # all features from s1 should still be in result
     assert all(f in result for f in s1.features)
-    # non-conflicting features from s2 should be in result
+    # non-conflicting features from s2 should also be in result
     for f, v in s2.features.items():
         if f not in s1.features:
             assert result[f] == v

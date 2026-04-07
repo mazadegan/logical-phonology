@@ -15,7 +15,11 @@ class Segment:
     def subtract(self, other: "Segment") -> "Segment":
         """A \\ B = {cF | cF ∈ A ∧ cF ∉ B}"""
         return Segment(
-            {k: v for k, v in self.features.items() if k not in other}
+            {
+                k: v
+                for k, v in self.features.items()
+                if k not in other or other[k] != v
+            }
         )
 
     def __sub__(self, other: "Segment") -> "Segment":
