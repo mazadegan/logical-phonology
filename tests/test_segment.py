@@ -128,3 +128,46 @@ def test_unify_strict(fs: lp.FeatureSystem) -> None:
     with pytest.raises(lp.UnificationError) as exc_info:
         s1.unify_strict(s2)
     assert exc_info.value.feature == "F1"
+
+
+@given(feature_spec_strategy, feature_spec_strategy)
+def test_subtract_is_subset(
+    spec1: dict[str, lp.FeatureValue],
+    spec2: dict[str, lp.FeatureValue],
+) -> None:
+    fs = lp.FeatureSystem(frozenset(["F1", "F2", "F3"]))
+    s1 = fs.segment(spec1)
+    s2 = fs.segment(spec2)
+    result = s1 - s2
+    assert all(f in s1 for f in result.features)
+    assert all(f not in s2 for f in result.features)
+
+
+@given(feature_spec_strategy, feature_spec_strategy)
+def test_project_is_subset(
+    spec1: dict[str, lp.FeatureValue],
+    spec2: dict[str, lp.FeatureValue],
+) -> None:
+    fs = lp.FeatureSystem(frozenset(["F1", "F2", "F3"]))
+    s = fs.segment(spec1)
+    restricted = frozenset(spec2.keys())
+    result = s & restricted
+    assert all(f in s for f in result.features)
+    assert all(f in restricted for f in result.features)
+
+
+@given(feature_spec_strategy, feature_spec_strategy)
+def test_unify_contains_non_conflicting(
+    spec1: dict[str, lp.FeatureValue],
+    spec2: dict[str, lp.FeatureValue],
+) -> None:
+    fs = lp.FeatureSystem(frozenset(["F1", "F2", "F3"]))
+    s1 = fs.segment(spec1)
+    s2 = fs.segment(spec2)
+    result = s1 | s2
+    # all features from s1 should be in result
+    assert all(f in result for f in s1.features)
+    # non-conflicting features from s2 should be in result
+    for f, v in s2.features.items():
+        if f not in s1.features:
+            assert result[f] == v
