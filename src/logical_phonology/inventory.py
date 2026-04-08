@@ -30,12 +30,12 @@ class Inventory:
     allow_aliases: bool = True
     names_in_order: tuple[str, ...] = field(init=False)
     segment_to_name: Mapping[Segment, str] = field(init=False)
+    user_names: frozenset[str] = field(init=False)
 
     def __post_init__(self) -> None:
-        # mutable copy
         extended: dict[str, Segment] = dict(self.name_to_segment)
-
-        # build segment_to_name
+        # capture user names before any modification
+        object.__setattr__(self, "user_names", frozenset(extended.keys()))
         d: dict[Segment, list[str]] = defaultdict(list)
         for name, segment in extended.items():
             d[segment].append(name)
@@ -45,7 +45,6 @@ class Inventory:
                 segment_to_name[segment] = names[0]
             else:
                 segment_to_name[segment] = str(segment)
-        # check if aliases are allowed
         if not self.allow_aliases:
             aliased = {
                 str(segment): names
@@ -54,18 +53,28 @@ class Inventory:
             }
             if aliased:
                 raise AliasError(aliased)
-        # set up canonical forms for aliased segments
+        # check for collisions BEFORE modifying extended
+        user_names = set(extended.keys())
+        canonical_names = {
+            str(segment)
+            for segment, name in segment_to_name.items()
+            if name == str(segment)
+        }
+        conflicts = canonical_names & user_names
+        if conflicts:
+            raise DuplicateNameError(conflicts)
+        reserved_names = {"⋉", "⋊"}
+        conflicts = reserved_names & user_names
+        if conflicts:
+            raise DuplicateNameError(conflicts)
+        # now safe to modify extended
         for segment, name in segment_to_name.items():
             if name == str(segment):
                 extended[name] = segment
-
-        # add reserved segments
         extended["⋉"] = self.feature_system.BOS
         extended["⋊"] = self.feature_system.EOS
         segment_to_name[self.feature_system.BOS] = "⋉"
         segment_to_name[self.feature_system.EOS] = "⋊"
-
-        # freeze everything
         object.__setattr__(self, "name_to_segment", MappingProxyType(extended))
         object.__setattr__(self, "names_in_order", tuple(extended.keys()))
         object.__setattr__(
@@ -158,11 +167,9 @@ class Inventory:
             yield Word(tuple(combo))
 
     def extend(self, new_segments: dict[str, Segment]) -> Inventory:
-        # check for name conflicts
-        conflicts = set(new_segments.keys()) & set(self.name_to_segment.keys())
+        conflicts = set(new_segments.keys()) & self.user_names
         if conflicts:
             raise DuplicateNameError(conflicts)
-        # check for segment conflicts
         if not self.allow_aliases:
             segment_conflicts = {
                 name: seg for name, seg in new_segments.items() if seg in self
@@ -173,7 +180,11 @@ class Inventory:
                     for name, seg in segment_conflicts.items()
                 }
                 raise AliasError(aliased)
-        merged = dict(self.name_to_segment) | new_segments
+        merged = {
+            k: v
+            for k, v in self.name_to_segment.items()
+            if k in self.user_names
+        } | new_segments
         return Inventory(self.feature_system, merged, self.allow_aliases)
 
     def __contains__(self, item: object) -> bool:
