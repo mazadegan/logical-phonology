@@ -95,11 +95,11 @@ class Inventory:
     def tokenize(
         self, input_str: str, allow_ambiguity: bool = False
     ) -> Word | list[Word]:
-        if " " in input_str:
-            split = input_str.split(" ")
-            if not all(tok in self for tok in split):
+        if any(c.isspace() for c in input_str):
+            tokens = input_str.split()
+            if not all(tok in self for tok in tokens):
                 raise UntokenizableInputError(input_str)
-            return Word(tuple([self[tok] for tok in split]))
+            return Word(tuple([self[tok] for tok in tokens]))
 
         all_tokenizations: list[Word] = []
 

@@ -138,6 +138,14 @@ def test_delimited_tokenization(inv: lp.Inventory) -> None:
     assert word[3] == inv["D"]
 
 
+def test_delimited_tokenization_multiple_spaces(inv: lp.Inventory) -> None:
+    word = inv.tokenize("A  B  C")
+    assert len(word) == 3
+    assert word[0] == inv["A"]
+    assert word[1] == inv["B"]
+    assert word[2] == inv["C"]
+
+
 def test_fail_delimited_tokenization_with_bad_input(inv: lp.Inventory) -> None:
     with pytest.raises(lp.UntokenizableInputError) as exc_info:
         inv.tokenize("A B C DD")
