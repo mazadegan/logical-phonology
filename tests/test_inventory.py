@@ -1,4 +1,5 @@
 from itertools import product
+from typing import Iterator
 
 import pytest
 from hypothesis import given
@@ -201,3 +202,12 @@ def test_iter_extension_over_natural_class_sequences(
         [fs.natural_class({"F1": lp.POS}), fs.natural_class({"F1": lp.POS})]
     )
     assert len(list(inv.iter_extension(ncs3))) == 4  #  2**2
+
+
+def test_iter_extension_delegation_over(
+    inv: lp.Inventory, fs: lp.FeatureSystem
+) -> None:
+    nc = fs.natural_class({})
+    ncs = fs.natural_class_sequence([nc])
+    assert isinstance(nc.over(inv), Iterator)
+    assert isinstance(ncs.over(inv), Iterator)

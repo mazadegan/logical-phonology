@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import cast, overload
+from typing import TYPE_CHECKING, Iterator, cast, overload
 
 from .natural_class import NaturalClass
 from .word import Word
+
+if TYPE_CHECKING:
+    from .inventory import Inventory
 
 
 @dataclass(frozen=True)
@@ -20,6 +25,11 @@ class NaturalClassSequence:
             for i in range(len(word) - len(self) + 1)
             if self.matches_at(word, i)
         ]
+
+    def over(
+        self, inv: Inventory, filter_boundaries: bool = True
+    ) -> Iterator[Word]:
+        return inv.iter_extension(self, filter_boundaries)
 
     def __len__(self) -> int:
         return len(self.sequence)
