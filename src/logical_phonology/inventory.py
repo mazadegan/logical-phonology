@@ -4,7 +4,7 @@ from collections import defaultdict
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from types import MappingProxyType
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator, overload
 
 from .errors import (
     AliasError,
@@ -16,6 +16,8 @@ from .errors import (
 
 if TYPE_CHECKING:
     from .feature_system import FeatureSystem
+from .natural_class import NaturalClass
+from .natural_class_sequence import NaturalClassSequence
 from .segment import Segment
 from .word import Word
 
@@ -109,6 +111,50 @@ class Inventory:
         if len(all_tokenizations) == 0:
             raise UntokenizableInputError(input_str)
         return all_tokenizations[0]
+
+    @overload
+    def iter_extension(
+        self, obj: NaturalClass, filter_boundaries: bool = True
+    ) -> Iterator[Segment]: ...
+
+    @overload
+    def iter_extension(
+        self, obj: NaturalClassSequence, filter_boundaries: bool = True
+    ) -> Iterator[Word]: ...
+
+    def iter_extension(
+        self,
+        obj: NaturalClass | NaturalClassSequence,
+        filter_boundaries: bool = True,
+    ) -> Iterator[Segment] | Iterator[Word]:
+        if isinstance(obj, NaturalClass):
+            return self._iter_nc(obj, filter_boundaries)
+        return self._iter_ncs(obj, filter_boundaries)
+
+    # -- These private methods are needed to satisfy mypy because generators --
+    def _iter_nc(
+        self, nc: NaturalClass, filter_boundaries: bool = True
+    ) -> Iterator[Segment]:
+        for seg in self.segment_to_name:
+            if seg in nc:
+                if not filter_boundaries or seg not in (self.BOS, self.EOS):
+                    yield seg
+
+    def _iter_ncs(
+        self, ncs: NaturalClassSequence, filter_boundaries: bool = True
+    ) -> Iterator[Word]:
+        from itertools import product
+
+        extensions = [
+            [
+                seg
+                for seg in self._iter_nc(nc, filter_boundaries)
+                if not filter_boundaries or seg not in (self.BOS, self.EOS)
+            ]
+            for nc in ncs.sequence
+        ]
+        for combo in product(*extensions):
+            yield Word(tuple(combo))
 
     def __contains__(self, item: object) -> bool:
         if isinstance(item, str):

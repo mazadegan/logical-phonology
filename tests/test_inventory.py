@@ -156,3 +156,48 @@ def test_render_tokenize_roundtrip_aliased(fs: lp.FeatureSystem) -> None:
     word = fs.word([seg])
     # render produces canonical form, tokenize can parse it back
     assert inv_alias.tokenize(inv_alias.render(word)) == word
+
+
+def test_iter_extension_over_natural_classes(
+    inv: lp.Inventory, fs: lp.FeatureSystem
+) -> None:
+    nc1 = fs.natural_class({})
+    assert (
+        len(list(inv.iter_extension(nc1))) == 4
+    )  # 4 + boundaries filtered by default
+    assert (
+        len(list(inv.iter_extension(nc1, filter_boundaries=False))) == 6
+    )  # 4 + 2 boundaries
+    nc2 = fs.natural_class({"F1": lp.POS})
+    assert (
+        len(list(inv.iter_extension(nc2))) == 2
+    )  # boundaries not specified for anything but "BOS/EOS"
+    nc3 = fs.natural_class({"F1": lp.POS, "F2": lp.POS})
+    assert (
+        len(list(inv.iter_extension(nc3))) == 1
+    )  # Only one segment that is {+F1,+F2}
+
+
+def test_iter_extension_over_natural_class_sequences(
+    inv: lp.Inventory, fs: lp.FeatureSystem
+) -> None:
+    ncs1 = fs.natural_class_sequence([fs.natural_class({})])
+    assert (
+        len(list(inv.iter_extension(ncs1))) == 4
+    )  # boundaries filtered (default)
+    assert (
+        len(list(inv.iter_extension(ncs1, filter_boundaries=False))) == 6
+    )  # includes boundaries
+    ncs2 = fs.natural_class_sequence(
+        [fs.natural_class({}), fs.natural_class({})]
+    )
+    assert (
+        len(list(inv.iter_extension(ncs2))) == 16
+    )  #  (4 + boundaries filtered by default)**2
+    assert (
+        len(list(inv.iter_extension(ncs2, filter_boundaries=False))) == 36
+    )  #  (4 + 2 boundaries)**2
+    ncs3 = fs.natural_class_sequence(
+        [fs.natural_class({"F1": lp.POS}), fs.natural_class({"F1": lp.POS})]
+    )
+    assert len(list(inv.iter_extension(ncs3))) == 4  #  2**2
