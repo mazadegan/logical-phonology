@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Iterator, overload
 from .errors import (
     AliasError,
     AmbiguousTokenizationError,
+    DuplicateNameError,
     UnknownNameError,
     UnknownSegmentError,
     UntokenizableInputError,
@@ -155,6 +156,25 @@ class Inventory:
         ]
         for combo in product(*extensions):
             yield Word(tuple(combo))
+
+    def extend(self, new_segments: dict[str, Segment]) -> Inventory:
+        # check for name conflicts
+        conflicts = set(new_segments.keys()) & set(self.name_to_segment.keys())
+        if conflicts:
+            raise DuplicateNameError(conflicts)
+        # check for segment conflicts
+        if not self.allow_aliases:
+            segment_conflicts = {
+                name: seg for name, seg in new_segments.items() if seg in self
+            }
+            if segment_conflicts:
+                aliased = {
+                    str(seg): [self.name_of(seg), name]
+                    for name, seg in segment_conflicts.items()
+                }
+                raise AliasError(aliased)
+        merged = dict(self.name_to_segment) | new_segments
+        return Inventory(self.feature_system, merged, self.allow_aliases)
 
     def __contains__(self, item: object) -> bool:
         if isinstance(item, str):

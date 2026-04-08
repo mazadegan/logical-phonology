@@ -101,3 +101,11 @@ class AmbiguousTokenizationError(ValidationError):
             f"Found {len(tokenizations)} possible parses:\n"
             + "\n".join(rendered)
         )
+
+
+class DuplicateNameError(ValidationError):
+    def __init__(self, conflicts: set[str]) -> None:
+        self.conflicts = conflicts
+        super().__init__(
+            f"The following names already exist in the inventory: {conflicts}"
+        )

@@ -211,3 +211,32 @@ def test_iter_extension_delegation_over(
     ncs = fs.natural_class_sequence([nc])
     assert isinstance(nc.over(inv), Iterator)
     assert isinstance(ncs.over(inv), Iterator)
+
+
+def test_basic_extend(inv: lp.Inventory, fs: lp.FeatureSystem) -> None:
+    new_seg = fs.segment({"F1": lp.POS})
+    inv2 = inv.extend({"Z": new_seg})
+    assert "Z" in inv2
+    assert inv2["Z"] == new_seg
+    with pytest.raises(lp.UntokenizableInputError) as exc_info:
+        inv.tokenize("Z")
+    assert "Z" in exc_info.value.input_str
+    word = inv2.tokenize("Z")
+    assert word[0] == new_seg
+
+
+def test_duplicate_name(inv: lp.Inventory, fs: lp.FeatureSystem) -> None:
+    with pytest.raises(lp.DuplicateNameError) as exc_info:
+        inv.extend({"A": fs.segment({})})
+    assert "A" in exc_info.value.conflicts
+
+
+def test_extend_alias_error(inv: lp.Inventory, fs: lp.FeatureSystem) -> None:
+    inv_no_aliases = fs.inventory(
+        {name: inv[name] for name in ["A", "B", "C", "D"]},
+        allow_aliases=False,
+    )
+    dup_segment = inv["A"]
+    with pytest.raises(lp.AliasError) as exc_info:
+        inv_no_aliases.extend({"Q": dup_segment})
+    assert str(dup_segment) in exc_info.value.aliased
