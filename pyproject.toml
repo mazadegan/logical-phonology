@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "logical-phonology"
-version = "0.2.0"
+version = "0.2.1"
 description = "A logical phonology library"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -18,6 +18,7 @@ dev = [
     "pytest-stub",
     "hypothesis",
     "ruff",
+    "pydoc-markdown",
 ]
 
 [tool.ruff]
@@ -36,3 +37,6 @@ include = ["src/logical_phonology/py.typed"]
 [tool.mypy]
 strict = true
 mypy_path = "src"
+
+[tool.hatch.envs.default.scripts]
+make_api_reference = "python scripts/make_api_reference.py"

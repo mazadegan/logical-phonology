@@ -8,8 +8,13 @@ from .feature_value import FeatureValue
 
 @dataclass(frozen=True)
 class Segment:
-    """
-    A consistent feature bundle. Use FeatureSystem.segment() to construct.
+    """An immutable feature bundle representing a phonological segment.
+
+    Use `FeatureSystem.segment()` to construct. Direct construction is
+    possible but bypasses feature validation.
+
+    Attributes:
+        features: An immutable mapping of feature names to FeatureValues.
     """
 
     features: Mapping[str, FeatureValue]
@@ -20,7 +25,18 @@ class Segment:
         )
 
     def subtract(self, other: "Segment") -> "Segment":
-        """A \\ B = {cF | cF ∈ A ∧ cF ∉ B}"""
+        """A \\ B = {cF | cF ∈ A ∧ cF ∉ B}
+
+        Returns a new segment containing all valued features from this segment
+        that do not appear with the same value in `other`. Features with
+        conflicting values are kept. Also available as the `-` operator.
+
+        Args:
+            other: The segment whose features are subtracted.
+
+        Returns:
+            A new Segment with the result of the subtraction.
+        """
         return Segment(
             {
                 k: v
@@ -33,7 +49,18 @@ class Segment:
         return self.subtract(other)
 
     def unify(self, other: "Segment") -> "Segment":
-        """A ⊔ B = A ∪ {cF | cF ∈ B ∧ ¬cF ∉ A}"""
+        """A ⊔ B = A ∪ {cF | cF ∈ B ∧ ¬cF ∉ A}
+
+        Returns a new segment containing all features from this segment, plus
+        any features from `other` that do not conflict. Conflicting features
+        are silently ignored. Also available as the `|` operator.
+
+        Args:
+            other: The segment to unify with.
+
+        Returns:
+            A new Segment with the result of unification.
+        """
         result = dict(self.features)
         for f, v in other.features.items():
             if f not in self.features:
@@ -42,7 +69,18 @@ class Segment:
         return Segment(result)
 
     def unify_strict(self, other: "Segment") -> "Segment":
-        """Same as unify, but raises UnificationError on unification failure"""
+        """Same as `unify`, but raises UnificationError on conflicting features.
+
+        Args:
+            other: The segment to unify with.
+
+        Returns:
+            A new Segment with the result of unification.
+
+        Raises:
+            UnificationError: If both segments specify conflicting values for
+                the same feature.
+        """  # noqa: E501
         result = dict(self.features)
         for f, v in other.features.items():
             if f not in self.features:
@@ -55,6 +93,16 @@ class Segment:
         return self.unify(other)
 
     def project(self, restricted_feature_set: frozenset[str]) -> "Segment":
+        """Return a new segment containing only the specified features.
+
+        Also available as the `&` operator.
+
+        Args:
+            restricted_feature_set: The set of feature names to keep.
+
+        Returns:
+            A new Segment containing only the features in `restricted_feature_set`.
+        """  # noqa: E501
         return Segment(
             {
                 k: v
@@ -77,5 +125,11 @@ class Segment:
         return item in self.features
 
     def __str__(self) -> str:
+        """Return the canonical string representation of the segment.
+
+        Features are sorted alphabetically and formatted as `{+F1-F2}`.
+        This canonical form is used as the name for aliased segments in
+        an Inventory.
+        """
         parts = sorted(f"{v}{f}" for f, v in self.features.items())
         return "{" + "".join(parts) + "}"
