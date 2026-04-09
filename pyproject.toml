@@ -19,6 +19,9 @@ dev = [
     "hypothesis",
     "ruff",
     "pydoc-markdown",
+    "build",
+    "twine",
+
 ]
 
 [tool.ruff]

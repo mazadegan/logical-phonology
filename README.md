@@ -15,9 +15,23 @@ building LP structures.
 > [Logical Phonology Archive](https://wellformedness.com/loa/).
 
 ## Installation
+
 ```bash
 pip install logical-phonology
 ```
+
+## Development
+
+To install the development dependencies:
+```bash
+pip install -e ".[dev]"
+```
+
+Available scripts:
+
+- `hatch run make_api_reference` — regenerate the API reference docs
+- `hatch run publish` — bump version, rebuild docs, and publish to PyPI
+
 ## Quick Start
 
 ### Defining a Feature System
