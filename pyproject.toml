@@ -41,6 +41,9 @@ include = ["src/logical_phonology/py.typed"]
 strict = true
 mypy_path = "src"
 
+[tool.hatch.envs.default]
+type = "system"
+
 [tool.hatch.envs.default.scripts]
 make_api_reference = "python scripts/make_api_reference.py"
 publish = [
