@@ -30,7 +30,7 @@ pip install -e ".[dev]"
 Available scripts:
 
 - `hatch run make_api_reference` — regenerate the API reference docs
-- `hatch run publish` — bump version, rebuild docs, and publish to PyPI
+- `./scripts/publish.sh` — bump version, rebuild docs, and publish to PyPI
 
 ## Quick Start
 
