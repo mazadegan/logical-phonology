@@ -14,6 +14,7 @@
   * [UntokenizableInputError](#logical_phonology.errors.UntokenizableInputError)
   * [AmbiguousTokenizationError](#logical_phonology.errors.AmbiguousTokenizationError)
   * [DuplicateNameError](#logical_phonology.errors.DuplicateNameError)
+  * [CombinatoricExplosionError](#logical_phonology.errors.CombinatoricExplosionError)
 
 <a id="logical_phonology.errors"></a>
 
@@ -204,4 +205,24 @@ exists.
 **Attributes**:
 
 - `conflicts` - The set of names that already exist in the inventory.
+
+<a id="logical_phonology.errors.CombinatoricExplosionError"></a>
+
+## CombinatoricExplosionError Objects
+
+```python
+class CombinatoricExplosionError(ValidationError)
+```
+
+Raised when `full_inventory()` is called with a feature set that is
+too large to enumerate safely.
+
+The number of possible segments grows as 3^n where n is the number of
+features, so large feature sets can produce an intractable number of
+segments.
+
+**Attributes**:
+
+- `max_length` - The maximum allowed feature set size.
+- `actual_length` - The actual size of the feature set.
 

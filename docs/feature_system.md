@@ -10,6 +10,7 @@
     * [natural\_class](#logical_phonology.feature_system.FeatureSystem.natural_class)
     * [natural\_class\_sequence](#logical_phonology.feature_system.FeatureSystem.natural_class_sequence)
     * [inventory](#logical_phonology.feature_system.FeatureSystem.inventory)
+    * [full\_inventory](#logical_phonology.feature_system.FeatureSystem.full_inventory)
 
 <a id="logical_phonology.feature_system"></a>
 
@@ -220,4 +221,41 @@ Construct an Inventory from a mapping of names to segments.
 - `AliasError` - If aliases are detected and `allow_aliases=False`.
 - `DuplicateNameError` - If any name collides with a reserved or
   canonical form name.
+
+<a id="logical_phonology.feature_system.FeatureSystem.full_inventory"></a>
+
+#### full\_inventory
+
+```python
+def full_inventory(max_feature_set_length: int = 8) -> Inventory
+```
+
+Construct an inventory containing all possible segments over this
+feature system.
+
+Enumerates all combinations of POS, NEG, and unspecified for every
+feature, producing 3^n segments where n is the number of features.
+Each segment is named by its canonical form (e.g. `{+F1-F2}`).
+
+This is useful as a foundation for use cases where every possible
+segment must be reachable. Users can then extend the result with
+human-readable names via `Inventory.extend()`.
+
+**Arguments**:
+
+- `max_feature_set_length` - The maximum allowed number of features.
+  Defaults to 8 (producing at most 6561 segments). Raise this
+  limit with caution — at n=10 the inventory has 59049 segments.
+  
+
+**Returns**:
+
+  An Inventory containing all possible segments over this feature
+  system.
+  
+
+**Raises**:
+
+- `CombinatoricExplosionError` - If the number of features exceeds
+  `max_feature_set_length`.
 
