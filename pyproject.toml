@@ -40,3 +40,11 @@ mypy_path = "src"
 
 [tool.hatch.envs.default.scripts]
 make_api_reference = "python scripts/make_api_reference.py"
+publish = [
+    "python scripts/bump_version.py",
+    "python scripts/make_api_reference.py",
+    "rm -rf dist/",
+    "python -m build",
+    "twine upload dist/*",
+    "python scripts/tag_release.py",
+]
