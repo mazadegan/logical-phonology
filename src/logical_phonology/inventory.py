@@ -59,18 +59,31 @@ class Inventory:
     user_names: frozenset[str] = field(init=False)
 
     def __post_init__(self) -> None:
+        # grab a mutable copy of the user-provided name_to_segment mapping
         extended: dict[str, Segment] = dict(self.name_to_segment)
-        # capture user names before any modification
+
+        # get user-provided names before any auto-generated names are added
+        # this is used by extend() to distinguish user names from canonical
+        # or reserved names
         object.__setattr__(self, "user_names", frozenset(extended.keys()))
+
+        # build a mapping from segments to all names that refer to them
+        # this is for detecting aliases
         d: dict[Segment, list[str]] = defaultdict(list)
         for name, segment in extended.items():
             d[segment].append(name)
+
+        # build segment_to_name. This is the canonical name reverse lookup
+        # unambiguous segments keep their user-provided name
+        # aliased segments get their canonical form (e.g. "{+F1-F2}") as a name
         segment_to_name: dict[Segment, str] = {}
         for segment, names in d.items():
             if len(names) == 1:
                 segment_to_name[segment] = names[0]
             else:
                 segment_to_name[segment] = str(segment)
+
+        # if aliases are disabled, raise if any segment has multiple names
         if not self.allow_aliases:
             aliased = {
                 str(segment): names
@@ -79,28 +92,31 @@ class Inventory:
             }
             if aliased:
                 raise AliasError(aliased)
-        # check for collisions BEFORE modifying extended
+
+        # check that reserved boundary names were not used by the user
+        # this must happen before we inject boundary segments
         user_names = set(extended.keys())
-        canonical_names = {
-            str(segment)
-            for segment, name in segment_to_name.items()
-            if name == str(segment)
-        }
-        conflicts = canonical_names & user_names
-        if conflicts:
-            raise DuplicateNameError(conflicts)
         reserved_names = {"⋉", "⋊"}
         conflicts = reserved_names & user_names
         if conflicts:
             raise DuplicateNameError(conflicts)
-        # now safe to modify extended
+
+        # register canonical forms for aliased segments in extended. If the
+        # canonical form is already in extended (e.g. from full_inventory),
+        # skip it. This means the user already provided that name and it
+        # points to the correct segment
         for segment, name in segment_to_name.items():
-            if name == str(segment):
+            if name == str(segment) and name not in extended:
                 extended[name] = segment
+
+        # inject BOS and EOS boundary pseudo-segments: these are always
+        # available in every inventory
         extended["⋉"] = self.feature_system.BOS
         extended["⋊"] = self.feature_system.EOS
         segment_to_name[self.feature_system.BOS] = "⋉"
         segment_to_name[self.feature_system.EOS] = "⋊"
+
+        # freeze everything. From this point on the inventory is immutable
         object.__setattr__(self, "name_to_segment", MappingProxyType(extended))
         object.__setattr__(self, "names_in_order", tuple(extended.keys()))
         object.__setattr__(

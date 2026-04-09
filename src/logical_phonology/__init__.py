@@ -3,6 +3,7 @@ __version__ = "0.2.1"
 from .errors import (
     AliasError,
     AmbiguousTokenizationError,
+    CombinatoricExplosionError,
     DuplicateNameError,
     InvalidFeatureValueError,
     LogicalPhonologyError,
@@ -47,4 +48,5 @@ __all__ = [
     "UnknownNameError",
     "UnknownSegmentError",
     "DuplicateNameError",
+    "CombinatoricExplosionError",
 ]

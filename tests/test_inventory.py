@@ -248,3 +248,28 @@ def test_extend_alias_error(inv: lp.Inventory, fs: lp.FeatureSystem) -> None:
     with pytest.raises(lp.AliasError) as exc_info:
         inv_no_aliases.extend({"Q": dup_segment})
     assert str(dup_segment) in exc_info.value.aliased
+
+
+def test_full_inventory_length(fs: lp.FeatureSystem) -> None:
+    inv = fs.full_inventory()
+    # 3^2 = 9 segments, + 2 boundary segments
+    assert len(inv.segment_to_name) == 3 ** len(fs.valid_features) + 2
+
+
+def test_full_inventory_extend_aliases(fs: lp.FeatureSystem) -> None:
+    inv = fs.full_inventory()
+    seg = fs.segment({"F1": lp.POS, "F2": lp.POS})
+    inv2 = inv.extend({"A": seg})
+    # {+F1+F2} already exists in `inv` under its canonical name.
+    # Extending with inv2 should just add an alias for this segment
+    assert "A" in inv2
+    assert inv2["A"] == seg
+    assert inv2.name_of(seg) == str(seg)  # Canonical form wins when aliased
+
+
+def test_full_inventory_explosion_error() -> None:
+    fs = lp.FeatureSystem(frozenset(["F1", "F2", "F3"]))
+    with pytest.raises(lp.CombinatoricExplosionError) as exc_info:
+        fs.full_inventory(max_feature_set_length=2)
+    assert exc_info.value.max_length == 2
+    assert exc_info.value.actual_length == 3

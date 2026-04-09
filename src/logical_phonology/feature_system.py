@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from .errors import (
+    CombinatoricExplosionError,
     ReservedFeatureError,
     ReservedFeatureUsageError,
     UnknownFeatureError,
@@ -165,3 +166,46 @@ class FeatureSystem:
                 canonical form name.
         """
         return Inventory(self, name_to_segment, allow_aliases=allow_aliases)
+
+    def full_inventory(self, max_feature_set_length: int = 8) -> Inventory:
+        """Construct an inventory containing all possible segments over this
+        feature system.
+
+        Enumerates all combinations of POS, NEG, and unspecified for every
+        feature, producing 3^n segments where n is the number of features.
+        Each segment is named by its canonical form (e.g. `{+F1-F2}`).
+
+        This is useful as a foundation for use cases where every possible
+        segment must be reachable. Users can then extend the result with
+        human-readable names via `Inventory.extend()`.
+
+        Args:
+            max_feature_set_length: The maximum allowed number of features.
+                Defaults to 8 (producing at most 6561 segments). Raise this
+                limit with caution — at n=10 the inventory has 59049 segments.
+
+        Returns:
+            An Inventory containing all possible segments over this feature
+            system.
+
+        Raises:
+            CombinatoricExplosionError: If the number of features exceeds
+                `max_feature_set_length`.
+        """
+        if len(self.valid_features) > max_feature_set_length:
+            raise CombinatoricExplosionError(
+                max_feature_set_length, len(self.valid_features)
+            )
+        from itertools import product
+
+        features = sorted(self.valid_features)
+        segments = {}
+        for values in product(
+            [FeatureValue.POS, FeatureValue.NEG, None], repeat=len(features)
+        ):
+            spec = {f: v for f, v in zip(features, values) if v is not None}
+            seg = self.segment(spec)
+            name = str(seg)
+            segments[name] = seg
+
+        return Inventory(self, segments)

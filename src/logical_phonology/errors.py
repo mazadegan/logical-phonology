@@ -187,3 +187,27 @@ class DuplicateNameError(ValidationError):
         super().__init__(
             f"The following names already exist in the inventory: {conflicts}"
         )
+
+
+class CombinatoricExplosionError(ValidationError):
+    """Raised when `full_inventory()` is called with a feature set that is
+    too large to enumerate safely.
+
+    The number of possible segments grows as 3^n where n is the number of
+    features, so large feature sets can produce an intractable number of
+    segments.
+
+    Attributes:
+        max_length: The maximum allowed feature set size.
+        actual_length: The actual size of the feature set.
+    """
+
+    def __init__(self, max_length: int, actual_length: int) -> None:
+        self.max_length = max_length
+        self.actual_length = actual_length
+        super().__init__(
+            f"Feature set size {actual_length} exceeds the maximum allowed "
+            f"size of {max_length} for full_inventory(). "
+            f"Pass max_feature_set_length={actual_length} to override, "
+            f"but be aware this will generate {3**actual_length} segments."
+        )
