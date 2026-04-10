@@ -9,6 +9,7 @@
     * [iter\_extension](#logical_phonology.inventory.Inventory.iter_extension)
     * [extend](#logical_phonology.inventory.Inventory.extend)
     * [\_\_contains\_\_](#logical_phonology.inventory.Inventory.__contains__)
+    * [\_\_len\_\_](#logical_phonology.inventory.Inventory.__len__)
     * [segment](#logical_phonology.inventory.Inventory.segment)
     * [name\_of](#logical_phonology.inventory.Inventory.name_of)
 
@@ -210,6 +211,20 @@ Accepts either a string (name lookup) or a Segment (reverse lookup).
 **Returns**:
 
   True if the item is in this inventory, False otherwise.
+
+<a id="logical_phonology.inventory.Inventory.__len__"></a>
+
+#### \_\_len\_\_
+
+```python
+def __len__() -> int
+```
+
+Return the number of distinct segments in this inventory.
+
+Counts unique segments, not names — aliases are not double-counted.
+Use ``len(self.name_to_segment)`` if you want the total number of
+names including aliases and canonical forms.
 
 <a id="logical_phonology.inventory.Inventory.segment"></a>
 
