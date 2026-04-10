@@ -2,8 +2,6 @@
 
 * [logical\_phonology.inventory](#logical_phonology.inventory)
   * [Inventory](#logical_phonology.inventory.Inventory)
-    * [BOS](#logical_phonology.inventory.Inventory.BOS)
-    * [EOS](#logical_phonology.inventory.Inventory.EOS)
     * [render](#logical_phonology.inventory.Inventory.render)
     * [tokenize](#logical_phonology.inventory.Inventory.tokenize)
     * [iter\_extension](#logical_phonology.inventory.Inventory.iter_extension)
@@ -51,28 +49,6 @@ Use `FeatureSystem.inventory()` to construct.
 - `user_names` - The frozenset of names explicitly provided by the user,
   excluding auto-generated canonical and reserved names.
 - `allow_aliases` - Whether multiple names may map to the same segment.
-
-<a id="logical_phonology.inventory.Inventory.BOS"></a>
-
-#### BOS
-
-```python
-@property
-def BOS() -> Segment
-```
-
-The beginning-of-string boundary pseudo-segment (⋉).
-
-<a id="logical_phonology.inventory.Inventory.EOS"></a>
-
-#### EOS
-
-```python
-@property
-def EOS() -> Segment
-```
-
-The end-of-string boundary pseudo-segment (⋊).
 
 <a id="logical_phonology.inventory.Inventory.render"></a>
 

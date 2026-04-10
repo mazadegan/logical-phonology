@@ -4,6 +4,8 @@
   * [FeatureSystem](#logical_phonology.feature_system.FeatureSystem)
     * [BOS](#logical_phonology.feature_system.FeatureSystem.BOS)
     * [EOS](#logical_phonology.feature_system.FeatureSystem.EOS)
+    * [BOS\_NC](#logical_phonology.feature_system.FeatureSystem.BOS_NC)
+    * [EOS\_NC](#logical_phonology.feature_system.FeatureSystem.EOS_NC)
     * [segment](#logical_phonology.feature_system.FeatureSystem.segment)
     * [word](#logical_phonology.feature_system.FeatureSystem.word)
     * [add\_boundaries](#logical_phonology.feature_system.FeatureSystem.add_boundaries)
@@ -75,6 +77,28 @@ The end-of-string boundary pseudo-segment (⋊).
 This is a reserved segment with a single feature `{'EOS': POS}`.
 It is automatically added by `add_boundaries()` and recognized
 by `Inventory.tokenize()` and `Inventory.render()`.
+
+<a id="logical_phonology.feature_system.FeatureSystem.BOS_NC"></a>
+
+#### BOS\_NC
+
+```python
+@property
+def BOS_NC() -> NaturalClass
+```
+
+Returns a natural match that contains only the BOS pseudo-segment.
+
+<a id="logical_phonology.feature_system.FeatureSystem.EOS_NC"></a>
+
+#### EOS\_NC
+
+```python
+@property
+def EOS_NC() -> NaturalClass
+```
+
+Returns a natural match that contains only the EOS pseudo-segment.
 
 <a id="logical_phonology.feature_system.FeatureSystem.segment"></a>
 
