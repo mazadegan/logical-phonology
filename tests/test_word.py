@@ -9,15 +9,17 @@ def fs() -> lp.FeatureSystem:
     return lp.FeatureSystem(valid_features)
 
 
-@pytest.mark.parametrize(
-    "segments,expected_len",
-    [
-        ([], 0),
-        ([{}], 1),
-        ([{}, {}], 2),
-        ([{}, {}, {}], 3),
-    ],
-)
+_CORRECT_LENGTH_PARAMETERS: list[
+    tuple[list[dict[str, lp.FeatureValue]], int]
+] = [
+    ([], 0),
+    ([{}], 1),
+    ([{}, {}], 2),
+    ([{}, {}, {}], 3),
+]
+
+
+@pytest.mark.parametrize("segments,expected_len", _CORRECT_LENGTH_PARAMETERS)
 def test_correct_length(
     segments: list[dict[str, lp.FeatureValue]],
     expected_len: int,

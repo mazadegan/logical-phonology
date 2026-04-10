@@ -64,6 +64,20 @@ class FeatureSystem:
         """
         return Segment({"EOS": FeatureValue.POS})
 
+    @property
+    def BOS_NC(self) -> NaturalClass:
+        """
+        Returns a natural match that contains only the BOS pseudo-segment.
+        """
+        return self.natural_class(dict(self.BOS.features))
+
+    @property
+    def EOS_NC(self) -> NaturalClass:
+        """
+        Returns a natural match that contains only the EOS pseudo-segment.
+        """
+        return self.natural_class(dict(self.EOS.features))
+
     def segment(self, features: dict[str, FeatureValue]) -> Segment:
         """Construct a Segment from a feature specification.
 

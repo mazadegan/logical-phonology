@@ -86,7 +86,9 @@ class Inventory:
         # if aliases are disabled, raise if any segment has multiple names
         if not self.allow_aliases:
             aliased = {
-                str(segment): names for segment, names in d.items() if len(names) > 1
+                str(segment): names
+                for segment, names in d.items()
+                if len(names) > 1
             }
             if aliased:
                 raise AliasError(aliased)
@@ -117,17 +119,9 @@ class Inventory:
         # freeze everything. From this point on the inventory is immutable
         object.__setattr__(self, "name_to_segment", MappingProxyType(extended))
         object.__setattr__(self, "names_in_order", tuple(extended.keys()))
-        object.__setattr__(self, "segment_to_name", MappingProxyType(segment_to_name))
-
-    @property
-    def BOS(self) -> Segment:
-        """The beginning-of-string boundary pseudo-segment (⋉)."""
-        return self.feature_system.BOS
-
-    @property
-    def EOS(self) -> Segment:
-        """The end-of-string boundary pseudo-segment (⋊)."""
-        return self.feature_system.EOS
+        object.__setattr__(
+            self, "segment_to_name", MappingProxyType(segment_to_name)
+        )
 
     def render(self, word: Word) -> str:
         """Render a word as a string using inventory names.
@@ -236,7 +230,10 @@ class Inventory:
     ) -> Iterator[Segment]:
         for seg in self.segment_to_name:
             if seg in nc:
-                if not filter_boundaries or seg not in (self.BOS, self.EOS):
+                if not filter_boundaries or seg not in (
+                    self.feature_system.BOS,
+                    self.feature_system.EOS,
+                ):
                     yield seg
 
     def _iter_ncs(
@@ -248,7 +245,9 @@ class Inventory:
             [
                 seg
                 for seg in self._iter_nc(nc, filter_boundaries)
-                if not filter_boundaries or seg not in (self.BOS, self.EOS)
+                if not filter_boundaries
+                or seg
+                not in (self.feature_system.BOS, self.feature_system.EOS)
             ]
             for nc in ncs.sequence
         ]
@@ -285,7 +284,9 @@ class Inventory:
                 }
                 raise AliasError(aliased)
         merged = {
-            k: v for k, v in self.name_to_segment.items() if k in self.user_names
+            k: v
+            for k, v in self.name_to_segment.items()
+            if k in self.user_names
         } | new_segments
         return Inventory(self.feature_system, merged, self.allow_aliases)
 

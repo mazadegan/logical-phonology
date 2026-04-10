@@ -28,3 +28,4 @@ env/
 Thumbs.db
 # environment variables
 .env
+todo.txt

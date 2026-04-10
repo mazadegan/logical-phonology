@@ -25,9 +25,15 @@ def inv(fs: lp.FeatureSystem) -> lp.Inventory:
     names = ["A", "B", "C", "D"]
     values = list(product([lp.POS, lp.NEG], repeat=2))
     segments = {
-        name: fs.segment({"F1": f1, "F2": f2}) for name, (f1, f2) in zip(names, values)
+        name: fs.segment({"F1": f1, "F2": f2})
+        for name, (f1, f2) in zip(names, values)
     }
     return fs.inventory(segments)
+
+
+def test_boundary_natural_class_generation(fs: lp.FeatureSystem) -> None:
+    assert fs.BOS in fs.BOS_NC
+    assert fs.EOS in fs.EOS_NC
 
 
 def test_alias_error() -> None:
@@ -71,7 +77,9 @@ def test_render(inv: lp.Inventory, fs: lp.FeatureSystem) -> None:
     assert inv.render(word) == "AB"
 
 
-def test_render_with_boundaries(inv: lp.Inventory, fs: lp.FeatureSystem) -> None:
+def test_render_with_boundaries(
+    inv: lp.Inventory, fs: lp.FeatureSystem
+) -> None:
     word = fs.add_boundaries(fs.word([inv["A"], inv["B"]]))
     assert inv.render(word) == "⋉AB⋊"
 
@@ -118,7 +126,8 @@ def test_ambiguous_tokenization() -> None:
     names = ["A", "AA", "AAA", "AAAA"]
     values = list(product([lp.POS, lp.NEG], repeat=2))
     segments = {
-        name: fs.segment({"F1": f1, "F2": f2}) for name, (f1, f2) in zip(names, values)
+        name: fs.segment({"F1": f1, "F2": f2})
+        for name, (f1, f2) in zip(names, values)
     }
     inv = fs.inventory(segments)
     tokenizations = inv.tokenize("AAAA", allow_ambiguity=True)
@@ -148,7 +157,9 @@ def test_fail_delimited_tokenization_with_bad_input(inv: lp.Inventory) -> None:
     assert "DD" in exc_info.value.input_str
 
 
-def test_render_tokenize_roundtrip(inv: lp.Inventory, fs: lp.FeatureSystem) -> None:
+def test_render_tokenize_roundtrip(
+    inv: lp.Inventory, fs: lp.FeatureSystem
+) -> None:
     word = fs.word([inv["A"], inv["B"], inv["C"]])
     assert inv.tokenize(inv.render(word)) == word
 
@@ -165,7 +176,9 @@ def test_iter_extension_over_natural_classes(
     inv: lp.Inventory, fs: lp.FeatureSystem
 ) -> None:
     nc1 = fs.natural_class({})
-    assert len(list(inv.iter_extension(nc1))) == 4  # 4 + boundaries filtered by default
+    assert (
+        len(list(inv.iter_extension(nc1))) == 4
+    )  # 4 + boundaries filtered by default
     assert (
         len(list(inv.iter_extension(nc1, filter_boundaries=False))) == 6
     )  # 4 + 2 boundaries
@@ -174,18 +187,24 @@ def test_iter_extension_over_natural_classes(
         len(list(inv.iter_extension(nc2))) == 2
     )  # boundaries not specified for anything but "BOS/EOS"
     nc3 = fs.natural_class({"F1": lp.POS, "F2": lp.POS})
-    assert len(list(inv.iter_extension(nc3))) == 1  # Only one segment that is {+F1,+F2}
+    assert (
+        len(list(inv.iter_extension(nc3))) == 1
+    )  # Only one segment that is {+F1,+F2}
 
 
 def test_iter_extension_over_natural_class_sequences(
     inv: lp.Inventory, fs: lp.FeatureSystem
 ) -> None:
     ncs1 = fs.natural_class_sequence([fs.natural_class({})])
-    assert len(list(inv.iter_extension(ncs1))) == 4  # boundaries filtered (default)
+    assert (
+        len(list(inv.iter_extension(ncs1))) == 4
+    )  # boundaries filtered (default)
     assert (
         len(list(inv.iter_extension(ncs1, filter_boundaries=False))) == 6
     )  # includes boundaries
-    ncs2 = fs.natural_class_sequence([fs.natural_class({}), fs.natural_class({})])
+    ncs2 = fs.natural_class_sequence(
+        [fs.natural_class({}), fs.natural_class({})]
+    )
     assert (
         len(list(inv.iter_extension(ncs2))) == 16
     )  #  (4 + boundaries filtered by default)**2
