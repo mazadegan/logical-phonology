@@ -86,9 +86,7 @@ class Inventory:
         # if aliases are disabled, raise if any segment has multiple names
         if not self.allow_aliases:
             aliased = {
-                str(segment): names
-                for segment, names in d.items()
-                if len(names) > 1
+                str(segment): names for segment, names in d.items() if len(names) > 1
             }
             if aliased:
                 raise AliasError(aliased)
@@ -119,9 +117,7 @@ class Inventory:
         # freeze everything. From this point on the inventory is immutable
         object.__setattr__(self, "name_to_segment", MappingProxyType(extended))
         object.__setattr__(self, "names_in_order", tuple(extended.keys()))
-        object.__setattr__(
-            self, "segment_to_name", MappingProxyType(segment_to_name)
-        )
+        object.__setattr__(self, "segment_to_name", MappingProxyType(segment_to_name))
 
     @property
     def BOS(self) -> Segment:
@@ -289,9 +285,7 @@ class Inventory:
                 }
                 raise AliasError(aliased)
         merged = {
-            k: v
-            for k, v in self.name_to_segment.items()
-            if k in self.user_names
+            k: v for k, v in self.name_to_segment.items() if k in self.user_names
         } | new_segments
         return Inventory(self.feature_system, merged, self.allow_aliases)
 
@@ -311,6 +305,15 @@ class Inventory:
         if isinstance(item, Segment):
             return item in self.segment_to_name
         return False
+
+    def __len__(self) -> int:
+        """Return the number of distinct segments in this inventory.
+
+        Counts unique segments, not names — aliases are not double-counted.
+        Use ``len(self.name_to_segment)`` if you want the total number of
+        names including aliases and canonical forms.
+        """
+        return len(self.segment_to_name)
 
     def segment(self, name: str) -> Segment:
         """Look up a segment by name.

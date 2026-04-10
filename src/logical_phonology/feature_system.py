@@ -199,7 +199,7 @@ class FeatureSystem:
         from itertools import product
 
         features = sorted(self.valid_features)
-        segments = {}
+        segments: dict[str, Segment] = {}
         for values in product(
             [FeatureValue.POS, FeatureValue.NEG, None], repeat=len(features)
         ):
