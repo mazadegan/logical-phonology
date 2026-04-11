@@ -7,6 +7,7 @@
     * [unify\_strict](#logical_phonology.segment.Segment.unify_strict)
     * [project](#logical_phonology.segment.Segment.project)
     * [\_\_str\_\_](#logical_phonology.segment.Segment.__str__)
+    * [\_\_add\_\_](#logical_phonology.segment.Segment.__add__)
 
 <a id="logical_phonology.segment"></a>
 
@@ -135,4 +136,29 @@ Return the canonical string representation of the segment.
 Features are sorted alphabetically and formatted as `{+F1-F2}`.
 This canonical form is used as the name for aliased segments in
 an Inventory.
+
+<a id="logical_phonology.segment.Segment.__add__"></a>
+
+#### \_\_add\_\_
+
+```python
+def __add__(other: "Segment | Word") -> "Word"
+```
+
+Concatenate this segment with another segment or word.
+
+**Arguments**:
+
+- `other` - A Segment or Word to append.
+  
+
+**Returns**:
+
+  A new Word with this segment followed by the segments of other.
+  
+
+**Notes**:
+
+  Boundaries are not checked — callers are responsible for
+  ensuring BOS and EOS appear only at the edges of the final word.
 

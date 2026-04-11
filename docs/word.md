@@ -5,6 +5,7 @@
     * [\_\_len\_\_](#logical_phonology.word.Word.__len__)
     * [\_\_iter\_\_](#logical_phonology.word.Word.__iter__)
     * [\_\_getitem\_\_](#logical_phonology.word.Word.__getitem__)
+    * [\_\_add\_\_](#logical_phonology.word.Word.__add__)
 
 <a id="logical_phonology.word"></a>
 
@@ -70,4 +71,30 @@ Return a segment by index or a new word by slice.
 **Returns**:
 
   A Segment if index is an integer, or a new Word if index is a slice.
+
+<a id="logical_phonology.word.Word.__add__"></a>
+
+#### \_\_add\_\_
+
+```python
+def __add__(other: "Word | Segment") -> "Word"
+```
+
+Concatenate this word with another word or segment.
+
+**Arguments**:
+
+- `other` - A Word or Segment to append.
+  
+
+**Returns**:
+
+  A new Word containing the segments of this word followed by
+  the segments of other.
+  
+
+**Notes**:
+
+  Boundaries are not checked — callers are responsible for
+  ensuring BOS and EOS appear only at the edges of the final word.
 
