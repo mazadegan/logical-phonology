@@ -9,6 +9,7 @@
     * [segment](#logical_phonology.feature_system.FeatureSystem.segment)
     * [word](#logical_phonology.feature_system.FeatureSystem.word)
     * [add\_boundaries](#logical_phonology.feature_system.FeatureSystem.add_boundaries)
+    * [remove\_boundaries](#logical_phonology.feature_system.FeatureSystem.remove_boundaries)
     * [natural\_class](#logical_phonology.feature_system.FeatureSystem.natural_class)
     * [natural\_class\_sequence](#logical_phonology.feature_system.FeatureSystem.natural_class_sequence)
     * [inventory](#logical_phonology.feature_system.FeatureSystem.inventory)
@@ -159,11 +160,29 @@ Return a new Word with BOS and EOS boundary pseudo-segments added.
 **Arguments**:
 
 - `word` - The word to add boundaries to.
-  
 
 **Returns**:
 
-  A new Word with `BOS` prepended and `EOS` appended.
+  A new Word with `BOS` prepended and `EOS` appended, if not already
+  present.
+
+<a id="logical_phonology.feature_system.FeatureSystem.remove_boundaries"></a>
+
+#### remove\_boundaries
+
+```python
+def remove_boundaries(word: Word) -> Word
+```
+
+Return a new Word with BOS and EOS boundary pseudo-segments removed.
+
+**Arguments**:
+
+- `word` - The word to remove boundaries from.
+
+**Returns**:
+
+  A new Word with leading `BOS` and trailing `EOS` removed, if present.
 
 <a id="logical_phonology.feature_system.FeatureSystem.natural_class"></a>
 
