@@ -7,7 +7,9 @@
     * [find\_first](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_first)
     * [find\_last](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_last)
     * [over](#logical_phonology.natural_class_sequence.NaturalClassSequence.over)
+    * [\_\_len\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__len__)
     * [\_\_contains\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__contains__)
+    * [\_\_getitem\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__getitem__)
 
 <a id="logical_phonology.natural_class_sequence"></a>
 
@@ -139,6 +141,16 @@ Iterate over all words matching this sequence over a given inventory.
   An iterator over all words in the inventory that match this
   natural class sequence.
 
+<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.__len__"></a>
+
+#### \_\_len\_\_
+
+```python
+def __len__() -> int
+```
+
+Return the number of natural classes in this sequence.
+
 <a id="logical_phonology.natural_class_sequence.NaturalClassSequence.__contains__"></a>
 
 #### \_\_contains\_\_
@@ -161,4 +173,24 @@ available via the `in` operator.
 **Returns**:
 
   True if the word matches this sequence, False otherwise.
+
+<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.__getitem__"></a>
+
+#### \_\_getitem\_\_
+
+```python
+def __getitem__(index: int | slice) -> "NaturalClass | NaturalClassSequence"
+```
+
+Return a natural class by index or a subsequence by slice.
+
+**Arguments**:
+
+- `index` - An integer index or slice.
+  
+
+**Returns**:
+
+  A NaturalClass if index is an integer, or a new
+  NaturalClassSequence if index is a slice.
 

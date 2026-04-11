@@ -9,6 +9,7 @@
     * [\_\_contains\_\_](#logical_phonology.inventory.Inventory.__contains__)
     * [\_\_len\_\_](#logical_phonology.inventory.Inventory.__len__)
     * [segment](#logical_phonology.inventory.Inventory.segment)
+    * [\_\_getitem\_\_](#logical_phonology.inventory.Inventory.__getitem__)
     * [name\_of](#logical_phonology.inventory.Inventory.name_of)
 
 <a id="logical_phonology.inventory"></a>
@@ -213,6 +214,32 @@ def segment(name: str) -> Segment
 Look up a segment by name.
 
 Also available via the `[]` operator.
+
+**Arguments**:
+
+- `name` - The symbol name to look up.
+  
+
+**Returns**:
+
+  The Segment corresponding to the given name.
+  
+
+**Raises**:
+
+- `UnknownNameError` - If the name is not in this inventory.
+
+<a id="logical_phonology.inventory.Inventory.__getitem__"></a>
+
+#### \_\_getitem\_\_
+
+```python
+def __getitem__(name: str) -> Segment
+```
+
+Look up a segment by name.
+
+Also available via the ``segment()`` method.
 
 **Arguments**:
 

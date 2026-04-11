@@ -4,6 +4,7 @@
   * [NaturalClass](#logical_phonology.natural_class.NaturalClass)
     * [over](#logical_phonology.natural_class.NaturalClass.over)
     * [\_\_contains\_\_](#logical_phonology.natural_class.NaturalClass.__contains__)
+    * [\_\_hash\_\_](#logical_phonology.natural_class.NaturalClass.__hash__)
 
 <a id="logical_phonology.natural_class"></a>
 
@@ -75,4 +76,14 @@ via the `in` operator.
 **Returns**:
 
   True if the segment belongs to this natural class, False otherwise.
+
+<a id="logical_phonology.natural_class.NaturalClass.__hash__"></a>
+
+#### \_\_hash\_\_
+
+```python
+def __hash__() -> int
+```
+
+Hash based on the feature specification.
 

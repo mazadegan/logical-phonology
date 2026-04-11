@@ -3,9 +3,15 @@
 * [logical\_phonology.segment](#logical_phonology.segment)
   * [Segment](#logical_phonology.segment.Segment)
     * [subtract](#logical_phonology.segment.Segment.subtract)
+    * [\_\_sub\_\_](#logical_phonology.segment.Segment.__sub__)
     * [unify](#logical_phonology.segment.Segment.unify)
     * [unify\_strict](#logical_phonology.segment.Segment.unify_strict)
+    * [\_\_or\_\_](#logical_phonology.segment.Segment.__or__)
     * [project](#logical_phonology.segment.Segment.project)
+    * [\_\_and\_\_](#logical_phonology.segment.Segment.__and__)
+    * [\_\_hash\_\_](#logical_phonology.segment.Segment.__hash__)
+    * [\_\_getitem\_\_](#logical_phonology.segment.Segment.__getitem__)
+    * [\_\_contains\_\_](#logical_phonology.segment.Segment.__contains__)
     * [\_\_str\_\_](#logical_phonology.segment.Segment.__str__)
     * [\_\_add\_\_](#logical_phonology.segment.Segment.__add__)
 
@@ -53,6 +59,16 @@ conflicting values are kept. Also available as the `-` operator.
 **Returns**:
 
   A new Segment with the result of the subtraction.
+
+<a id="logical_phonology.segment.Segment.__sub__"></a>
+
+#### \_\_sub\_\_
+
+```python
+def __sub__(other: "Segment") -> "Segment"
+```
+
+Subtract another segment's features from this one. See ``subtract``.
 
 <a id="logical_phonology.segment.Segment.unify"></a>
 
@@ -102,6 +118,16 @@ Same as `unify`, but raises UnificationError on conflicting features.
 - `UnificationError` - If both segments specify conflicting values for
   the same feature.
 
+<a id="logical_phonology.segment.Segment.__or__"></a>
+
+#### \_\_or\_\_
+
+```python
+def __or__(other: "Segment") -> "Segment"
+```
+
+Unify this segment with another. See ``unify``.
+
 <a id="logical_phonology.segment.Segment.project"></a>
 
 #### project
@@ -122,6 +148,46 @@ Also available as the `&` operator.
 **Returns**:
 
   A new Segment containing only the features in `restricted_feature_set`.
+
+<a id="logical_phonology.segment.Segment.__and__"></a>
+
+#### \_\_and\_\_
+
+```python
+def __and__(restricted_feature_set: frozenset[str]) -> "Segment"
+```
+
+Project this segment onto a feature set. See ``project``.
+
+<a id="logical_phonology.segment.Segment.__hash__"></a>
+
+#### \_\_hash\_\_
+
+```python
+def __hash__() -> int
+```
+
+Hash based on the feature bundle.
+
+<a id="logical_phonology.segment.Segment.__getitem__"></a>
+
+#### \_\_getitem\_\_
+
+```python
+def __getitem__(key: str) -> FeatureValue
+```
+
+Look up the value of a feature by name.
+
+<a id="logical_phonology.segment.Segment.__contains__"></a>
+
+#### \_\_contains\_\_
+
+```python
+def __contains__(item: str) -> bool
+```
+
+Return True if this segment has a value for the given feature name.
 
 <a id="logical_phonology.segment.Segment.__str__"></a>
 
