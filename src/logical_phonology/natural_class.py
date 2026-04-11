@@ -68,4 +68,5 @@ class NaturalClass:
         return self.feature_specification.items() <= s.features.items()
 
     def __hash__(self) -> int:
+        """Hash based on the feature specification."""
         return hash(frozenset(self.feature_specification.items()))

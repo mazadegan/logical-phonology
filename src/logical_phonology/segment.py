@@ -50,6 +50,7 @@ class Segment:
         )
 
     def __sub__(self, other: "Segment") -> "Segment":
+        """Subtract another segment's features from this one. See ``subtract``."""
         return self.subtract(other)
 
     def unify(self, other: "Segment") -> "Segment":
@@ -94,6 +95,7 @@ class Segment:
         return Segment(result)
 
     def __or__(self, other: "Segment") -> "Segment":
+        """Unify this segment with another. See ``unify``."""
         return self.unify(other)
 
     def project(self, restricted_feature_set: frozenset[str]) -> "Segment":
@@ -116,16 +118,20 @@ class Segment:
         )
 
     def __and__(self, restricted_feature_set: frozenset[str]) -> "Segment":
+        """Project this segment onto a feature set. See ``project``."""
         return self.project(restricted_feature_set)
 
     # dict are not hashable, must use frozenset of features' items
     def __hash__(self) -> int:
+        """Hash based on the feature bundle."""
         return hash((frozenset(self.features.items())))
 
     def __getitem__(self, key: str) -> FeatureValue:
+        """Look up the value of a feature by name."""
         return self.features[key]
 
     def __contains__(self, item: str) -> bool:
+        """Return True if this segment has a value for the given feature name."""
         return item in self.features
 
     def __str__(self) -> str:

@@ -335,6 +335,20 @@ class Inventory:
         return self.name_to_segment[name]
 
     def __getitem__(self, name: str) -> Segment:
+        """Look up a segment by name.
+
+        Also available via the ``segment()`` method.
+
+        Args:
+            name: The symbol name to look up.
+
+        Returns:
+            The Segment corresponding to the given name.
+
+        Raises:
+            UnknownNameError: If the name is not in this inventory.
+        """
+
         return self.segment(name)
 
     def name_of(self, seg: Segment) -> str:

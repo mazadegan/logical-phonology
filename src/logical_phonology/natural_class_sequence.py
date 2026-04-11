@@ -109,6 +109,7 @@ class NaturalClassSequence:
         return inv.iter_extension(self, filter_boundaries)
 
     def __len__(self) -> int:
+        """Return the number of natural classes in this sequence."""
         return len(self.sequence)
 
     def __contains__(self, item: Word) -> bool:
@@ -137,6 +138,15 @@ class NaturalClassSequence:
     def __getitem__(
         self, index: int | slice
     ) -> "NaturalClass | NaturalClassSequence":
+        """Return a natural class by index or a subsequence by slice.
+
+        Args:
+            index: An integer index or slice.
+
+        Returns:
+            A NaturalClass if index is an integer, or a new
+            NaturalClassSequence if index is a slice.
+        """
         result = self.sequence[index]
         if isinstance(index, slice):
             return NaturalClassSequence(cast(tuple[NaturalClass, ...], result))
