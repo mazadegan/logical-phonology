@@ -125,3 +125,51 @@ def test_find_all_with_boundaries(fs: lp.FeatureSystem) -> None:
     )
     assert ncs1.find_all(w) == [3]
     assert ncs2.find_all(w) == [2]
+
+
+def test_find_first(fs: lp.FeatureSystem) -> None:
+    ncs = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
+    w = fs.word(
+        [
+            fs.segment({"F1": lp.NEG}),
+            fs.segment({"F1": lp.POS}),
+            fs.segment({"F1": lp.NEG}),
+            fs.segment({"F1": lp.POS}),
+        ]
+    )
+    assert ncs.find_first(w) == 1  # finds first match from start
+    assert ncs.find_first(w, from_pos=2) == 3  # finds next match after pos 2
+    assert ncs.find_first(w, from_pos=4) is None  # past end, no match
+    assert ncs.find_first(w, from_pos=0) == 1  # from_pos=0 same as default
+
+
+def test_find_last(fs: lp.FeatureSystem) -> None:
+    ncs = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
+    w = fs.word(
+        [
+            fs.segment({"F1": lp.NEG}),
+            fs.segment({"F1": lp.POS}),
+            fs.segment({"F1": lp.NEG}),
+            fs.segment({"F1": lp.POS}),
+        ]
+    )
+    assert ncs.find_last(w) == 3  # finds last match in word
+    assert ncs.find_last(w, before_pos=3) == 1  # finds last match before pos 3
+    assert ncs.find_last(w, before_pos=1) is None  # nothing before pos 1
+    assert ncs.find_last(w, before_pos=4) == 3  # before_pos past last match
+
+
+def test_find_first_no_match(fs: lp.FeatureSystem) -> None:
+    ncs = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
+    w = fs.word([fs.segment({"F1": lp.NEG}), fs.segment({"F1": lp.NEG})])
+    assert ncs.find_first(w) is None
+    assert ncs.find_last(w) is None
+
+
+def test_find_first_longer_than_word(fs: lp.FeatureSystem) -> None:
+    ncs = fs.natural_class_sequence(
+        [fs.natural_class({"F1": lp.POS}), fs.natural_class({"F1": lp.POS})]
+    )
+    w = fs.word([fs.segment({"F1": lp.POS})])
+    assert ncs.find_first(w) is None
+    assert ncs.find_last(w) is None
