@@ -114,14 +114,32 @@ class FeatureSystem:
 
     def add_boundaries(self, word: Word) -> Word:
         """Return a new Word with BOS and EOS boundary pseudo-segments added.
-
         Args:
             word: The word to add boundaries to.
-
         Returns:
-            A new Word with `BOS` prepended and `EOS` appended.
+            A new Word with `BOS` prepended and `EOS` appended, if not already
+            present.
         """
-        return Word(tuple([self.BOS, *word, self.EOS]))
+        segs = list(word)
+        if not segs or segs[0] != self.BOS:
+            segs = [self.BOS] + segs
+        if not segs or segs[-1] != self.EOS:
+            segs = segs + [self.EOS]
+        return Word(tuple(segs))
+
+    def remove_boundaries(self, word: Word) -> Word:
+        """Return a new Word with BOS and EOS boundary pseudo-segments removed.
+        Args:
+            word: The word to remove boundaries from.
+        Returns:
+            A new Word with leading `BOS` and trailing `EOS` removed, if present.
+        """
+        segs = list(word)
+        if segs and segs[0] == self.BOS:
+            segs = segs[1:]
+        if segs and segs[-1] == self.EOS:
+            segs = segs[:-1]
+        return Word(tuple(segs))
 
     def natural_class(self, features: dict[str, FeatureValue]) -> NaturalClass:
         """Construct a NaturalClass from a feature specification.

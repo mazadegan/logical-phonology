@@ -37,6 +37,41 @@ def test_correct_boundary_segments(fs: lp.FeatureSystem) -> None:
     assert word_with_boundaries[-1] == fs.EOS
 
 
+def test_remove_boundaries(fs: lp.FeatureSystem) -> None:
+    seg = fs.segment({"F1": lp.POS})
+    word = fs.word([seg])
+    bracketed = fs.add_boundaries(word)
+    assert fs.remove_boundaries(bracketed) == word
+
+
+def test_remove_boundaries_idempotent(fs: lp.FeatureSystem) -> None:
+    seg = fs.segment({"F1": lp.POS})
+    word = fs.word([seg])
+    assert fs.remove_boundaries(word) == word
+
+
+def test_remove_boundaries_empty(fs: lp.FeatureSystem) -> None:
+    empty = fs.word([])
+    assert fs.remove_boundaries(empty) == empty
+
+
+def test_remove_boundaries_only_bos(fs: lp.FeatureSystem) -> None:
+    word = fs.word([fs.BOS])
+    assert fs.remove_boundaries(word) == fs.word([])
+
+
+def test_remove_boundaries_only_eos(fs: lp.FeatureSystem) -> None:
+    word = fs.word([fs.EOS])
+    assert fs.remove_boundaries(word) == fs.word([])
+
+
+def test_add_boundaries_idempotent(fs: lp.FeatureSystem) -> None:
+    seg = fs.segment({"F1": lp.POS})
+    word = fs.word([seg])
+    bracketed = fs.add_boundaries(word)
+    assert fs.add_boundaries(bracketed) == bracketed
+
+
 @pytest.fixture
 def seg1(fs: lp.FeatureSystem) -> lp.Segment:
     return fs.segment({"F1": lp.POS})
