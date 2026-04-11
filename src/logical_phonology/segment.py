@@ -1,6 +1,10 @@
 from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from logical_phonology.word import Word
 
 from .errors import UnificationError
 from .feature_value import FeatureValue
@@ -133,3 +137,22 @@ class Segment:
         """
         parts = sorted(f"{v}{f}" for f, v in self.features.items())
         return "{" + "".join(parts) + "}"
+
+    def __add__(self, other: "Segment | Word") -> "Word":
+        """Concatenate this segment with another segment or word.
+
+        Args:
+            other: A Segment or Word to append.
+
+        Returns:
+            A new Word with this segment followed by the segments of other.
+
+        Note:
+            Boundaries are not checked — callers are responsible for
+            ensuring BOS and EOS appear only at the edges of the final word.
+        """
+        from logical_phonology.word import Word
+
+        if isinstance(other, Segment):
+            return Word((self, other))
+        return Word((self,) + other.segments)

@@ -52,3 +52,21 @@ class Word:
         if isinstance(index, slice):
             return Word(cast(tuple[Segment, ...], result))
         return cast(Segment, result)
+
+    def __add__(self, other: "Word | Segment") -> "Word":
+        """Concatenate this word with another word or segment.
+
+        Args:
+            other: A Word or Segment to append.
+
+        Returns:
+            A new Word containing the segments of this word followed by
+            the segments of other.
+
+        Note:
+            Boundaries are not checked — callers are responsible for
+            ensuring BOS and EOS appear only at the edges of the final word.
+        """
+        if isinstance(other, Segment):
+            return Word(self.segments + (other,))
+        return Word(self.segments + other.segments)
