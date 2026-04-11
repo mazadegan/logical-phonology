@@ -4,6 +4,8 @@
   * [NaturalClassSequence](#logical_phonology.natural_class_sequence.NaturalClassSequence)
     * [matches\_at](#logical_phonology.natural_class_sequence.NaturalClassSequence.matches_at)
     * [find\_all](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_all)
+    * [find\_first](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_first)
+    * [find\_last](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_last)
     * [over](#logical_phonology.natural_class_sequence.NaturalClassSequence.over)
     * [\_\_contains\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__contains__)
 
@@ -73,6 +75,47 @@ Return all positions in the word where the sequence matches.
 
   A list of positions where this natural class sequence matches
   as a substring of the word.
+
+<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.find_first"></a>
+
+#### find\_first
+
+```python
+def find_first(word: Word, from_pos: int = 0) -> int | None
+```
+
+Return the position of the first match at or after from_pos.
+
+**Arguments**:
+
+- `word` - The word to search.
+- `from_pos` - The position to start searching from (inclusive).
+  
+
+**Returns**:
+
+  The index of the first matching position, or None if no match found.
+
+<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.find_last"></a>
+
+#### find\_last
+
+```python
+def find_last(word: Word, before_pos: int | None = None) -> int | None
+```
+
+Return the position of the last match before before_pos.
+
+**Arguments**:
+
+- `word` - The word to search.
+- `before_pos` - Search only positions before this index (exclusive).
+  If None, searches the entire word.
+  
+
+**Returns**:
+
+  The index of the last matching position, or None if no match found.
 
 <a id="logical_phonology.natural_class_sequence.NaturalClassSequence.over"></a>
 
