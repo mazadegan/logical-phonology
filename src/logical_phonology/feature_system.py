@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from logical_phonology.natural_class_union import NaturalClassUnion
+
 from .errors import (
     CombinatoricExplosionError,
     ReservedFeatureError,
@@ -132,7 +134,8 @@ class FeatureSystem:
         Args:
             word: The word to remove boundaries from.
         Returns:
-            A new Word with leading `BOS` and trailing `EOS` removed, if present.
+            A new Word with leading `BOS` and trailing `EOS` removed, if
+            present.
         """
         segs = list(word)
         if segs and segs[0] == self.BOS:
@@ -163,8 +166,18 @@ class FeatureSystem:
             raise UnknownFeatureError(unknown)
         return NaturalClass(features)
 
-    def natural_class_sequence(
+    def natural_class_union(
         self, classes: list[NaturalClass]
+    ) -> NaturalClassUnion:
+        """
+        Construct a NaturalClassUnion from a list of NaturalClass objects.
+        """
+        from logical_phonology.natural_class_union import NaturalClassUnion
+
+        return NaturalClassUnion(tuple(classes))
+
+    def natural_class_sequence(
+        self, classes: list[NaturalClass | NaturalClassUnion]
     ) -> NaturalClassSequence:
         """Construct a NaturalClassSequence from an ordered list of natural
         classes.

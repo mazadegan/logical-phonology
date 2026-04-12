@@ -21,6 +21,7 @@ from .feature_value import NEG, POS, FeatureValue
 from .inventory import Inventory
 from .natural_class import NaturalClass
 from .natural_class_sequence import NaturalClassSequence
+from .natural_class_union import NaturalClassUnion
 from .segment import Segment
 from .word import Word
 
@@ -37,6 +38,7 @@ __all__ = [
     "Segment",
     "NaturalClass",
     "NaturalClassSequence",
+    "NaturalClassUnion",
     "Word",
     "ReservedFeatureError",
     "ReservedFeatureUsageError",

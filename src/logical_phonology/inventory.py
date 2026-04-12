@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Iterator, overload
 
+from logical_phonology.natural_class_union import NaturalClassUnion
+
 from .errors import (
     AliasError,
     AmbiguousTokenizationError,
@@ -241,16 +243,31 @@ class Inventory:
     ) -> Iterator[Word]:
         from itertools import product
 
-        extensions = [
-            [
-                seg
-                for seg in self._iter_nc(nc, filter_boundaries)
-                if not filter_boundaries
-                or seg
-                not in (self.feature_system.BOS, self.feature_system.EOS)
-            ]
-            for nc in ncs.sequence
-        ]
+        extensions: list[list[Segment]] = []
+        for nc in ncs.sequence:
+            if isinstance(nc, NaturalClassUnion):
+                segs = [
+                    seg
+                    for seg in self.segment_to_name
+                    if seg in nc
+                    and (
+                        not filter_boundaries
+                        or seg
+                        not in (
+                            self.feature_system.BOS,
+                            self.feature_system.EOS,
+                        )
+                    )
+                ]
+            else:
+                segs = [
+                    seg
+                    for seg in self._iter_nc(nc, filter_boundaries)
+                    if not filter_boundaries
+                    or seg
+                    not in (self.feature_system.BOS, self.feature_system.EOS)
+                ]
+            extensions.append(segs)
         for combo in product(*extensions):
             yield Word(tuple(combo))
 

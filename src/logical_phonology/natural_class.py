@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Iterator
 
+from logical_phonology.natural_class_union import NaturalClassUnion
+
 from .feature_value import FeatureValue
 from .segment import Segment
 
@@ -70,3 +72,7 @@ class NaturalClass:
     def __hash__(self) -> int:
         """Hash based on the feature specification."""
         return hash(frozenset(self.feature_specification.items()))
+
+    def __or__(self, other: NaturalClass) -> NaturalClassUnion:
+        """Return a union of this natural class with another."""
+        return NaturalClassUnion((self, other))

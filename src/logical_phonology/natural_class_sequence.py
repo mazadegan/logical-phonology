@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterator, cast, overload
 
+from logical_phonology.natural_class_union import NaturalClassUnion
+
 from .natural_class import NaturalClass
 from .word import Word
 
@@ -25,7 +27,7 @@ class NaturalClassSequence:
         sequence: An ordered tuple of NaturalClass objects.
     """  # noqa: E501
 
-    sequence: tuple[NaturalClass, ...]
+    sequence: tuple[NaturalClass | NaturalClassUnion, ...]
 
     def matches_at(self, word: Word, position: int) -> bool:
         """Return True if the sequence matches the word starting at position.
