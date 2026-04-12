@@ -11,6 +11,7 @@
     * [add\_boundaries](#logical_phonology.feature_system.FeatureSystem.add_boundaries)
     * [remove\_boundaries](#logical_phonology.feature_system.FeatureSystem.remove_boundaries)
     * [natural\_class](#logical_phonology.feature_system.FeatureSystem.natural_class)
+    * [natural\_class\_union](#logical_phonology.feature_system.FeatureSystem.natural_class_union)
     * [natural\_class\_sequence](#logical_phonology.feature_system.FeatureSystem.natural_class_sequence)
     * [inventory](#logical_phonology.feature_system.FeatureSystem.inventory)
     * [full\_inventory](#logical_phonology.feature_system.FeatureSystem.full_inventory)
@@ -182,7 +183,8 @@ Return a new Word with BOS and EOS boundary pseudo-segments removed.
 
 **Returns**:
 
-  A new Word with leading `BOS` and trailing `EOS` removed, if present.
+  A new Word with leading `BOS` and trailing `EOS` removed, if
+  present.
 
 <a id="logical_phonology.feature_system.FeatureSystem.natural_class"></a>
 
@@ -213,13 +215,24 @@ to match boundary pseudo-segments.
 - `UnknownFeatureError` - If any feature name is not in `valid_features`
   and is not a reserved feature.
 
+<a id="logical_phonology.feature_system.FeatureSystem.natural_class_union"></a>
+
+#### natural\_class\_union
+
+```python
+def natural_class_union(classes: list[NaturalClass]) -> NaturalClassUnion
+```
+
+Construct a NaturalClassUnion from a list of NaturalClass objects.
+
 <a id="logical_phonology.feature_system.FeatureSystem.natural_class_sequence"></a>
 
 #### natural\_class\_sequence
 
 ```python
 def natural_class_sequence(
-        classes: list[NaturalClass]) -> NaturalClassSequence
+        classes: list[NaturalClass | NaturalClassUnion]
+) -> NaturalClassSequence
 ```
 
 Construct a NaturalClassSequence from an ordered list of natural

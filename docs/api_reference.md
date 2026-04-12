@@ -6,5 +6,6 @@
 - [inventory](inventory.md)
 - [natural_class](natural_class.md)
 - [natural_class_sequence](natural_class_sequence.md)
+- [natural_class_union](natural_class_union.md)
 - [segment](segment.md)
 - [word](word.md)

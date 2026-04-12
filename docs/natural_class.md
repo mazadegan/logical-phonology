@@ -5,6 +5,7 @@
     * [over](#logical_phonology.natural_class.NaturalClass.over)
     * [\_\_contains\_\_](#logical_phonology.natural_class.NaturalClass.__contains__)
     * [\_\_hash\_\_](#logical_phonology.natural_class.NaturalClass.__hash__)
+    * [\_\_or\_\_](#logical_phonology.natural_class.NaturalClass.__or__)
 
 <a id="logical_phonology.natural_class"></a>
 
@@ -86,4 +87,14 @@ def __hash__() -> int
 ```
 
 Hash based on the feature specification.
+
+<a id="logical_phonology.natural_class.NaturalClass.__or__"></a>
+
+#### \_\_or\_\_
+
+```python
+def __or__(other: NaturalClass) -> NaturalClassUnion
+```
+
+Return a union of this natural class with another.
 
