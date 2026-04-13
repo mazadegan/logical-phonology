@@ -50,7 +50,9 @@ class Segment:
         )
 
     def __sub__(self, other: "Segment") -> "Segment":
-        """Subtract another segment's features from this one. See ``subtract``."""
+        """
+        Subtract another segment's features from this one. See ``subtract``.
+        """
         return self.subtract(other)
 
     def unify(self, other: "Segment") -> "Segment":

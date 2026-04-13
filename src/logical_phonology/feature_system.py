@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from logical_phonology.natural_class_union import NaturalClassUnion
 
@@ -14,6 +15,9 @@ from .natural_class import NaturalClass
 from .natural_class_sequence import NaturalClassSequence
 from .segment import Segment
 from .word import Word
+
+if TYPE_CHECKING:
+    from .toolkit import Toolkit
 
 RESERVED_FEATURES = frozenset(["BOS", "EOS"])
 
@@ -211,6 +215,11 @@ class FeatureSystem:
                 canonical form name.
         """
         return Inventory(self, name_to_segment, allow_aliases=allow_aliases)
+
+    def toolkit(self) -> "Toolkit":
+        from logical_phonology.toolkit import Toolkit
+
+        return Toolkit(self)
 
     def full_inventory(self, max_feature_set_length: int = 8) -> Inventory:
         """Construct an inventory containing all possible segments over this
