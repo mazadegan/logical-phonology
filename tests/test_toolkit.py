@@ -45,6 +45,19 @@ def test_tk_subtract_words() -> None:
     assert tk.subtract(w1, w2) == FS.word([G, E])
 
 
+def test_tk_intersect_segments() -> None:
+    tk = FS.toolkit()
+    assert tk.intersect(A, B) == E
+    assert tk.intersect(A, D) == I
+
+
+def test_tk_intersect_words() -> None:
+    tk = FS.toolkit()
+    w1 = FS.word([A, B])
+    w2 = FS.word([B, C])
+    assert tk.intersect(w1, w2) == FS.word([E, I])
+
+
 def test_tk_project_segment() -> None:
     tk = FS.toolkit()
     assert tk.project(A, frozenset(["F"])) == E

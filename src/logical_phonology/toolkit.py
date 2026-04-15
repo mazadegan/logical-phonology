@@ -84,6 +84,48 @@ class Toolkit:
         raise TypeError("Both arguments must be of the same type")
 
     @overload
+    def intersect(self, a: Segment, b: Segment) -> Segment: ...
+    @overload
+    def intersect(self, a: Word, b: Word) -> Word: ...
+    def intersect(self, a: object, b: object) -> Segment | Word:
+        """Intersect two segments or two words.
+
+        For segments, this returns the segment consisting of the valued
+        features that are the same in both segments.
+
+        For words, each aligned pair of segments is intersected and the
+        resulting segments are reassembled into a new word.
+
+        Args:
+            a: A `Segment` or `Word`.
+            b: A `Segment` or `Word` of the same type as `a`.
+
+        Returns:
+            The segment- or word-level intersection.
+
+        Raises:
+            TypeError: If `a` and `b` are not both segments or both words.
+        """
+        if isinstance(a, Segment) and isinstance(b, Segment):
+            return Segment(
+                {f: v for f, v in a.features.items() if f in b and b[f] == v}
+            )
+        if isinstance(a, Word) and isinstance(b, Word):
+            return self.fs.word(
+                [
+                    Segment(
+                        {
+                            f: v
+                            for f, v in s.features.items()
+                            if f in t and t[f] == v
+                        }
+                    )
+                    for s, t in zip(a, b)
+                ]
+            )
+        raise TypeError("Both arguments must be of the same type")
+
+    @overload
     def project(
         self, a: Segment, restricted_feature_set: frozenset[str]
     ) -> Segment: ...
