@@ -8,4 +8,5 @@
 - [natural_class_sequence](natural_class_sequence.md)
 - [natural_class_union](natural_class_union.md)
 - [segment](segment.md)
+- [toolkit](toolkit.md)
 - [word](word.md)

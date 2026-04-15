@@ -93,8 +93,8 @@ Hash based on the feature specification.
 #### \_\_or\_\_
 
 ```python
-def __or__(other: NaturalClass) -> NaturalClassUnion
+def __or__(other: NaturalClass | NaturalClassUnion) -> NaturalClassUnion
 ```
 
-Return a union of this natural class with another.
+Return a union of this natural class with another class or union.
 
