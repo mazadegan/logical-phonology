@@ -1,3 +1,5 @@
+import pytest
+
 import logical_phonology as lp
 
 FS = lp.FeatureSystem(frozenset(["F", "G"]))
@@ -86,6 +88,33 @@ def test_tk_tier_union() -> None:
     word = FS.word([A, B, C, D, I])
     union = NC_NEG_F | NC_POS_G
     assert tk.tier(word, union) == FS.word([A, C, D])
+
+
+def test_tk_ngrams() -> None:
+    tk = FS.toolkit()
+    word = FS.word([A, B, C])
+    result = tk.ngrams(word, 2)
+    assert result == [
+        (0, 2, FS.word([A, B])),
+        (1, 3, FS.word([B, C])),
+    ]
+
+
+def test_tk_ngrams_with_boundaries() -> None:
+    tk = FS.toolkit()
+    word = FS.add_boundaries(FS.word([A, B]))
+    result = tk.ngrams(word, 2)
+    assert result == [
+        (0, 2, FS.word([FS.BOS, A])),
+        (1, 3, FS.word([A, B])),
+        (2, 4, FS.word([B, FS.EOS])),
+    ]
+
+
+def test_tk_ngrams_rejects_nonpositive_n() -> None:
+    tk = FS.toolkit()
+    with pytest.raises(ValueError):
+        tk.ngrams(FS.word([A, B]), 0)
 
 
 def test_tk_intersect_segments() -> None:

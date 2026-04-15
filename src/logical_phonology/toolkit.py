@@ -147,6 +147,29 @@ class Toolkit:
         """
         return self.fs.word([s for s in w if s in nc])
 
+    def ngrams(self, w: Word, n: int) -> list[tuple[int, int, Word]]:
+        """Return all contiguous n-grams of a word.
+
+        The word is treated as-is, so any BOS/EOS boundary segments already
+        present in `w` are included in the n-gram windows.
+
+        Args:
+            w: The word to slice into contiguous subsequences.
+            n: The length of each n-gram. Must be positive.
+
+        Returns:
+            A list of `(start, end, subsequence)` tuples, where `end` is
+            exclusive.
+
+        Raises:
+            ValueError: If `n` is not positive.
+        """
+        if n <= 0:
+            raise ValueError("n must be positive")
+        return [
+            (i, i + n, w[i : i + n]) for i in range(max(len(w) - n + 1, 0))
+        ]
+
     @overload
     def intersect(self, a: Segment, b: Segment) -> Segment: ...
     @overload
