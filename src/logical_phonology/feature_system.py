@@ -191,15 +191,25 @@ class FeatureSystem:
             segs = segs[:-1]
         return Word(tuple(segs))
 
-    def natural_class(self, features: dict[str, FeatureValue]) -> NaturalClass:
+    @overload
+    def natural_class(
+        self, features: Mapping[str, FeatureValue]
+    ) -> NaturalClass: ...
+    @overload
+    def natural_class(self, features: Mapping[str, str]) -> NaturalClass: ...
+    @overload
+    def natural_class(
+        self, features: Mapping[str, FeatureValue | str]
+    ) -> NaturalClass: ...
+    def natural_class(self, features: Mapping[str, object]) -> NaturalClass:
         """Construct a NaturalClass from a feature specification.
 
         Natural classes may reference reserved features such as 'BOS' and 'EOS'
         to match boundary pseudo-segments.
 
         Args:
-            features: A partial mapping of feature names to FeatureValues
-                defining the class.
+            features: A partial mapping of feature names to `FeatureValue` or
+                `'+'`/`'-'` strings defining the class.
 
         Returns:
             A new NaturalClass with the given feature specification.
@@ -211,7 +221,17 @@ class FeatureSystem:
         unknown = (features.keys() - self.valid_features) - RESERVED_FEATURES
         if unknown:
             raise UnknownFeatureError(unknown)
-        return NaturalClass(features)
+        normalized: dict[str, FeatureValue] = {}
+        for feature, value in features.items():
+            if isinstance(value, FeatureValue):
+                normalized[feature] = value
+            elif isinstance(value, str):
+                normalized[feature] = FeatureValue.from_str(value)
+            else:
+                raise TypeError(
+                    "Feature values must be FeatureValue or '+'/'-' strings"
+                )
+        return NaturalClass(normalized)
 
     def natural_class_union(
         self, classes: list[NaturalClass]

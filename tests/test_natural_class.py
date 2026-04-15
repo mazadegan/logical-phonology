@@ -15,6 +15,29 @@ def test_natural_class_unknown_feature(fs: lp.FeatureSystem) -> None:
     assert "F4" in exc_info.value.unknown
 
 
+def test_natural_class_from_string_feature_values(
+    fs: lp.FeatureSystem,
+) -> None:
+    assert fs.natural_class({"F1": "+", "F2": "-"}) == fs.natural_class(
+        {"F1": lp.POS, "F2": lp.NEG}
+    )
+
+
+def test_natural_class_from_mixed_feature_values(
+    fs: lp.FeatureSystem,
+) -> None:
+    assert fs.natural_class({"F1": "+", "F2": lp.NEG}) == fs.natural_class(
+        {"F1": lp.POS, "F2": lp.NEG}
+    )
+
+
+def test_natural_class_invalid_string_feature_value_raises(
+    fs: lp.FeatureSystem,
+) -> None:
+    with pytest.raises(lp.InvalidFeatureValueError):
+        fs.natural_class({"F1": "x"})
+
+
 def test_natural_class_spec_immutable(fs: lp.FeatureSystem) -> None:
     nc = fs.natural_class({"F1": lp.POS})
     with pytest.raises(TypeError):
