@@ -20,6 +20,18 @@ class ValidationError(LogicalPhonologyError):
     pass
 
 
+class LoadInventoryError(ValidationError):
+    """Raised when an inventory file cannot be parsed or loaded."""
+
+    pass
+
+
+class InventoryFileError(LoadInventoryError):
+    """Raised when an inventory file is malformed or cannot be read."""
+
+    pass
+
+
 class InvalidFeatureValueError(ValidationError):
     """Raised when a string cannot be parsed as a FeatureValue.
 

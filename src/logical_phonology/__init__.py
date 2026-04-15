@@ -5,7 +5,9 @@ from .errors import (
     AmbiguousTokenizationError,
     CombinatoricExplosionError,
     DuplicateNameError,
+    InventoryFileError,
     InvalidFeatureValueError,
+    LoadInventoryError,
     LogicalPhonologyError,
     ReservedFeatureError,
     ReservedFeatureUsageError,
@@ -19,6 +21,7 @@ from .errors import (
 from .feature_system import FeatureSystem
 from .feature_value import NEG, POS, FeatureValue
 from .inventory import Inventory
+from .loaders import load_inventory_from_file
 from .natural_class import NaturalClass
 from .natural_class_sequence import NaturalClassSequence
 from .natural_class_union import NaturalClassUnion
@@ -35,6 +38,7 @@ __all__ = [
     "POS",
     "NEG",
     "FeatureSystem",
+    "load_inventory_from_file",
     "Segment",
     "NaturalClass",
     "NaturalClassSequence",
@@ -42,6 +46,8 @@ __all__ = [
     "Word",
     "ReservedFeatureError",
     "ReservedFeatureUsageError",
+    "LoadInventoryError",
+    "InventoryFileError",
     "UnificationError",
     "Inventory",
     "AliasError",
