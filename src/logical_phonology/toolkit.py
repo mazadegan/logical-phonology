@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from functools import reduce
 from typing import Callable, overload
 
@@ -214,14 +215,14 @@ class Toolkit:
 
     @overload
     def project(
-        self, a: Segment, restricted_feature_set: frozenset[str]
+        self, a: Segment, restricted_feature_set: Collection[str]
     ) -> Segment: ...
     @overload
     def project(
-        self, a: Word, restricted_feature_set: frozenset[str]
+        self, a: Word, restricted_feature_set: Collection[str]
     ) -> Word: ...
     def project(
-        self, a: object, restricted_feature_set: frozenset[str]
+        self, a: object, restricted_feature_set: Collection[str]
     ) -> Segment | Word:
         """Project a segment or every segment in a word onto a feature set.
 

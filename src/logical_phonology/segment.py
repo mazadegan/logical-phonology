@@ -1,4 +1,4 @@
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 from typing import TYPE_CHECKING
@@ -100,26 +100,23 @@ class Segment:
         """Unify this segment with another. See ``unify``."""
         return self.unify(other)
 
-    def project(self, restricted_feature_set: frozenset[str]) -> "Segment":
+    def project(self, restricted_feature_set: Collection[str]) -> "Segment":
         """Return a new segment containing only the specified features.
 
         Also available as the `&` operator.
 
         Args:
-            restricted_feature_set: The set of feature names to keep.
+            restricted_feature_set: The collection of feature names to keep.
 
         Returns:
             A new Segment containing only the features in `restricted_feature_set`.
         """  # noqa: E501
+        allowed = set(restricted_feature_set)
         return Segment(
-            {
-                k: v
-                for k, v in self.features.items()
-                if k in restricted_feature_set
-            }
+            {k: v for k, v in self.features.items() if k in allowed}
         )
 
-    def __and__(self, restricted_feature_set: frozenset[str]) -> "Segment":
+    def __and__(self, restricted_feature_set: Collection[str]) -> "Segment":
         """Project this segment onto a feature set. See ``project``."""
         return self.project(restricted_feature_set)
 

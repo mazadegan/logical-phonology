@@ -139,3 +139,9 @@ def test_tk_project_word() -> None:
     tk = FS.toolkit()
     word = FS.word([A, B])
     assert tk.project(word, frozenset(["F"])) == FS.word([E, E])
+
+
+def test_tk_project_accepts_list() -> None:
+    tk = FS.toolkit()
+    word = FS.word([A, B])
+    assert tk.project(word, ["F"]) == FS.word([E, E])

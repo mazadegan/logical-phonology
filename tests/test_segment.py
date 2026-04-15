@@ -168,6 +168,14 @@ def test_project(fs: lp.FeatureSystem) -> None:
     assert "F3" not in result
 
 
+def test_project_accepts_list(fs: lp.FeatureSystem) -> None:
+    s = fs.segment({"F1": lp.POS, "F2": lp.NEG, "F3": lp.POS})
+    result = s.project(["F1", "F2"])
+    assert "F1" in result
+    assert "F2" in result
+    assert "F3" not in result
+
+
 def test_unify(fs: lp.FeatureSystem) -> None:
     s1 = fs.segment({"F1": lp.POS})
     s2 = fs.segment({"F2": lp.NEG})
