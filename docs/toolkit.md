@@ -222,7 +222,7 @@ resulting segments are reassembled into a new word.
 
 ```python
 def project(a: object,
-            restricted_feature_set: frozenset[str]) -> Segment | Word
+            restricted_feature_set: Collection[str]) -> Segment | Word
 ```
 
 Project a segment or every segment in a word onto a feature set.

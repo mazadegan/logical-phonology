@@ -133,7 +133,7 @@ Unify this segment with another. See ``unify``.
 #### project
 
 ```python
-def project(restricted_feature_set: frozenset[str]) -> "Segment"
+def project(restricted_feature_set: Collection[str]) -> "Segment"
 ```
 
 Return a new segment containing only the specified features.
@@ -142,7 +142,7 @@ Also available as the `&` operator.
 
 **Arguments**:
 
-- `restricted_feature_set` - The set of feature names to keep.
+- `restricted_feature_set` - The collection of feature names to keep.
   
 
 **Returns**:
@@ -154,7 +154,7 @@ Also available as the `&` operator.
 #### \_\_and\_\_
 
 ```python
-def __and__(restricted_feature_set: frozenset[str]) -> "Segment"
+def __and__(restricted_feature_set: Collection[str]) -> "Segment"
 ```
 
 Project this segment onto a feature set. See ``project``.

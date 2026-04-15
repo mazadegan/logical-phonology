@@ -2,6 +2,7 @@
 
 * [logical\_phonology.feature\_system](#logical_phonology.feature_system)
   * [FeatureSystem](#logical_phonology.feature_system.FeatureSystem)
+    * [from\_features](#logical_phonology.feature_system.FeatureSystem.from_features)
     * [BOS](#logical_phonology.feature_system.FeatureSystem.BOS)
     * [EOS](#logical_phonology.feature_system.FeatureSystem.EOS)
     * [BOS\_NC](#logical_phonology.feature_system.FeatureSystem.BOS_NC)
@@ -49,6 +50,33 @@ in user-defined feature systems.
 
 - `ReservedFeatureError` - If any feature name in `valid_features` is
   reserved.
+
+<a id="logical_phonology.feature_system.FeatureSystem.from_features"></a>
+
+#### from\_features
+
+```python
+@classmethod
+def from_features(cls, features: Collection[str]) -> "FeatureSystem"
+```
+
+Construct a FeatureSystem from any collection of feature names.
+
+**Arguments**:
+
+- `features` - Feature names as a collection, e.g. list, tuple, set, or
+  frozenset.
+  
+
+**Returns**:
+
+  A FeatureSystem with immutable `valid_features`.
+  
+
+**Raises**:
+
+- `ValueError` - If duplicate feature names are provided.
+- `ReservedFeatureError` - If reserved names are included.
 
 <a id="logical_phonology.feature_system.FeatureSystem.BOS"></a>
 
@@ -107,16 +135,16 @@ Returns a natural match that contains only the EOS pseudo-segment.
 #### segment
 
 ```python
-def segment(features: dict[str, FeatureValue]) -> Segment
+def segment(features: Mapping[str, object]) -> Segment
 ```
 
 Construct a Segment from a feature specification.
 
 **Arguments**:
 
-- `features` - A mapping of feature names to FeatureValues. May be
-  partial — unspecified features are simply absent from the
-  segment's feature bundle.
+- `features` - A mapping of feature names to `FeatureValue` or `'+'`/`'-'`
+  strings. May be partial — unspecified features are simply absent
+  from the segment's feature bundle.
   
 
 **Returns**:
