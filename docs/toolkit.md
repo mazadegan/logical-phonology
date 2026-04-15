@@ -7,6 +7,7 @@
     * [subtract](#logical_phonology.toolkit.Toolkit.subtract)
     * [union](#logical_phonology.toolkit.Toolkit.union)
     * [tier](#logical_phonology.toolkit.Toolkit.tier)
+    * [ngrams](#logical_phonology.toolkit.Toolkit.ngrams)
     * [intersect](#logical_phonology.toolkit.Toolkit.intersect)
     * [project](#logical_phonology.toolkit.Toolkit.project)
 
@@ -154,6 +155,35 @@ Return the subsequence of a word that belongs to a natural class.
 
   A new word containing only the segments of `w` that belong to
   `nc`, in their original relative order.
+
+<a id="logical_phonology.toolkit.Toolkit.ngrams"></a>
+
+#### ngrams
+
+```python
+def ngrams(w: Word, n: int) -> list[tuple[int, int, Word]]
+```
+
+Return all contiguous n-grams of a word.
+
+The word is treated as-is, so any BOS/EOS boundary segments already
+present in `w` are included in the n-gram windows.
+
+**Arguments**:
+
+- `w` - The word to slice into contiguous subsequences.
+- `n` - The length of each n-gram. Must be positive.
+  
+
+**Returns**:
+
+  A list of `(start, end, subsequence)` tuples, where `end` is
+  exclusive.
+  
+
+**Raises**:
+
+- `ValueError` - If `n` is not positive.
 
 <a id="logical_phonology.toolkit.Toolkit.intersect"></a>
 
