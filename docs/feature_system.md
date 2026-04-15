@@ -219,7 +219,7 @@ Return a new Word with BOS and EOS boundary pseudo-segments removed.
 #### natural\_class
 
 ```python
-def natural_class(features: dict[str, FeatureValue]) -> NaturalClass
+def natural_class(features: Mapping[str, object]) -> NaturalClass
 ```
 
 Construct a NaturalClass from a feature specification.
@@ -229,8 +229,8 @@ to match boundary pseudo-segments.
 
 **Arguments**:
 
-- `features` - A partial mapping of feature names to FeatureValues
-  defining the class.
+- `features` - A partial mapping of feature names to `FeatureValue` or
+  `'+'`/`'-'` strings defining the class.
   
 
 **Returns**:
