@@ -3,6 +3,8 @@
 * [logical\_phonology.errors](#logical_phonology.errors)
   * [LogicalPhonologyError](#logical_phonology.errors.LogicalPhonologyError)
   * [ValidationError](#logical_phonology.errors.ValidationError)
+  * [LoadInventoryError](#logical_phonology.errors.LoadInventoryError)
+  * [InventoryFileError](#logical_phonology.errors.InventoryFileError)
   * [InvalidFeatureValueError](#logical_phonology.errors.InvalidFeatureValueError)
   * [UnknownFeatureError](#logical_phonology.errors.UnknownFeatureError)
   * [ReservedFeatureError](#logical_phonology.errors.ReservedFeatureError)
@@ -39,6 +41,26 @@ class ValidationError(LogicalPhonologyError)
 ```
 
 Base exception for validation errors.
+
+<a id="logical_phonology.errors.LoadInventoryError"></a>
+
+## LoadInventoryError Objects
+
+```python
+class LoadInventoryError(ValidationError)
+```
+
+Raised when an inventory file cannot be parsed or loaded.
+
+<a id="logical_phonology.errors.InventoryFileError"></a>
+
+## InventoryFileError Objects
+
+```python
+class InventoryFileError(LoadInventoryError)
+```
+
+Raised when an inventory file is malformed or cannot be read.
 
 <a id="logical_phonology.errors.InvalidFeatureValueError"></a>
 
