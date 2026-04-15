@@ -23,7 +23,9 @@ class NaturalClassUnion:
     def __or__(
         self, other: NaturalClass | NaturalClassUnion
     ) -> NaturalClassUnion:
-        """Return a new union combining this union with another class or union."""
+        """
+        Return a new union combining this union with another class or union.
+        """
         if isinstance(other, NaturalClassUnion):
             return NaturalClassUnion(self.classes + other.classes)
         return NaturalClassUnion(self.classes + (other,))
