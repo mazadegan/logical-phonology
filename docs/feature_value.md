@@ -6,6 +6,8 @@
     * [from\_str](#logical_phonology.feature_value.FeatureValue.from_str)
   * [POS](#logical_phonology.feature_value.POS)
   * [NEG](#logical_phonology.feature_value.NEG)
+  * [FeatureValueLiteral](#logical_phonology.feature_value.FeatureValueLiteral)
+  * [FeatureValueInput](#logical_phonology.feature_value.FeatureValueInput)
 
 <a id="logical_phonology.feature_value"></a>
 
@@ -77,4 +79,16 @@ Alias for `FeatureValue.POS`.
 #### NEG
 
 Alias for `FeatureValue.NEG`.
+
+<a id="logical_phonology.feature_value.FeatureValueLiteral"></a>
+
+#### FeatureValueLiteral
+
+Literal string forms accepted for feature values.
+
+<a id="logical_phonology.feature_value.FeatureValueInput"></a>
+
+#### FeatureValueInput
+
+Input type accepted by APIs that parse feature values.
 
