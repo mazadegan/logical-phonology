@@ -28,3 +28,27 @@ def test_tk_unify_words() -> None:
     w1 = FS.word([E, G])  # +F only, +G only
     w2 = FS.word([F, H])  # -F only, -G only
     assert tk.unify(w1, w2) == FS.word([E, G])
+
+
+def test_tk_subtract_segments() -> None:
+    tk = FS.toolkit()
+    assert tk.subtract(A, E) == G
+    assert tk.subtract(B, H) == E
+
+
+def test_tk_subtract_words() -> None:
+    tk = FS.toolkit()
+    w1 = FS.word([A, B])
+    w2 = FS.word([E, H])
+    assert tk.subtract(w1, w2) == FS.word([G, E])
+
+
+def test_tk_project_segment() -> None:
+    tk = FS.toolkit()
+    assert tk.project(A, frozenset(["F"])) == E
+
+
+def test_tk_project_word() -> None:
+    tk = FS.toolkit()
+    word = FS.word([A, B])
+    assert tk.project(word, frozenset(["F"])) == FS.word([E, E])
