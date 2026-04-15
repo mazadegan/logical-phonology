@@ -83,7 +83,7 @@ def test_segment_invalid_string_feature_value_raises(
     fs: lp.FeatureSystem,
 ) -> None:
     with pytest.raises(lp.InvalidFeatureValueError):
-        fs.segment({"F1": "x"})
+        fs.segment({"F1": "x"})  # type: ignore[arg-type]
 
 
 @given(feature_spec_strategy)

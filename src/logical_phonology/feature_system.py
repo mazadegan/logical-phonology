@@ -10,7 +10,7 @@ from .errors import (
     ReservedFeatureUsageError,
     UnknownFeatureError,
 )
-from .feature_value import FeatureValue
+from .feature_value import FeatureValue, FeatureValueInput, FeatureValueLiteral
 from .inventory import Inventory
 from .natural_class import NaturalClass
 from .natural_class_sequence import NaturalClassSequence
@@ -112,11 +112,11 @@ class FeatureSystem:
     @overload
     def segment(self, features: Mapping[str, FeatureValue]) -> Segment: ...
     @overload
-    def segment(self, features: Mapping[str, str]) -> Segment: ...
-    @overload
     def segment(
-        self, features: Mapping[str, FeatureValue | str]
+        self, features: Mapping[str, FeatureValueLiteral]
     ) -> Segment: ...
+    @overload
+    def segment(self, features: Mapping[str, FeatureValueInput]) -> Segment: ...
     def segment(self, features: Mapping[str, object]) -> Segment:
         """Construct a Segment from a feature specification.
 
@@ -196,10 +196,12 @@ class FeatureSystem:
         self, features: Mapping[str, FeatureValue]
     ) -> NaturalClass: ...
     @overload
-    def natural_class(self, features: Mapping[str, str]) -> NaturalClass: ...
+    def natural_class(
+        self, features: Mapping[str, FeatureValueLiteral]
+    ) -> NaturalClass: ...
     @overload
     def natural_class(
-        self, features: Mapping[str, FeatureValue | str]
+        self, features: Mapping[str, FeatureValueInput]
     ) -> NaturalClass: ...
     def natural_class(self, features: Mapping[str, object]) -> NaturalClass:
         """Construct a NaturalClass from a feature specification.

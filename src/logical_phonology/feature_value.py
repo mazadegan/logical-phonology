@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Literal, TypeAlias
 
 from .errors import InvalidFeatureValueError
 
@@ -47,3 +48,9 @@ POS = FeatureValue.POS
 
 NEG = FeatureValue.NEG
 """Alias for `FeatureValue.NEG`."""
+
+FeatureValueLiteral: TypeAlias = Literal["+", "-"]
+"""Literal string forms accepted for feature values."""
+
+FeatureValueInput: TypeAlias = FeatureValue | FeatureValueLiteral
+"""Input type accepted by APIs that parse feature values."""
