@@ -92,8 +92,8 @@ def tokenize(input_str: str,
 Tokenize a string into a Word using this inventory.
 
 If the string contains whitespace, it is split on whitespace and each
-token is looked up directly. Otherwise, recursive tokenization is used
-to find all valid segmentations.
+token is looked up directly. Otherwise, dynamic programming over string
+positions is used to find all valid segmentations.
 
 **Arguments**:
 
