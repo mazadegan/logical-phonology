@@ -1,5 +1,6 @@
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 from logical_phonology.natural_class_union import NaturalClassUnion
 
@@ -45,6 +46,30 @@ class FeatureSystem:
 
     valid_features: frozenset[str]
 
+    @classmethod
+    def from_features(cls, features: Collection[str]) -> "FeatureSystem":
+        """Construct a FeatureSystem from any collection of feature names.
+
+        Args:
+            features: Feature names as a collection, e.g. list, tuple, set, or
+                frozenset.
+
+        Returns:
+            A FeatureSystem with immutable `valid_features`.
+
+        Raises:
+            ValueError: If duplicate feature names are provided.
+            ReservedFeatureError: If reserved names are included.
+        """
+        feature_list = list(features)
+        unique = set(feature_list)
+        if len(unique) != len(feature_list):
+            duplicates = {f for f in unique if feature_list.count(f) > 1}
+            raise ValueError(
+                f"Duplicate feature names are not allowed: {duplicates}"
+            )
+        return cls(frozenset(feature_list))
+
     def __post_init__(self) -> None:
         reserved_conflicts = self.valid_features & RESERVED_FEATURES
         if reserved_conflicts:
@@ -84,13 +109,21 @@ class FeatureSystem:
         """
         return self.natural_class(dict(self.EOS.features))
 
-    def segment(self, features: dict[str, FeatureValue]) -> Segment:
+    @overload
+    def segment(self, features: Mapping[str, FeatureValue]) -> Segment: ...
+    @overload
+    def segment(self, features: Mapping[str, str]) -> Segment: ...
+    @overload
+    def segment(
+        self, features: Mapping[str, FeatureValue | str]
+    ) -> Segment: ...
+    def segment(self, features: Mapping[str, object]) -> Segment:
         """Construct a Segment from a feature specification.
 
         Args:
-            features: A mapping of feature names to FeatureValues. May be
-                partial — unspecified features are simply absent from the
-                segment's feature bundle.
+            features: A mapping of feature names to `FeatureValue` or `'+'`/`'-'`
+                strings. May be partial — unspecified features are simply absent
+                from the segment's feature bundle.
 
         Returns:
             A new Segment with the given feature specification.
@@ -105,7 +138,17 @@ class FeatureSystem:
         unknown = features.keys() - self.valid_features
         if unknown:
             raise UnknownFeatureError(unknown)
-        return Segment(features)
+        normalized: dict[str, FeatureValue] = {}
+        for feature, value in features.items():
+            if isinstance(value, FeatureValue):
+                normalized[feature] = value
+            elif isinstance(value, str):
+                normalized[feature] = FeatureValue.from_str(value)
+            else:
+                raise TypeError(
+                    "Feature values must be FeatureValue or '+'/'-' strings"
+                )
+        return Segment(normalized)
 
     def word(self, segments: list[Segment]) -> Word:
         """Construct a Word from a list of segments.

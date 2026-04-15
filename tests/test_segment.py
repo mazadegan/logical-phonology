@@ -17,6 +17,21 @@ def fs() -> lp.FeatureSystem:
     return lp.FeatureSystem(valid_features)
 
 
+def test_feature_system_from_features_accepts_list() -> None:
+    fs = lp.FeatureSystem.from_features(["F1", "F2", "F3"])
+    assert fs.valid_features == frozenset(["F1", "F2", "F3"])
+
+
+def test_feature_system_from_features_accepts_tuple() -> None:
+    fs = lp.FeatureSystem.from_features(("F1", "F2", "F3"))
+    assert fs.valid_features == frozenset(["F1", "F2", "F3"])
+
+
+def test_feature_system_from_features_rejects_duplicates() -> None:
+    with pytest.raises(ValueError):
+        lp.FeatureSystem.from_features(["F1", "F1", "F2"])
+
+
 def test_fail_on_reserved_features() -> None:
     with pytest.raises(lp.ReservedFeatureError) as exc_info:
         lp.FeatureSystem(frozenset(["EOS"]))
@@ -46,6 +61,29 @@ def test_fully_underspecified_segment(fs: lp.FeatureSystem) -> None:
     assert "F1" not in segment
     assert "F2" not in segment
     assert "F3" not in segment
+
+
+def test_segment_from_string_feature_values(
+    fs: lp.FeatureSystem,
+) -> None:
+    assert fs.segment({"F1": "+", "F2": "-"}) == fs.segment(
+        {"F1": lp.POS, "F2": lp.NEG}
+    )
+
+
+def test_segment_from_mixed_feature_values(
+    fs: lp.FeatureSystem,
+) -> None:
+    assert fs.segment({"F1": "+", "F2": lp.NEG}) == fs.segment(
+        {"F1": lp.POS, "F2": lp.NEG}
+    )
+
+
+def test_segment_invalid_string_feature_value_raises(
+    fs: lp.FeatureSystem,
+) -> None:
+    with pytest.raises(lp.InvalidFeatureValueError):
+        fs.segment({"F1": "x"})
 
 
 @given(feature_spec_strategy)

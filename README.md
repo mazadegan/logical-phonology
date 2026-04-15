@@ -41,7 +41,7 @@ defines the universal set of valid features for your analysis:
 ```python
 import logical_phonology as lp
 
-fs = lp.FeatureSystem(frozenset(["F1", "F2", "F3"]))
+fs = lp.FeatureSystem.from_features(["F1", "F2", "F3"])
 ```
 
 ### Building Segments
