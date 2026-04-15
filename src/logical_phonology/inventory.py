@@ -150,8 +150,8 @@ class Inventory:
         """Tokenize a string into a Word using this inventory.
 
         If the string contains whitespace, it is split on whitespace and each
-        token is looked up directly. Otherwise, recursive tokenization is used
-        to find all valid segmentations.
+        token is looked up directly. Otherwise, dynamic programming over string
+        positions is used to find all valid segmentations.
 
         Args:
             input_str: The string to tokenize.
@@ -174,18 +174,24 @@ class Inventory:
                 raise UntokenizableInputError(input_str)
             return Word(tuple([self[tok] for tok in tokens]))
 
-        all_tokenizations: list[Word] = []
+        n = len(input_str)
+        # memo[i] stores all parses of input_str[i:] as lists of segments
+        memo: dict[int, list[list[Segment]]] = {n: [[]]}
+        name_to_segment = self.name_to_segment
 
-        def recurse(input_str: str, current_parse: list[Segment]) -> None:
-            if input_str == "":
-                all_tokenizations.append(Word(tuple(current_parse)))
-                return
+        for i in range(n - 1, -1, -1):
+            parses_from_i: list[list[Segment]] = []
             for name in self.names_in_order:
-                if input_str.startswith(name):
-                    next_parse = [seg for seg in current_parse] + [self[name]]
-                    recurse(input_str[len(name) :], next_parse)
+                if not input_str.startswith(name, i):
+                    continue
+                end = i + len(name)
+                for suffix_parse in memo.get(end, []):
+                    parses_from_i.append(
+                        [name_to_segment[name]] + suffix_parse
+                    )
+            memo[i] = parses_from_i
 
-        recurse(input_str, [])
+        all_tokenizations = [Word(tuple(parse)) for parse in memo.get(0, [])]
 
         if len(all_tokenizations) > 1:
             if not allow_ambiguity:

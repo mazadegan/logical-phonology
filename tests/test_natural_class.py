@@ -35,7 +35,7 @@ def test_natural_class_invalid_string_feature_value_raises(
     fs: lp.FeatureSystem,
 ) -> None:
     with pytest.raises(lp.InvalidFeatureValueError):
-        fs.natural_class({"F1": "x"})  # type: ignore[arg-type]
+        fs.natural_class({"F1": "x"})  # type: ignore[dict-item]
 
 
 def test_natural_class_spec_immutable(fs: lp.FeatureSystem) -> None:

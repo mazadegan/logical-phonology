@@ -116,7 +116,9 @@ class FeatureSystem:
         self, features: Mapping[str, FeatureValueLiteral]
     ) -> Segment: ...
     @overload
-    def segment(self, features: Mapping[str, FeatureValueInput]) -> Segment: ...
+    def segment(
+        self, features: Mapping[str, FeatureValueInput]
+    ) -> Segment: ...
     def segment(self, features: Mapping[str, object]) -> Segment:
         """Construct a Segment from a feature specification.
 
