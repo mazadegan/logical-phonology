@@ -15,11 +15,13 @@ INV = FS.inventory({"A": A, "B": B, "C": C, "D": D})
 
 def test_tk_unify_segments() -> None:
     tk = FS.toolkit()
-    # A has +F, +G. E has only +F. Unifying A with E should give A (left-biased, A already has G)
+    # A has +F, +G. E has only +F. Unifying A with E should give A
+    # (left-biased, A already has G)
     assert tk.unify(A, E) == A
     # E has only +F. G has only +G. Unifying E with G should give A (+F, +G)
     assert tk.unify(E, G) == A
-    # E has +F. F has -F. Unifying E with F should give E (left-biased, E wins on F)
+    # E has +F. F has -F. Unifying E with F should give E
+    # (left-biased, E wins on F)
     assert tk.unify(E, F) == E
 
 

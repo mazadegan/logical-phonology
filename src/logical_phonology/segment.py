@@ -133,7 +133,9 @@ class Segment:
         return self.features[key]
 
     def __contains__(self, item: str) -> bool:
-        """Return True if this segment has a value for the given feature name."""
+        """
+        Return True if this segment has a value for the given feature name.
+        """
         return item in self.features
 
     def __str__(self) -> str:
