@@ -2,6 +2,8 @@ from functools import reduce
 from typing import Callable, overload
 
 from logical_phonology.feature_system import FeatureSystem
+from logical_phonology.natural_class import NaturalClass
+from logical_phonology.natural_class_union import NaturalClassUnion
 from logical_phonology.segment import Segment
 from logical_phonology.word import Word
 
@@ -82,6 +84,53 @@ class Toolkit:
         if isinstance(a, Word) and isinstance(b, Word):
             return self.fs.word([s.subtract(t) for s, t in zip(a, b)])
         raise TypeError("Both arguments must be of the same type")
+
+    @overload
+    def union(
+        self, a: NaturalClass, b: NaturalClass
+    ) -> NaturalClassUnion: ...
+    @overload
+    def union(
+        self, a: NaturalClass, b: NaturalClassUnion
+    ) -> NaturalClassUnion: ...
+    @overload
+    def union(
+        self, a: NaturalClassUnion, b: NaturalClass
+    ) -> NaturalClassUnion: ...
+    @overload
+    def union(
+        self, a: NaturalClassUnion, b: NaturalClassUnion
+    ) -> NaturalClassUnion: ...
+    def union(
+        self, a: object, b: object
+    ) -> NaturalClassUnion:
+        """Union two natural classes or natural class unions.
+
+        This is an analysis-level helper for combining natural-class
+        descriptions without introducing a segment-level union operation.
+
+        Args:
+            a: A `NaturalClass` or `NaturalClassUnion`.
+            b: A `NaturalClass` or `NaturalClassUnion`.
+
+        Returns:
+            A `NaturalClassUnion` containing the classes from both inputs.
+
+        Raises:
+            TypeError: If either argument is not a natural class or natural
+                class union.
+        """
+        if isinstance(a, NaturalClass) and isinstance(b, NaturalClass):
+            return NaturalClassUnion((a, b))
+        if isinstance(a, NaturalClass) and isinstance(b, NaturalClassUnion):
+            return NaturalClassUnion((a,) + b.classes)
+        if isinstance(a, NaturalClassUnion) and isinstance(b, NaturalClass):
+            return NaturalClassUnion(a.classes + (b,))
+        if isinstance(a, NaturalClassUnion) and isinstance(
+            b, NaturalClassUnion
+        ):
+            return NaturalClassUnion(a.classes + b.classes)
+        raise TypeError("Both arguments must be natural classes or unions")
 
     @overload
     def intersect(self, a: Segment, b: Segment) -> Segment: ...

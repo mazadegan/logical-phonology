@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 if TYPE_CHECKING:
     from logical_phonology.natural_class import NaturalClass
@@ -16,12 +16,14 @@ class NaturalClassUnion:
         """Return True if the segment belongs to any class in this union."""
         return any(seg in nc for nc in self.classes)
 
+    @overload
+    def __or__(self, other: NaturalClass) -> NaturalClassUnion: ...
+    @overload
+    def __or__(self, other: NaturalClassUnion) -> NaturalClassUnion: ...
     def __or__(
         self, other: NaturalClass | NaturalClassUnion
     ) -> NaturalClassUnion:
-        """
-        Return a new union combining this union with another class or union.
-        """
+        """Return a new union combining this union with another class or union."""
         if isinstance(other, NaturalClassUnion):
             return NaturalClassUnion(self.classes + other.classes)
         return NaturalClassUnion(self.classes + (other,))

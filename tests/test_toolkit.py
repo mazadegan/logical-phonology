@@ -12,6 +12,11 @@ H = FS.segment({"G": lp.NEG})
 I = FS.segment({})  # noqa: E741
 INV = FS.inventory({"A": A, "B": B, "C": C, "D": D})
 
+NC_POS_F = FS.natural_class({"F": lp.POS})
+NC_NEG_F = FS.natural_class({"F": lp.NEG})
+NC_POS_G = FS.natural_class({"G": lp.POS})
+NC_NEG_G = FS.natural_class({"G": lp.NEG})
+
 
 def test_tk_unify_segments() -> None:
     tk = FS.toolkit()
@@ -43,6 +48,31 @@ def test_tk_subtract_words() -> None:
     w1 = FS.word([A, B])
     w2 = FS.word([E, H])
     assert tk.subtract(w1, w2) == FS.word([G, E])
+
+
+def test_tk_union_nc_nc() -> None:
+    tk = FS.toolkit()
+    union = tk.union(NC_POS_F, NC_NEG_F)
+    assert isinstance(union, lp.NaturalClassUnion)
+    assert len(union.classes) == 2
+
+
+def test_tk_union_nc_union() -> None:
+    tk = FS.toolkit()
+    union = tk.union(NC_POS_F, NC_NEG_F | NC_POS_G)
+    assert len(union.classes) == 3
+
+
+def test_tk_union_union_nc() -> None:
+    tk = FS.toolkit()
+    union = tk.union(NC_POS_F | NC_NEG_F, NC_POS_G)
+    assert len(union.classes) == 3
+
+
+def test_tk_union_union_union() -> None:
+    tk = FS.toolkit()
+    union = tk.union(NC_POS_F | NC_NEG_F, NC_POS_G | NC_NEG_G)
+    assert len(union.classes) == 4
 
 
 def test_tk_intersect_segments() -> None:

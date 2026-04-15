@@ -29,6 +29,14 @@ def test_nc_or_contains_both_classes() -> None:
     assert len(union.classes) == 2
 
 
+def test_nc_or_union_prepends_class() -> None:
+    union = NC_POS_F | (NC_NEG_F | NC_POS_G)
+    assert len(union.classes) == 3
+    assert union.classes[0] == NC_POS_F
+    assert union.classes[1] == NC_NEG_F
+    assert union.classes[2] == NC_POS_G
+
+
 ### NaturalClassUnion.__contains__ ###
 
 

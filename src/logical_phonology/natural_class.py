@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, overload
 
 from logical_phonology.natural_class_union import NaturalClassUnion
 
@@ -73,6 +73,14 @@ class NaturalClass:
         """Hash based on the feature specification."""
         return hash(frozenset(self.feature_specification.items()))
 
-    def __or__(self, other: NaturalClass) -> NaturalClassUnion:
-        """Return a union of this natural class with another."""
+    @overload
+    def __or__(self, other: NaturalClass) -> NaturalClassUnion: ...
+    @overload
+    def __or__(self, other: NaturalClassUnion) -> NaturalClassUnion: ...
+    def __or__(
+        self, other: NaturalClass | NaturalClassUnion
+    ) -> NaturalClassUnion:
+        """Return a union of this natural class with another class or union."""
+        if isinstance(other, NaturalClassUnion):
+            return NaturalClassUnion((self,) + other.classes)
         return NaturalClassUnion((self, other))
