@@ -86,9 +86,7 @@ class Toolkit:
         raise TypeError("Both arguments must be of the same type")
 
     @overload
-    def union(
-        self, a: NaturalClass, b: NaturalClass
-    ) -> NaturalClassUnion: ...
+    def union(self, a: NaturalClass, b: NaturalClass) -> NaturalClassUnion: ...
     @overload
     def union(
         self, a: NaturalClass, b: NaturalClassUnion
@@ -101,9 +99,7 @@ class Toolkit:
     def union(
         self, a: NaturalClassUnion, b: NaturalClassUnion
     ) -> NaturalClassUnion: ...
-    def union(
-        self, a: object, b: object
-    ) -> NaturalClassUnion:
+    def union(self, a: object, b: object) -> NaturalClassUnion:
         """Union two natural classes or natural class unions.
 
         This is an analysis-level helper for combining natural-class
@@ -130,7 +126,26 @@ class Toolkit:
             b, NaturalClassUnion
         ):
             return NaturalClassUnion(a.classes + b.classes)
-        raise TypeError("Both arguments must be natural classes or unions")
+        raise TypeError(
+            "Both arguments must be natural classes or natural class unions"
+        )
+
+    @overload
+    def tier(self, w: Word, nc: NaturalClass) -> Word: ...
+    @overload
+    def tier(self, w: Word, nc: NaturalClassUnion) -> Word: ...
+    def tier(self, w: Word, nc: NaturalClass | NaturalClassUnion) -> Word:
+        """Return the subsequence of a word that belongs to a natural class.
+
+        Args:
+            w: The word to filter.
+            nc: A `NaturalClass` or `NaturalClassUnion` to match against.
+
+        Returns:
+            A new word containing only the segments of `w` that belong to
+            `nc`, in their original relative order.
+        """
+        return self.fs.word([s for s in w if s in nc])
 
     @overload
     def intersect(self, a: Segment, b: Segment) -> Segment: ...

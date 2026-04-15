@@ -75,6 +75,19 @@ def test_tk_union_union_union() -> None:
     assert len(union.classes) == 4
 
 
+def test_tk_tier_nc() -> None:
+    tk = FS.toolkit()
+    word = FS.word([A, B, C, D, I])
+    assert tk.tier(word, NC_POS_F) == FS.word([A, B])
+
+
+def test_tk_tier_union() -> None:
+    tk = FS.toolkit()
+    word = FS.word([A, B, C, D, I])
+    union = NC_NEG_F | NC_POS_G
+    assert tk.tier(word, union) == FS.word([A, C, D])
+
+
 def test_tk_intersect_segments() -> None:
     tk = FS.toolkit()
     assert tk.intersect(A, B) == E
