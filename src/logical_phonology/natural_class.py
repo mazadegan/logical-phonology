@@ -54,6 +54,31 @@ class NaturalClass:
         """  # noqa: E501
         return inv.iter_extension(self, filter_boundaries)
 
+    def extension(
+        self,
+        inv: Inventory,
+        filter_boundaries: bool = True,
+        as_names: bool = False,
+    ) -> tuple[Segment, ...] | tuple[str, ...]:
+        """
+        Return the materialized extension of this natural class over an
+        inventory.
+
+        Args:
+            inv: The inventory to evaluate the natural class over.
+            filter_boundaries: If True (default), BOS and EOS pseudo-segments
+                are excluded from the results.
+            as_names: If True, return inventory names instead of segments.
+
+        Returns:
+            A tuple of matching segments (default) or matching names when
+            `as_names=True`.
+        """
+        segments = tuple(self.over(inv, filter_boundaries))
+        if as_names:
+            return tuple(inv.name_of(seg) for seg in segments)
+        return segments
+
     def __contains__(self, s: Segment) -> bool:
         """Return True if the segment belongs to this natural class.
 

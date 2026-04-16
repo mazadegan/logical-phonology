@@ -110,6 +110,31 @@ class NaturalClassSequence:
         """  # noqa: E501
         return inv.iter_extension(self, filter_boundaries)
 
+    def extension(
+        self,
+        inv: Inventory,
+        filter_boundaries: bool = True,
+        as_names: bool = False,
+    ) -> tuple[Word, ...] | tuple[str, ...]:
+        """
+        Return the materialized extension of this sequence over an inventory.
+
+        Args:
+            inv: The inventory to evaluate the sequence over.
+            filter_boundaries: If True (default), BOS and EOS pseudo-segments
+                are excluded from the results.
+            as_names: If True, return rendered word strings instead of `Word`
+                objects.
+
+        Returns:
+            A tuple of matching words (default) or rendered word strings when
+            `as_names=True`.
+        """
+        words = tuple(self.over(inv, filter_boundaries))
+        if as_names:
+            return tuple(inv.render(word) for word in words)
+        return words
+
     def __len__(self) -> int:
         """Return the number of natural classes in this sequence."""
         return len(self.sequence)

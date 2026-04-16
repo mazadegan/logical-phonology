@@ -120,3 +120,10 @@ def test_iter_extension_with_union() -> None:
     results = list(INV.iter_extension(ncs))
     # should include all segments with +F or -F (A, B, C, D but not U)
     assert len(results) == 4
+
+
+def test_union_over_and_extension() -> None:
+    union = NC_POS_F | NC_NEG_G
+    over = tuple(union.over(INV))
+    assert all(isinstance(seg, lp.Segment) for seg in over)
+    assert union.extension(INV, as_names=True) == ("A", "B", "D")

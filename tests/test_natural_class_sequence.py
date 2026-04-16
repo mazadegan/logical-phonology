@@ -191,3 +191,22 @@ def test_natural_class_sequence_str_with_union(
     union = nc1 | nc2
     ncs = fs.natural_class_sequence([union, nc1])
     assert str(ncs) == "[{+F1}|{-F2} {+F1}]"
+
+
+def test_natural_class_sequence_extension(
+    fs: lp.FeatureSystem,
+) -> None:
+    inv = fs.inventory(
+        {
+            "A": fs.segment({"F1": lp.POS, "F2": lp.POS}),
+            "B": fs.segment({"F1": lp.NEG, "F2": lp.POS}),
+            "C": fs.segment({"F1": lp.POS, "F2": lp.NEG}),
+            "D": fs.segment({"F1": lp.NEG, "F2": lp.NEG}),
+        }
+    )
+    ncs = fs.natural_class_sequence(
+        [fs.natural_class({"F1": lp.POS}), fs.natural_class({"F2": lp.NEG})]
+    )
+    words = ncs.extension(inv)
+    assert all(isinstance(w, lp.Word) for w in words)
+    assert ncs.extension(inv, as_names=True) == ("AC", "AD", "CC", "CD")

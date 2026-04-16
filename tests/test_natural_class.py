@@ -80,3 +80,15 @@ def test_natural_class_str(fs: lp.FeatureSystem) -> None:
 
 def test_natural_class_str_empty(fs: lp.FeatureSystem) -> None:
     assert str(fs.natural_class({})) == "[{}]"
+
+
+def test_natural_class_extension(fs: lp.FeatureSystem) -> None:
+    inv = fs.inventory(
+        {
+            "A": fs.segment({"F1": lp.POS}),
+            "B": fs.segment({"F1": lp.NEG}),
+        }
+    )
+    nc = fs.natural_class({"F1": lp.POS})
+    assert nc.extension(inv) == (inv["A"],)
+    assert nc.extension(inv, as_names=True) == ("A",)
