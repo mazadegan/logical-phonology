@@ -29,8 +29,7 @@ underspecified features.
 - `path` - Path to the inventory file.
 - `delimiter` - Column delimiter. Defaults to ',' for CSV; use '\t' for
   TSV.
-- `strict` - If True, require every data row to have the same number of
-  columns as the header row.
+- `strict` - If True, require every data row to have the same number of columns as the header row.
   
 
 **Returns**:

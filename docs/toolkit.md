@@ -7,6 +7,7 @@
     * [subtract](#logical_phonology.toolkit.Toolkit.subtract)
     * [union](#logical_phonology.toolkit.Toolkit.union)
     * [tier](#logical_phonology.toolkit.Toolkit.tier)
+    * [natural\_classes\_over](#logical_phonology.toolkit.Toolkit.natural_classes_over)
     * [ngrams](#logical_phonology.toolkit.Toolkit.ngrams)
     * [intersect](#logical_phonology.toolkit.Toolkit.intersect)
     * [project](#logical_phonology.toolkit.Toolkit.project)
@@ -155,6 +156,41 @@ Return the subsequence of a word that belongs to a natural class.
 
   A new word containing only the segments of `w` that belong to
   `nc`, in their original relative order.
+
+<a id="logical_phonology.toolkit.Toolkit.natural_classes_over"></a>
+
+#### natural\_classes\_over
+
+```python
+def natural_classes_over(features: Collection[str],
+                         include_empty: bool = True,
+                         max_features: int = 8) -> Iterator[NaturalClass]
+```
+
+Yield all natural classes over a given feature set.
+
+Features are deduplicated and sorted to ensure deterministic ordering.
+Each feature can be absent, positive, or negative, producing `3^n`
+classes over `n` unique features.
+
+**Arguments**:
+
+- `features` - The feature names to build classes over.
+- `include_empty` - If True, include the empty class (no feature
+  specifications).
+- `max_features` - Maximum number of unique features to allow.
+  
+
+**Yields**:
+
+  NaturalClass objects over the given feature set.
+  
+
+**Raises**:
+
+- `UnknownFeatureError` - If any feature is not in this feature system.
+- `ValueError` - If the number of unique features exceeds
+  `max_features`.
 
 <a id="logical_phonology.toolkit.Toolkit.ngrams"></a>
 
