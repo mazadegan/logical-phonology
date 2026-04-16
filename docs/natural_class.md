@@ -3,6 +3,7 @@
 * [logical\_phonology.natural\_class](#logical_phonology.natural_class)
   * [NaturalClass](#logical_phonology.natural_class.NaturalClass)
     * [over](#logical_phonology.natural_class.NaturalClass.over)
+    * [extension](#logical_phonology.natural_class.NaturalClass.extension)
     * [\_\_contains\_\_](#logical_phonology.natural_class.NaturalClass.__contains__)
     * [\_\_hash\_\_](#logical_phonology.natural_class.NaturalClass.__hash__)
     * [\_\_str\_\_](#logical_phonology.natural_class.NaturalClass.__str__)
@@ -55,6 +56,32 @@ Iterate over all segments in this natural class over a given inventory.
 
   An iterator over all segments in the inventory that belong to
   this natural class.
+
+<a id="logical_phonology.natural_class.NaturalClass.extension"></a>
+
+#### extension
+
+```python
+def extension(inv: Inventory,
+              filter_boundaries: bool = True,
+              as_names: bool = False) -> tuple[Segment, ...] | tuple[str, ...]
+```
+
+Return the materialized extension of this natural class over an
+inventory.
+
+**Arguments**:
+
+- `inv` - The inventory to evaluate the natural class over.
+- `filter_boundaries` - If True (default), BOS and EOS pseudo-segments
+  are excluded from the results.
+- `as_names` - If True, return inventory names instead of segments.
+  
+
+**Returns**:
+
+  A tuple of matching segments (default) or matching names when
+  `as_names=True`.
 
 <a id="logical_phonology.natural_class.NaturalClass.__contains__"></a>
 

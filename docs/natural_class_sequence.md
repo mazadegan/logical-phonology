@@ -7,6 +7,7 @@
     * [find\_first](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_first)
     * [find\_last](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_last)
     * [over](#logical_phonology.natural_class_sequence.NaturalClassSequence.over)
+    * [extension](#logical_phonology.natural_class_sequence.NaturalClassSequence.extension)
     * [\_\_len\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__len__)
     * [\_\_contains\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__contains__)
     * [\_\_getitem\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__getitem__)
@@ -141,6 +142,32 @@ Iterate over all words matching this sequence over a given inventory.
 
   An iterator over all words in the inventory that match this
   natural class sequence.
+
+<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.extension"></a>
+
+#### extension
+
+```python
+def extension(inv: Inventory,
+              filter_boundaries: bool = True,
+              as_names: bool = False) -> tuple[Word, ...] | tuple[str, ...]
+```
+
+Return the materialized extension of this sequence over an inventory.
+
+**Arguments**:
+
+- `inv` - The inventory to evaluate the sequence over.
+- `filter_boundaries` - If True (default), BOS and EOS pseudo-segments
+  are excluded from the results.
+- `as_names` - If True, return rendered word strings instead of `Word`
+  objects.
+  
+
+**Returns**:
+
+  A tuple of matching words (default) or rendered word strings when
+  `as_names=True`.
 
 <a id="logical_phonology.natural_class_sequence.NaturalClassSequence.__len__"></a>
 
