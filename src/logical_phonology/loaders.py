@@ -26,8 +26,7 @@ def load_inventory_from_file(
         path: Path to the inventory file.
         delimiter: Column delimiter. Defaults to ',' for CSV; use '\\t' for
             TSV.
-        strict: If True, require every data row to have the same number of
-            columns as the header row.
+        strict: If True, require every data row to have the same number of columns as the header row.
 
     Returns:
         A `(FeatureSystem, Inventory)` pair loaded from the file.
@@ -37,7 +36,7 @@ def load_inventory_from_file(
         InventoryFileError: If the file cannot be read or contains invalid
             structure.
         ReservedFeatureError: If the file defines reserved feature names.
-    """
+    """  # noqa: E501
     path = Path(path)
     try:
         with path.open(newline="") as f:

@@ -90,6 +90,38 @@ def test_tk_tier_union() -> None:
     assert tk.tier(word, union) == FS.word([A, C, D])
 
 
+def test_tk_natural_classes_over_count() -> None:
+    tk = FS.toolkit()
+    classes = list(tk.natural_classes_over(["F", "G"]))
+    assert len(classes) == 9
+
+
+def test_tk_natural_classes_over_excludes_empty() -> None:
+    tk = FS.toolkit()
+    classes = list(tk.natural_classes_over(["F", "G"], include_empty=False))
+    assert len(classes) == 8
+    assert FS.natural_class({}) not in classes
+
+
+def test_tk_natural_classes_over_dedupes_and_sorts() -> None:
+    tk = FS.toolkit()
+    classes1 = list(tk.natural_classes_over(["G", "F", "F"]))
+    classes2 = list(tk.natural_classes_over(["F", "G"]))
+    assert classes1 == classes2
+
+
+def test_tk_natural_classes_over_rejects_unknown_feature() -> None:
+    tk = FS.toolkit()
+    with pytest.raises(lp.UnknownFeatureError):
+        list(tk.natural_classes_over(["F", "Z"]))
+
+
+def test_tk_natural_classes_over_max_features_guard() -> None:
+    tk = FS.toolkit()
+    with pytest.raises(ValueError):
+        list(tk.natural_classes_over(["F", "G"], max_features=1))
+
+
 def test_tk_ngrams() -> None:
     tk = FS.toolkit()
     word = FS.word([A, B, C])

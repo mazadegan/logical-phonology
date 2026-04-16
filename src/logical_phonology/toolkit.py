@@ -1,8 +1,11 @@
-from collections.abc import Collection
+from collections.abc import Collection, Iterator
 from functools import reduce
+from itertools import product
 from typing import Callable, overload
 
+from logical_phonology.errors import UnknownFeatureError
 from logical_phonology.feature_system import FeatureSystem
+from logical_phonology.feature_value import FeatureValue
 from logical_phonology.natural_class import NaturalClass
 from logical_phonology.natural_class_union import NaturalClassUnion
 from logical_phonology.segment import Segment
@@ -147,6 +150,53 @@ class Toolkit:
             `nc`, in their original relative order.
         """
         return self.fs.word([s for s in w if s in nc])
+
+    def natural_classes_over(
+        self,
+        features: Collection[str],
+        include_empty: bool = True,
+        max_features: int = 8,
+    ) -> Iterator[NaturalClass]:
+        """Yield all natural classes over a given feature set.
+
+        Features are deduplicated and sorted to ensure deterministic ordering.
+        Each feature can be absent, positive, or negative, producing `3^n`
+        classes over `n` unique features.
+
+        Args:
+            features: The feature names to build classes over.
+            include_empty: If True, include the empty class (no feature
+                specifications).
+            max_features: Maximum number of unique features to allow.
+
+        Yields:
+            NaturalClass objects over the given feature set.
+
+        Raises:
+            UnknownFeatureError: If any feature is not in this feature system.
+            ValueError: If the number of unique features exceeds
+                `max_features`.
+        """
+        feature_names = tuple(sorted(set(features)))
+        unknown = set(feature_names) - self.fs.valid_features
+        if unknown:
+            raise UnknownFeatureError(unknown)
+        if len(feature_names) > max_features:
+            raise ValueError(
+                f"Feature set size {len(feature_names)} exceeds max_features="
+                f"{max_features}. Pass a higher max_features to override."
+            )
+
+        values = (None, FeatureValue.POS, FeatureValue.NEG)
+        for assignment in product(values, repeat=len(feature_names)):
+            if not include_empty and all(v is None for v in assignment):
+                continue
+            spec = {
+                f: v
+                for f, v in zip(feature_names, assignment)
+                if v is not None
+            }
+            yield self.fs.natural_class(spec)
 
     def ngrams(self, w: Word, n: int) -> list[tuple[int, int, Word]]:
         """Return all contiguous n-grams of a word.
