@@ -153,3 +153,37 @@ class NaturalClassSequence:
         if isinstance(index, slice):
             return NaturalClassSequence(cast(tuple[NaturalClass, ...], result))
         return cast(NaturalClass, result)
+
+    def __str__(self) -> str:
+        """Return a canonical bracketed representation of this sequence.
+
+        Elements are rendered as natural-class specs, with unions using `|`,
+        joined by spaces inside one outer pair of brackets.
+        """
+        parts: list[str] = []
+        for item in self.sequence:
+            if isinstance(item, NaturalClassUnion):
+                part = "|".join(
+                    "{"
+                    + "".join(
+                        sorted(
+                            f"{value}{feature}"
+                            for feature, value in nc.feature_specification.items()  # noqa: E501
+                        )
+                    )
+                    + "}"
+                    for nc in item.classes
+                )
+                parts.append(part)
+            else:
+                parts.append(
+                    "{"
+                    + "".join(
+                        sorted(
+                            f"{value}{feature}"
+                            for feature, value in item.feature_specification.items()  # noqa: E501
+                        )
+                    )
+                    + "}"
+                )
+        return "[" + " ".join(parts) + "]"

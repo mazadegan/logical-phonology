@@ -75,6 +75,11 @@ def test_union_or_union_merges() -> None:
     assert len(merged.classes) == 4
 
 
+def test_union_str() -> None:
+    union = NC_POS_F | NC_NEG_G
+    assert str(union) == "[{+F}|{-G}]"
+
+
 ### NaturalClassSequence with union positions ###
 
 

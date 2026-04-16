@@ -73,6 +73,18 @@ class NaturalClass:
         """Hash based on the feature specification."""
         return hash(frozenset(self.feature_specification.items()))
 
+    def __str__(self) -> str:
+        """Return a canonical bracketed representation of this natural class.
+
+        Features are sorted alphabetically and formatted as
+        ``[{+F1-F2}]``.
+        """
+        parts = sorted(
+            f"{value}{feature}"
+            for feature, value in self.feature_specification.items()
+        )
+        return "[{" + "".join(parts) + "}]"
+
     @overload
     def __or__(self, other: NaturalClass) -> NaturalClassUnion: ...
     @overload

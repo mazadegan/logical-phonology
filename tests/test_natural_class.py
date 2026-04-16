@@ -71,3 +71,12 @@ def test_contains(fs: lp.FeatureSystem) -> None:
     assert fs.segment({"F1": lp.POS, "F2": lp.NEG}) in nc2
     nc3 = fs.natural_class({"F1": lp.POS, "F2": lp.NEG})
     assert fs.segment({"F1": lp.POS, "F2": lp.POS}) not in nc3
+
+
+def test_natural_class_str(fs: lp.FeatureSystem) -> None:
+    nc = fs.natural_class({"F2": lp.NEG, "F1": lp.POS})
+    assert str(nc) == "[{+F1-F2}]"
+
+
+def test_natural_class_str_empty(fs: lp.FeatureSystem) -> None:
+    assert str(fs.natural_class({})) == "[{}]"

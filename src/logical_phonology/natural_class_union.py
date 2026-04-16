@@ -29,3 +29,21 @@ class NaturalClassUnion:
         if isinstance(other, NaturalClassUnion):
             return NaturalClassUnion(self.classes + other.classes)
         return NaturalClassUnion(self.classes + (other,))
+
+    def __str__(self) -> str:
+        """Return a canonical bracketed representation of this union."""
+        return (
+            "["
+            + "|".join(
+                "{"
+                + "".join(
+                    sorted(
+                        f"{value}{feature}"
+                        for feature, value in nc.feature_specification.items()
+                    )
+                )
+                + "}"
+                for nc in self.classes
+            )
+            + "]"
+        )

@@ -173,3 +173,21 @@ def test_find_first_longer_than_word(fs: lp.FeatureSystem) -> None:
     w = fs.word([fs.segment({"F1": lp.POS})])
     assert ncs.find_first(w) is None
     assert ncs.find_last(w) is None
+
+
+def test_natural_class_sequence_str_single_matches_natural_class(
+    fs: lp.FeatureSystem,
+) -> None:
+    nc = fs.natural_class({"F1": lp.POS, "F2": lp.NEG})
+    ncs = fs.natural_class_sequence([nc])
+    assert str(ncs) == str(nc)
+
+
+def test_natural_class_sequence_str_with_union(
+    fs: lp.FeatureSystem,
+) -> None:
+    nc1 = fs.natural_class({"F1": lp.POS})
+    nc2 = fs.natural_class({"F2": lp.NEG})
+    union = nc1 | nc2
+    ncs = fs.natural_class_sequence([union, nc1])
+    assert str(ncs) == "[{+F1}|{-F2} {+F1}]"
