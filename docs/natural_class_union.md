@@ -4,6 +4,7 @@
   * [NaturalClassUnion](#logical_phonology.natural_class_union.NaturalClassUnion)
     * [\_\_contains\_\_](#logical_phonology.natural_class_union.NaturalClassUnion.__contains__)
     * [\_\_or\_\_](#logical_phonology.natural_class_union.NaturalClassUnion.__or__)
+    * [\_\_str\_\_](#logical_phonology.natural_class_union.NaturalClassUnion.__str__)
 
 <a id="logical_phonology.natural_class_union"></a>
 
@@ -37,4 +38,14 @@ def __or__(other: NaturalClass | NaturalClassUnion) -> NaturalClassUnion
 ```
 
 Return a new union combining this union with another class or union.
+
+<a id="logical_phonology.natural_class_union.NaturalClassUnion.__str__"></a>
+
+#### \_\_str\_\_
+
+```python
+def __str__() -> str
+```
+
+Return a canonical bracketed representation of this union.
 

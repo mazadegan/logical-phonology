@@ -10,6 +10,7 @@
     * [\_\_len\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__len__)
     * [\_\_contains\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__contains__)
     * [\_\_getitem\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__getitem__)
+    * [\_\_str\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__str__)
 
 <a id="logical_phonology.natural_class_sequence"></a>
 
@@ -193,4 +194,17 @@ Return a natural class by index or a subsequence by slice.
 
   A NaturalClass if index is an integer, or a new
   NaturalClassSequence if index is a slice.
+
+<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.__str__"></a>
+
+#### \_\_str\_\_
+
+```python
+def __str__() -> str
+```
+
+Return a canonical bracketed representation of this sequence.
+
+Elements are rendered as natural-class specs, with unions using `|`,
+joined by spaces inside one outer pair of brackets.
 

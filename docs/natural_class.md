@@ -5,6 +5,7 @@
     * [over](#logical_phonology.natural_class.NaturalClass.over)
     * [\_\_contains\_\_](#logical_phonology.natural_class.NaturalClass.__contains__)
     * [\_\_hash\_\_](#logical_phonology.natural_class.NaturalClass.__hash__)
+    * [\_\_str\_\_](#logical_phonology.natural_class.NaturalClass.__str__)
     * [\_\_or\_\_](#logical_phonology.natural_class.NaturalClass.__or__)
 
 <a id="logical_phonology.natural_class"></a>
@@ -87,6 +88,19 @@ def __hash__() -> int
 ```
 
 Hash based on the feature specification.
+
+<a id="logical_phonology.natural_class.NaturalClass.__str__"></a>
+
+#### \_\_str\_\_
+
+```python
+def __str__() -> str
+```
+
+Return a canonical bracketed representation of this natural class.
+
+Features are sorted alphabetically and formatted as
+``[{+F1-F2}]``.
 
 <a id="logical_phonology.natural_class.NaturalClass.__or__"></a>
 
