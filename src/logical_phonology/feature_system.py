@@ -237,6 +237,20 @@ class FeatureSystem:
                 )
         return NaturalClass(normalized)
 
+    def natural_class_from_segment(self, seg: Segment) -> NaturalClass:
+        """Construct a NaturalClass from a segment's feature bundle.
+
+        The resulting natural class matches all segments that are supersets of
+        the given segment specification.
+
+        Args:
+            seg: The segment whose feature bundle defines the natural class.
+
+        Returns:
+            A NaturalClass with the same feature specification as `seg`.
+        """
+        return self.natural_class(dict(seg.features))
+
     def natural_class_union(
         self, classes: list[NaturalClass]
     ) -> NaturalClassUnion:

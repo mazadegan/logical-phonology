@@ -15,6 +15,17 @@ def test_natural_class_unknown_feature(fs: lp.FeatureSystem) -> None:
     assert "F4" in exc_info.value.unknown
 
 
+def test_natural_class_from_segment(fs: lp.FeatureSystem) -> None:
+    seg = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    assert fs.natural_class_from_segment(seg) == fs.natural_class(
+        {"F1": lp.POS, "F2": lp.NEG}
+    )
+
+
+def test_natural_class_from_boundary_segment(fs: lp.FeatureSystem) -> None:
+    assert fs.natural_class_from_segment(fs.BOS) == fs.BOS_NC
+
+
 def test_natural_class_from_string_feature_values(
     fs: lp.FeatureSystem,
 ) -> None:
