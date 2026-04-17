@@ -1,6 +1,6 @@
 from collections.abc import Collection, Iterator
 from functools import reduce
-from itertools import product
+from itertools import combinations, product
 from typing import Callable, overload
 
 from logical_phonology.errors import UnknownFeatureError, UnknownSegmentError
@@ -308,13 +308,11 @@ class Toolkit:
     ) -> list[NaturalClass]:
         """Return all minimal natural classes with an exact target extension.
 
-        The search space is derived from the features common to all target
+        The search space is derived from features common to all target
         segments (same feature and same value). If `features` is provided, it
-        further restricts this common-feature set.
-
-        Candidate classes are then filtered to those whose extension over `inv`
-        is exactly `segments` (all and only), and only minimum-cardinality
-        matches are returned.
+        further restricts this common-feature set. Candidate classes are
+        evaluated with bit masks over the inventory and matched by exact
+        extension equality.
 
         Args:
             segments: Target extension as a collection of segments.
@@ -357,24 +355,60 @@ class Toolkit:
                 raise UnknownFeatureError(unknown)
             feature_set = tuple(sorted(common_features & feature_filter))
 
-        target_extension = frozenset(segment_list)
-
-        minimals: list[NaturalClass] = []
-        min_size: int | None = None
-
-        for nc in self.natural_classes_over(
-            feature_set, include_empty=True, max_features=max_features
-        ):
-            extension = frozenset(
-                nc.extension(inv, filter_boundaries=filter_boundaries)
+        if len(feature_set) > max_features:
+            raise ValueError(
+                f"Feature set size {len(feature_set)} exceeds max_features="
+                f"{max_features}. Pass a higher max_features to override."
             )
-            if extension != target_extension:
-                continue
-            size = len(nc.feature_specification)
-            if min_size is None or size < min_size:
-                min_size = size
-                minimals = [nc]
-            elif size == min_size:
-                minimals.append(nc)
 
-        return sorted(minimals, key=str)
+        universe = [
+            seg
+            for seg in inv.segment_to_name
+            if (not filter_boundaries)
+            or seg not in (inv.feature_system.BOS, inv.feature_system.EOS)
+        ]
+        seg_to_idx = {seg: i for i, seg in enumerate(universe)}
+        if any(seg not in seg_to_idx for seg in segment_list):
+            return []
+
+        target_mask = 0
+        for seg in segment_list:
+            target_mask |= 1 << seg_to_idx[seg]
+
+        literal_masks: dict[tuple[str, FeatureValue], int] = {}
+        for feature in feature_set:
+            pos_mask = 0
+            neg_mask = 0
+            for i, seg in enumerate(universe):
+                if feature in seg:
+                    if seg[feature] == FeatureValue.POS:
+                        pos_mask |= 1 << i
+                    elif seg[feature] == FeatureValue.NEG:
+                        neg_mask |= 1 << i
+            literal_masks[(feature, FeatureValue.POS)] = pos_mask
+            literal_masks[(feature, FeatureValue.NEG)] = neg_mask
+
+        full_mask = (1 << len(universe)) - 1
+
+        for size in range(0, len(feature_set) + 1):
+            matches: list[NaturalClass] = []
+            for subset in combinations(feature_set, size):
+                for values in product(
+                    (FeatureValue.POS, FeatureValue.NEG), repeat=size
+                ):
+                    mask = full_mask
+                    specification: dict[str, FeatureValue] = {}
+                    for feature, value in zip(subset, values):
+                        mask &= literal_masks[(feature, value)]
+                        if (mask & target_mask) != target_mask:
+                            break
+                        specification[feature] = value
+                    else:
+                        if mask == target_mask:
+                            matches.append(
+                                self.fs.natural_class(specification)
+                            )
+            if matches:
+                return sorted(matches, key=str)
+
+        return []

@@ -208,3 +208,15 @@ def test_tk_min_intensions_rejects_unknown_restriction_feature() -> None:
     tk = FS.toolkit()
     with pytest.raises(lp.UnknownFeatureError):
         tk.min_intensions([A, B], INV, features=["F", "Z"])
+
+
+def test_tk_min_intensions_ignores_duplicate_target_segments() -> None:
+    tk = FS.toolkit()
+    unique = tk.min_intensions([A, B], INV)
+    with_dupes = tk.min_intensions([A, A, B], INV)
+    assert with_dupes == unique
+
+
+def test_tk_min_intensions_empty_feature_restriction_returns_none() -> None:
+    tk = FS.toolkit()
+    assert tk.min_intensions([A], INV, features=[]) == []
