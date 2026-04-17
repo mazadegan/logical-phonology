@@ -70,3 +70,11 @@ class Word:
         if isinstance(other, Segment):
             return Word(self.segments + (other,))
         return Word(self.segments + other.segments)
+
+    def __str__(self) -> str:
+        """Return the canonical string representation of the word.
+
+        Words are rendered as angle-bracketed, space-separated segment
+        strings, e.g. ``<{+F} {-G}>``.
+        """
+        return "<" + " ".join(str(seg) for seg in self.segments) + ">"

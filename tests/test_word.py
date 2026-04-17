@@ -121,3 +121,17 @@ def test_chained_concatenation(
     assert seg1 + fs.word([seg2]) + seg3 + fs.word([seg1]) == fs.word(
         [seg1, seg2, seg3, seg1]
     )
+
+
+def test_word_str_empty(fs: lp.FeatureSystem) -> None:
+    assert str(fs.word([])) == "<>"
+
+
+def test_word_str(fs: lp.FeatureSystem) -> None:
+    w = fs.word(
+        [
+            fs.segment({"F2": lp.NEG, "F1": lp.POS}),
+            fs.segment({"F3": lp.POS}),
+        ]
+    )
+    assert str(w) == "<{+F1-F2} {+F3}>"
