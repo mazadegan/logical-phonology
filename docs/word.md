@@ -6,6 +6,7 @@
     * [\_\_iter\_\_](#logical_phonology.word.Word.__iter__)
     * [\_\_getitem\_\_](#logical_phonology.word.Word.__getitem__)
     * [\_\_add\_\_](#logical_phonology.word.Word.__add__)
+    * [\_\_str\_\_](#logical_phonology.word.Word.__str__)
 
 <a id="logical_phonology.word"></a>
 
@@ -97,4 +98,17 @@ Concatenate this word with another word or segment.
 
   Boundaries are not checked — callers are responsible for
   ensuring BOS and EOS appear only at the edges of the final word.
+
+<a id="logical_phonology.word.Word.__str__"></a>
+
+#### \_\_str\_\_
+
+```python
+def __str__() -> str
+```
+
+Return the canonical string representation of the word.
+
+Words are rendered as angle-bracketed, space-separated segment
+strings, e.g. ``<{+F} {-G}>``.
 
