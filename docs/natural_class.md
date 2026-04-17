@@ -4,6 +4,7 @@
   * [NaturalClass](#logical_phonology.natural_class.NaturalClass)
     * [over](#logical_phonology.natural_class.NaturalClass.over)
     * [extension](#logical_phonology.natural_class.NaturalClass.extension)
+    * [subintensions](#logical_phonology.natural_class.NaturalClass.subintensions)
     * [\_\_contains\_\_](#logical_phonology.natural_class.NaturalClass.__contains__)
     * [\_\_hash\_\_](#logical_phonology.natural_class.NaturalClass.__hash__)
     * [\_\_str\_\_](#logical_phonology.natural_class.NaturalClass.__str__)
@@ -82,6 +83,39 @@ inventory.
 
   A tuple of matching segments (default) or matching names when
   `as_names=True`.
+
+<a id="logical_phonology.natural_class.NaturalClass.subintensions"></a>
+
+#### subintensions
+
+```python
+def subintensions(include_self: bool = False,
+                  include_universal: bool = False,
+                  max_features: int = 8) -> Iterator["NaturalClass"]
+```
+
+Yield natural classes formed from subsets of this class's features.
+
+By default, excludes the original class and the empty (universal)
+class. The number of yielded classes grows as 2^n where n is the
+number of features.
+
+**Arguments**:
+
+- `include_self` - If True, include the full specification.
+- `include_universal` - If True, include the empty specification.
+- `max_features` - Maximum number of features allowed for generation.
+  
+
+**Yields**:
+
+  NaturalClass objects built from subset feature specifications.
+  
+
+**Raises**:
+
+- `CombinatoricExplosionError` - If the number of features exceeds
+  `max_features`.
 
 <a id="logical_phonology.natural_class.NaturalClass.__contains__"></a>
 
