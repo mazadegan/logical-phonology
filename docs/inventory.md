@@ -10,6 +10,7 @@
     * [\_\_len\_\_](#logical_phonology.inventory.Inventory.__len__)
     * [segment](#logical_phonology.inventory.Inventory.segment)
     * [\_\_getitem\_\_](#logical_phonology.inventory.Inventory.__getitem__)
+    * [segments](#logical_phonology.inventory.Inventory.segments)
     * [name\_of](#logical_phonology.inventory.Inventory.name_of)
 
 <a id="logical_phonology.inventory"></a>
@@ -254,6 +255,30 @@ Also available via the ``segment()`` method.
 **Raises**:
 
 - `UnknownNameError` - If the name is not in this inventory.
+
+<a id="logical_phonology.inventory.Inventory.segments"></a>
+
+#### segments
+
+```python
+def segments(names: Iterable[str]) -> list[Segment]
+```
+
+Look up multiple segments by name.
+
+**Arguments**:
+
+- `names` - Segment names to resolve in order.
+  
+
+**Returns**:
+
+  A list of segments corresponding to the provided names.
+  
+
+**Raises**:
+
+- `UnknownNameError` - If any name is not in this inventory.
 
 <a id="logical_phonology.inventory.Inventory.name_of"></a>
 

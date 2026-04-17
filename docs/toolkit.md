@@ -30,25 +30,26 @@ class Toolkit()
 #### fold
 
 ```python
-def fold(op: Callable[[Segment, Segment], Segment], w: Word) -> Segment
+def fold(op: Callable[[Segment, Segment], Segment],
+         segments: Sequence[Segment]) -> Segment
 ```
 
-Reduce a non-empty word with a binary segment operation.
+Reduce a non-empty segment sequence with a binary operation.
 
 **Arguments**:
 
 - `op` - A binary operation that combines two segments into one.
-- `w` - The word to reduce.
+- `segments` - The ordered segment sequence to reduce.
   
 
 **Returns**:
 
-  The result of applying `op` across all segments in `w`.
+  The result of applying `op` across all segments.
   
 
 **Raises**:
 
-- `ValueError` - If `w` is empty.
+- `ValueError` - If `segments` is empty.
 
 <a id="logical_phonology.toolkit.Toolkit.unify"></a>
 
@@ -292,6 +293,7 @@ def min_intensions(segments: Collection[Segment],
                    inv: Inventory,
                    features: Collection[str] | None = None,
                    *,
+                   strict_feature_system: bool = True,
                    filter_boundaries: bool = True,
                    max_features: int = 8) -> list[NaturalClass]
 ```
@@ -309,6 +311,8 @@ extension equality.
 - `segments` - Target extension as a collection of segments.
 - `inv` - The inventory that defines the universe for extensions.
 - `features` - Optional subset filter over common features.
+- `strict_feature_system` - If True (default), require that this
+  toolkit's feature system matches `inv.feature_system`.
 - `filter_boundaries` - If True (default), BOS/EOS are excluded when
   computing extensions.
 - `max_features` - Maximum number of unique features allowed for
@@ -324,6 +328,8 @@ extension equality.
 **Raises**:
 
 - `ValueError` - If `segments` is empty.
+- `ValueError` - If `strict_feature_system=True` and feature systems
+  do not match.
 - `UnknownSegmentError` - If any target segment is not in `inv`.
 - `UnknownFeatureError` - If any searched feature is unknown.
 - `ValueError` - If the searched feature count exceeds `max_features`.

@@ -13,6 +13,7 @@
     * [remove\_boundaries](#logical_phonology.feature_system.FeatureSystem.remove_boundaries)
     * [natural\_class](#logical_phonology.feature_system.FeatureSystem.natural_class)
     * [natural\_class\_from\_segment](#logical_phonology.feature_system.FeatureSystem.natural_class_from_segment)
+    * [natural\_class\_from\_segments](#logical_phonology.feature_system.FeatureSystem.natural_class_from_segments)
     * [natural\_class\_union](#logical_phonology.feature_system.FeatureSystem.natural_class_union)
     * [natural\_class\_sequence](#logical_phonology.feature_system.FeatureSystem.natural_class_sequence)
     * [inventory](#logical_phonology.feature_system.FeatureSystem.inventory)
@@ -265,6 +266,34 @@ the given segment specification.
 **Returns**:
 
   A NaturalClass with the same feature specification as `seg`.
+
+<a id="logical_phonology.feature_system.FeatureSystem.natural_class_from_segments"></a>
+
+#### natural\_class\_from\_segments
+
+```python
+def natural_class_from_segments(segments: Sequence[Segment]) -> NaturalClass
+```
+
+Construct a NaturalClass from features shared by all segments.
+
+This returns the maximal natural class that contains every segment in
+`segments`, computed as the intersection of their feature-value pairs.
+
+**Arguments**:
+
+- `segments` - A non-empty ordered sequence of segments.
+  
+
+**Returns**:
+
+  A NaturalClass whose specification consists of all feature-value
+  pairs shared by every input segment.
+  
+
+**Raises**:
+
+- `ValueError` - If `segments` is empty.
 
 <a id="logical_phonology.feature_system.FeatureSystem.natural_class_union"></a>
 
