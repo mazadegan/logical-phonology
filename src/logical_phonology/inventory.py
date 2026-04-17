@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Iterator, overload
@@ -373,6 +373,20 @@ class Inventory:
         """
 
         return self.segment(name)
+
+    def segments(self, names: Iterable[str]) -> list[Segment]:
+        """Look up multiple segments by name.
+
+        Args:
+            names: Segment names to resolve in order.
+
+        Returns:
+            A list of segments corresponding to the provided names.
+
+        Raises:
+            UnknownNameError: If any name is not in this inventory.
+        """
+        return [self[name] for name in names]
 
     def name_of(self, seg: Segment) -> str:
         """Return the canonical name of a segment in this inventory.

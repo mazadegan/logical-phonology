@@ -1,4 +1,4 @@
-from collections.abc import Collection, Iterator
+from collections.abc import Collection, Iterator, Sequence
 from functools import reduce
 from itertools import combinations, product
 from typing import Callable, overload
@@ -18,23 +18,25 @@ class Toolkit:
         self.fs = fs
 
     def fold(
-        self, op: Callable[[Segment, Segment], Segment], w: Word
+        self,
+        op: Callable[[Segment, Segment], Segment],
+        segments: Sequence[Segment],
     ) -> Segment:
-        """Reduce a non-empty word with a binary segment operation.
+        """Reduce a non-empty segment sequence with a binary operation.
 
         Args:
             op: A binary operation that combines two segments into one.
-            w: The word to reduce.
+            segments: The ordered segment sequence to reduce.
 
         Returns:
-            The result of applying `op` across all segments in `w`.
+            The result of applying `op` across all segments.
 
         Raises:
-            ValueError: If `w` is empty.
+            ValueError: If `segments` is empty.
         """
-        if len(w) == 0:
-            raise ValueError("Cannot fold over an empty word.")
-        return reduce(op, w)
+        if len(segments) == 0:
+            raise ValueError("Cannot fold over an empty segment sequence.")
+        return reduce(op, segments)
 
     @overload
     def unify(self, a: Segment, b: Segment) -> Segment: ...
@@ -303,6 +305,7 @@ class Toolkit:
         inv: Inventory,
         features: Collection[str] | None = None,
         *,
+        strict_feature_system: bool = True,
         filter_boundaries: bool = True,
         max_features: int = 8,
     ) -> list[NaturalClass]:
@@ -318,6 +321,8 @@ class Toolkit:
             segments: Target extension as a collection of segments.
             inv: The inventory that defines the universe for extensions.
             features: Optional subset filter over common features.
+            strict_feature_system: If True (default), require that this
+                toolkit's feature system matches `inv.feature_system`.
             filter_boundaries: If True (default), BOS/EOS are excluded when
                 computing extensions.
             max_features: Maximum number of unique features allowed for
@@ -329,10 +334,18 @@ class Toolkit:
 
         Raises:
             ValueError: If `segments` is empty.
+            ValueError: If `strict_feature_system=True` and feature systems
+                do not match.
             UnknownSegmentError: If any target segment is not in `inv`.
             UnknownFeatureError: If any searched feature is unknown.
             ValueError: If the searched feature count exceeds `max_features`.
         """
+        if strict_feature_system and inv.feature_system != self.fs:
+            raise ValueError(
+                "Toolkit feature system and inventory feature system must "
+                "match. Pass strict_feature_system=False to override."
+            )
+
         segment_list = list(segments)
         if not segment_list:
             raise ValueError("segments must be non-empty")

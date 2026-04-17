@@ -62,6 +62,15 @@ def test_name_of_roundtrip(feature_spec: dict[str, lp.FeatureValue]) -> None:
     assert inv[inv.name_of(seg)] == seg
 
 
+def test_segments_lookup(inv: lp.Inventory) -> None:
+    assert inv.segments(["A", "B"]) == [inv["A"], inv["B"]]
+
+
+def test_segments_lookup_unknown_raises(inv: lp.Inventory) -> None:
+    with pytest.raises(lp.UnknownNameError):
+        inv.segments(["A", "Z"])
+
+
 def test_aliased_segment_name_of() -> None:
     fs = lp.FeatureSystem(frozenset(["F1", "F2"]))
     seg = fs.segment({"F1": lp.POS, "F2": lp.NEG})

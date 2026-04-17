@@ -220,3 +220,25 @@ def test_tk_min_intensions_ignores_duplicate_target_segments() -> None:
 def test_tk_min_intensions_empty_feature_restriction_returns_none() -> None:
     tk = FS.toolkit()
     assert tk.min_intensions([A], INV, features=[]) == []
+
+
+def test_tk_fold_accepts_sequence() -> None:
+    tk = FS.toolkit()
+    assert tk.fold(tk.intersect, [A, B, C]) == I
+
+
+def test_tk_min_intensions_rejects_cross_feature_system_default() -> None:
+    other_fs = lp.FeatureSystem.from_features(["H"])
+    other_inv = other_fs.inventory({"X": other_fs.segment({"H": lp.POS})})
+    tk = FS.toolkit()
+    with pytest.raises(ValueError):
+        tk.min_intensions([A], other_inv)
+
+
+def test_tk_min_intensions_allows_cross_feature_system_override() -> None:
+    other_fs = lp.FeatureSystem.from_features(["H"])
+    other_inv = other_fs.inventory({"X": other_fs.segment({"H": lp.POS})})
+    tk = FS.toolkit()
+    assert tk.min_intensions(
+        [other_inv["X"]], other_inv, strict_feature_system=False
+    ) == [FS.natural_class({})]

@@ -1,4 +1,4 @@
-from collections.abc import Collection, Mapping
+from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, overload
 
@@ -250,6 +250,31 @@ class FeatureSystem:
             A NaturalClass with the same feature specification as `seg`.
         """
         return self.natural_class(dict(seg.features))
+
+    def natural_class_from_segments(
+        self, segments: Sequence[Segment]
+    ) -> NaturalClass:
+        """Construct a NaturalClass from features shared by all segments.
+
+        This returns the maximal natural class that contains every segment in
+        `segments`, computed as the intersection of their feature-value pairs.
+
+        Args:
+            segments: A non-empty ordered sequence of segments.
+
+        Returns:
+            A NaturalClass whose specification consists of all feature-value
+            pairs shared by every input segment.
+
+        Raises:
+            ValueError: If `segments` is empty.
+        """
+        if len(segments) == 0:
+            raise ValueError("segments must be non-empty")
+        common_items = set(segments[0].features.items())
+        for segment in segments[1:]:
+            common_items &= set(segment.features.items())
+        return self.natural_class(dict(common_items))
 
     def natural_class_union(
         self, classes: list[NaturalClass]

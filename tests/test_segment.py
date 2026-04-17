@@ -128,6 +128,21 @@ def test_reserved_segments(fs: lp.FeatureSystem) -> None:
     assert fs.BOS != fs.segment({})
 
 
+def test_natural_class_from_segments(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG, "F3": lp.POS})
+    s2 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    s3 = fs.segment({"F1": lp.POS, "F2": lp.POS})
+    nc = fs.natural_class_from_segments([s1, s2, s3])
+    assert nc == fs.natural_class({"F1": lp.POS})
+
+
+def test_natural_class_from_segments_rejects_empty(
+    fs: lp.FeatureSystem,
+) -> None:
+    with pytest.raises(ValueError):
+        fs.natural_class_from_segments([])
+
+
 def test_reserved_features_not_allowed_in_segments(
     fs: lp.FeatureSystem,
 ) -> None:
