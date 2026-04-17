@@ -3,9 +3,10 @@ from functools import reduce
 from itertools import product
 from typing import Callable, overload
 
-from logical_phonology.errors import UnknownFeatureError
+from logical_phonology.errors import UnknownFeatureError, UnknownSegmentError
 from logical_phonology.feature_system import FeatureSystem
 from logical_phonology.feature_value import FeatureValue
+from logical_phonology.inventory import Inventory
 from logical_phonology.natural_class import NaturalClass
 from logical_phonology.natural_class_union import NaturalClassUnion
 from logical_phonology.segment import Segment
@@ -295,3 +296,85 @@ class Toolkit:
         if isinstance(a, Word):
             return self.fs.word([s.project(restricted_feature_set) for s in a])
         raise TypeError("Argument must be a Segment or Word")
+
+    def min_intensions(
+        self,
+        segments: Collection[Segment],
+        inv: Inventory,
+        features: Collection[str] | None = None,
+        *,
+        filter_boundaries: bool = True,
+        max_features: int = 8,
+    ) -> list[NaturalClass]:
+        """Return all minimal natural classes with an exact target extension.
+
+        The search space is derived from the features common to all target
+        segments (same feature and same value). If `features` is provided, it
+        further restricts this common-feature set.
+
+        Candidate classes are then filtered to those whose extension over `inv`
+        is exactly `segments` (all and only), and only minimum-cardinality
+        matches are returned.
+
+        Args:
+            segments: Target extension as a collection of segments.
+            inv: The inventory that defines the universe for extensions.
+            features: Optional subset filter over common features.
+            filter_boundaries: If True (default), BOS/EOS are excluded when
+                computing extensions.
+            max_features: Maximum number of unique features allowed for
+                enumeration.
+
+        Returns:
+            A list of minimal natural classes. The list is sorted by string
+            form for deterministic order and is empty if no class matches.
+
+        Raises:
+            ValueError: If `segments` is empty.
+            UnknownSegmentError: If any target segment is not in `inv`.
+            UnknownFeatureError: If any searched feature is unknown.
+            ValueError: If the searched feature count exceeds `max_features`.
+        """
+        segment_list = list(segments)
+        if not segment_list:
+            raise ValueError("segments must be non-empty")
+
+        for segment in segment_list:
+            if segment not in inv:
+                raise UnknownSegmentError(segment)
+
+        common_items = set(segment_list[0].features.items())
+        for segment in segment_list[1:]:
+            common_items &= set(segment.features.items())
+        common_features = {feature for feature, _ in common_items}
+
+        if features is None:
+            feature_set = tuple(sorted(common_features))
+        else:
+            feature_filter = set(features)
+            unknown = feature_filter - self.fs.valid_features
+            if unknown:
+                raise UnknownFeatureError(unknown)
+            feature_set = tuple(sorted(common_features & feature_filter))
+
+        target_extension = frozenset(segment_list)
+
+        minimals: list[NaturalClass] = []
+        min_size: int | None = None
+
+        for nc in self.natural_classes_over(
+            feature_set, include_empty=True, max_features=max_features
+        ):
+            extension = frozenset(
+                nc.extension(inv, filter_boundaries=filter_boundaries)
+            )
+            if extension != target_extension:
+                continue
+            size = len(nc.feature_specification)
+            if min_size is None or size < min_size:
+                min_size = size
+                minimals = [nc]
+            elif size == min_size:
+                minimals.append(nc)
+
+        return sorted(minimals, key=str)

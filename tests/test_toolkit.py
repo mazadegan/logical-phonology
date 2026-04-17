@@ -177,3 +177,34 @@ def test_tk_project_accepts_list() -> None:
     tk = FS.toolkit()
     word = FS.word([A, B])
     assert tk.project(word, ["F"]) == FS.word([E, E])
+
+
+def test_tk_min_intensions_unique() -> None:
+    tk = FS.toolkit()
+    minimals = tk.min_intensions([A, B], INV)
+    assert minimals == [NC_POS_F]
+
+
+def test_tk_min_intensions_non_unique() -> None:
+    tk = FS.toolkit()
+    inv = FS.inventory({"A": A, "D": D})
+    minimals = tk.min_intensions([A], inv)
+    assert minimals == [NC_POS_F, NC_POS_G]
+
+
+def test_tk_min_intensions_no_solution_with_restricted_features() -> None:
+    tk = FS.toolkit()
+    minimals = tk.min_intensions([A], INV, features=["F"])
+    assert minimals == []
+
+
+def test_tk_min_intensions_rejects_empty_segments() -> None:
+    tk = FS.toolkit()
+    with pytest.raises(ValueError):
+        tk.min_intensions([], INV)
+
+
+def test_tk_min_intensions_rejects_unknown_restriction_feature() -> None:
+    tk = FS.toolkit()
+    with pytest.raises(lp.UnknownFeatureError):
+        tk.min_intensions([A, B], INV, features=["F", "Z"])
