@@ -11,6 +11,7 @@
     * [ngrams](#logical_phonology.toolkit.Toolkit.ngrams)
     * [intersect](#logical_phonology.toolkit.Toolkit.intersect)
     * [project](#logical_phonology.toolkit.Toolkit.project)
+    * [min\_intensions](#logical_phonology.toolkit.Toolkit.min_intensions)
 
 <a id="logical_phonology.toolkit"></a>
 
@@ -281,4 +282,51 @@ the results are reassembled into a new word.
 **Raises**:
 
 - `TypeError` - If `a` is neither a segment nor a word.
+
+<a id="logical_phonology.toolkit.Toolkit.min_intensions"></a>
+
+#### min\_intensions
+
+```python
+def min_intensions(segments: Collection[Segment],
+                   inv: Inventory,
+                   features: Collection[str] | None = None,
+                   *,
+                   filter_boundaries: bool = True,
+                   max_features: int = 8) -> list[NaturalClass]
+```
+
+Return all minimal natural classes with an exact target extension.
+
+The search space is derived from the features common to all target
+segments (same feature and same value). If `features` is provided, it
+further restricts this common-feature set.
+
+Candidate classes are then filtered to those whose extension over `inv`
+is exactly `segments` (all and only), and only minimum-cardinality
+matches are returned.
+
+**Arguments**:
+
+- `segments` - Target extension as a collection of segments.
+- `inv` - The inventory that defines the universe for extensions.
+- `features` - Optional subset filter over common features.
+- `filter_boundaries` - If True (default), BOS/EOS are excluded when
+  computing extensions.
+- `max_features` - Maximum number of unique features allowed for
+  enumeration.
+  
+
+**Returns**:
+
+  A list of minimal natural classes. The list is sorted by string
+  form for deterministic order and is empty if no class matches.
+  
+
+**Raises**:
+
+- `ValueError` - If `segments` is empty.
+- `UnknownSegmentError` - If any target segment is not in `inv`.
+- `UnknownFeatureError` - If any searched feature is unknown.
+- `ValueError` - If the searched feature count exceeds `max_features`.
 
