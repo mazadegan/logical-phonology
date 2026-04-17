@@ -12,6 +12,7 @@
     * [add\_boundaries](#logical_phonology.feature_system.FeatureSystem.add_boundaries)
     * [remove\_boundaries](#logical_phonology.feature_system.FeatureSystem.remove_boundaries)
     * [natural\_class](#logical_phonology.feature_system.FeatureSystem.natural_class)
+    * [natural\_class\_from\_segment](#logical_phonology.feature_system.FeatureSystem.natural_class_from_segment)
     * [natural\_class\_union](#logical_phonology.feature_system.FeatureSystem.natural_class_union)
     * [natural\_class\_sequence](#logical_phonology.feature_system.FeatureSystem.natural_class_sequence)
     * [inventory](#logical_phonology.feature_system.FeatureSystem.inventory)
@@ -242,6 +243,28 @@ to match boundary pseudo-segments.
 
 - `UnknownFeatureError` - If any feature name is not in `valid_features`
   and is not a reserved feature.
+
+<a id="logical_phonology.feature_system.FeatureSystem.natural_class_from_segment"></a>
+
+#### natural\_class\_from\_segment
+
+```python
+def natural_class_from_segment(seg: Segment) -> NaturalClass
+```
+
+Construct a NaturalClass from a segment's feature bundle.
+
+The resulting natural class matches all segments that are supersets of
+the given segment specification.
+
+**Arguments**:
+
+- `seg` - The segment whose feature bundle defines the natural class.
+  
+
+**Returns**:
+
+  A NaturalClass with the same feature specification as `seg`.
 
 <a id="logical_phonology.feature_system.FeatureSystem.natural_class_union"></a>
 
