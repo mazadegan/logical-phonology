@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from itertools import combinations
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Iterator, overload
 
 from logical_phonology.natural_class_union import NaturalClassUnion
 
+from .errors import CombinatoricExplosionError
 from .feature_value import FeatureValue
 from .segment import Segment
 
@@ -78,6 +80,44 @@ class NaturalClass:
         if as_names:
             return tuple(inv.name_of(seg) for seg in segments)
         return segments
+
+    def subintensions(
+        self,
+        include_self: bool = False,
+        include_universal: bool = False,
+        max_features: int = 8,
+    ) -> Iterator["NaturalClass"]:
+        """Yield natural classes formed from subsets of this class's features.
+
+        By default, excludes the original class and the empty (universal)
+        class. The number of yielded classes grows as 2^n where n is the
+        number of features.
+
+        Args:
+            include_self: If True, include the full specification.
+            include_universal: If True, include the empty specification.
+            max_features: Maximum number of features allowed for generation.
+
+        Yields:
+            NaturalClass objects built from subset feature specifications.
+
+        Raises:
+            CombinatoricExplosionError: If the number of features exceeds
+                `max_features`.
+        """
+        items = sorted(self.feature_specification.items())
+        if len(items) > max_features:
+            raise CombinatoricExplosionError(
+                max_length=max_features, actual_length=len(items)
+            )
+        n_items = len(items)
+        for size in range(0, n_items + 1):
+            for subset in combinations(items, size):
+                if size == 0 and not include_universal:
+                    continue
+                if size == n_items and not include_self:
+                    continue
+                yield NaturalClass(dict(subset))
 
     def __contains__(self, s: Segment) -> bool:
         """Return True if the segment belongs to this natural class.

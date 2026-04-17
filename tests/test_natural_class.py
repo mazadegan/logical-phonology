@@ -92,3 +92,37 @@ def test_natural_class_extension(fs: lp.FeatureSystem) -> None:
     nc = fs.natural_class({"F1": lp.POS})
     assert nc.extension(inv) == (inv["A"],)
     assert nc.extension(inv, as_names=True) == ("A",)
+
+
+def test_natural_class_subintensions_default(fs: lp.FeatureSystem) -> None:
+    nc = fs.natural_class({"F1": lp.POS, "F2": lp.NEG, "F3": lp.POS})
+    subs = list(nc.subintensions())
+    assert len(subs) == 6  # 2^3 - universal - self
+    assert fs.natural_class({}) not in subs
+    assert nc not in subs
+
+
+def test_natural_class_subintensions_inclusion_flags(
+    fs: lp.FeatureSystem,
+) -> None:
+    nc = fs.natural_class({"F1": lp.POS, "F2": lp.NEG, "F3": lp.POS})
+    assert len(list(nc.subintensions(include_universal=True))) == 7
+    assert len(list(nc.subintensions(include_self=True))) == 7
+    assert (
+        len(
+            list(
+                nc.subintensions(
+                    include_universal=True, include_self=True
+                )
+            )
+        )
+        == 8
+    )
+
+
+def test_natural_class_subintensions_max_features_guard(
+    fs: lp.FeatureSystem,
+) -> None:
+    nc = fs.natural_class({"F1": lp.POS, "F2": lp.NEG})
+    with pytest.raises(lp.CombinatoricExplosionError):
+        list(nc.subintensions(max_features=1))
