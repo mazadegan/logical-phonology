@@ -142,7 +142,10 @@ class Segment:
         This canonical form is used as the name for aliased segments in
         an Inventory.
         """
-        parts = sorted(f"{v}{f}" for f, v in self.features.items())
+        parts = [
+            f"{value}{feature}"
+            for feature, value in sorted(self.features.items())
+        ]
         return "{" + "".join(parts) + "}"
 
     def __add__(self, other: "Segment | Word") -> "Word":

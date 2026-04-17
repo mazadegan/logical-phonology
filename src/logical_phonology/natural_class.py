@@ -144,10 +144,12 @@ class NaturalClass:
         Features are sorted alphabetically and formatted as
         ``[{+F1-F2}]``.
         """
-        parts = sorted(
+        parts = [
             f"{value}{feature}"
-            for feature, value in self.feature_specification.items()
-        )
+            for feature, value in sorted(
+                self.feature_specification.items()
+            )
+        ]
         return "[{" + "".join(parts) + "}]"
 
     @overload

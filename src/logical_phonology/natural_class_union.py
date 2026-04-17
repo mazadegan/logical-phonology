@@ -83,9 +83,9 @@ class NaturalClassUnion:
             + "|".join(
                 "{"
                 + "".join(
-                    sorted(
-                        f"{value}{feature}"
-                        for feature, value in nc.feature_specification.items()
+                    f"{value}{feature}"
+                    for feature, value in sorted(
+                        nc.feature_specification.items()
                     )
                 )
                 + "}"

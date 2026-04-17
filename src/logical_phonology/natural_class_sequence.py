@@ -191,9 +191,9 @@ class NaturalClassSequence:
                 part = "|".join(
                     "{"
                     + "".join(
-                        sorted(
-                            f"{value}{feature}"
-                            for feature, value in nc.feature_specification.items()  # noqa: E501
+                        f"{value}{feature}"
+                        for feature, value in sorted(
+                            nc.feature_specification.items()
                         )
                     )
                     + "}"
@@ -204,9 +204,9 @@ class NaturalClassSequence:
                 parts.append(
                     "{"
                     + "".join(
-                        sorted(
-                            f"{value}{feature}"
-                            for feature, value in item.feature_specification.items()  # noqa: E501
+                        f"{value}{feature}"
+                        for feature, value in sorted(
+                            item.feature_specification.items()
                         )
                     )
                     + "}"
