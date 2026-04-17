@@ -298,13 +298,11 @@ def min_intensions(segments: Collection[Segment],
 
 Return all minimal natural classes with an exact target extension.
 
-The search space is derived from the features common to all target
+The search space is derived from features common to all target
 segments (same feature and same value). If `features` is provided, it
-further restricts this common-feature set.
-
-Candidate classes are then filtered to those whose extension over `inv`
-is exactly `segments` (all and only), and only minimum-cardinality
-matches are returned.
+further restricts this common-feature set. Candidate classes are
+evaluated with bit masks over the inventory and matched by exact
+extension equality.
 
 **Arguments**:
 
