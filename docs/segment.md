@@ -199,7 +199,7 @@ def __str__() -> str
 
 Return the canonical string representation of the segment.
 
-Features are sorted alphabetically and formatted as `{+F1-F2}`.
+Features are sorted alphabetically and formatted as `{+F1,-F2}`.
 This canonical form is used as the name for aliased segments in
 an Inventory.
 

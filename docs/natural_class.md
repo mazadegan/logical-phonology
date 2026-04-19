@@ -161,7 +161,7 @@ def __str__() -> str
 Return a canonical bracketed representation of this natural class.
 
 Features are sorted alphabetically and formatted as
-``[{+F1-F2}]``.
+``[{+F1,-F2}]``.
 
 <a id="logical_phonology.natural_class.NaturalClass.__or__"></a>
 
