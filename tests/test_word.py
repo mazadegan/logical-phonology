@@ -134,4 +134,4 @@ def test_word_str(fs: lp.FeatureSystem) -> None:
             fs.segment({"F3": lp.POS}),
         ]
     )
-    assert str(w) == "<{+F1-F2} {+F3}>"
+    assert str(w) == "<{+F1,-F2} {+F3}>"

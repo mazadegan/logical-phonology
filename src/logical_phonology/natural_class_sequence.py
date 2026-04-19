@@ -190,7 +190,7 @@ class NaturalClassSequence:
             if isinstance(item, NaturalClassUnion):
                 part = "|".join(
                     "{"
-                    + "".join(
+                    + ",".join(
                         f"{value}{feature}"
                         for feature, value in sorted(
                             nc.feature_specification.items()
@@ -203,7 +203,7 @@ class NaturalClassSequence:
             else:
                 parts.append(
                     "{"
-                    + "".join(
+                    + ",".join(
                         f"{value}{feature}"
                         for feature, value in sorted(
                             item.feature_specification.items()

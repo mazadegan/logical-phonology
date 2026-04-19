@@ -86,7 +86,7 @@ def test_contains(fs: lp.FeatureSystem) -> None:
 
 def test_natural_class_str(fs: lp.FeatureSystem) -> None:
     nc = fs.natural_class({"F2": lp.NEG, "F1": lp.POS})
-    assert str(nc) == "[{+F1-F2}]"
+    assert str(nc) == "[{+F1,-F2}]"
 
 
 def test_natural_class_str_empty(fs: lp.FeatureSystem) -> None:
@@ -96,7 +96,7 @@ def test_natural_class_str_empty(fs: lp.FeatureSystem) -> None:
 def test_natural_class_str_sorts_by_feature_name() -> None:
     fs = lp.FeatureSystem.from_features(["Front", "High", "Round"])
     nc = fs.natural_class({"High": lp.POS, "Front": lp.NEG, "Round": lp.NEG})
-    assert str(nc) == "[{-Front+High-Round}]"
+    assert str(nc) == "[{-Front,+High,-Round}]"
 
 
 def test_natural_class_extension(fs: lp.FeatureSystem) -> None:

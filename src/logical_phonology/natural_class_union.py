@@ -82,7 +82,7 @@ class NaturalClassUnion:
             "["
             + "|".join(
                 "{"
-                + "".join(
+                + ",".join(
                     f"{value}{feature}"
                     for feature, value in sorted(
                         nc.feature_specification.items()

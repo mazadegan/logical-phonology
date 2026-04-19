@@ -142,7 +142,7 @@ class NaturalClass:
         """Return a canonical bracketed representation of this natural class.
 
         Features are sorted alphabetically and formatted as
-        ``[{+F1-F2}]``.
+        ``[{+F1,-F2}]``.
         """
         parts = [
             f"{value}{feature}"
@@ -150,7 +150,7 @@ class NaturalClass:
                 self.feature_specification.items()
             )
         ]
-        return "[{" + "".join(parts) + "}]"
+        return "[{" + ",".join(parts) + "}]"
 
     @overload
     def __or__(self, other: NaturalClass) -> NaturalClassUnion: ...
