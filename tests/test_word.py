@@ -196,3 +196,25 @@ def test_word_tier_nc() -> None:
 def test_word_tier_union() -> None:
     word = _FS2.word([_A, _B, _C, _I])
     assert word.tier(_NC_NEG_F | _NC_POS_G) == _FS2.word([_A, _C])
+
+
+def test_word_ngrams() -> None:
+    word = _FS2.word([_A, _B, _C])
+    assert word.ngrams(2) == [
+        (0, 2, _FS2.word([_A, _B])),
+        (1, 3, _FS2.word([_B, _C])),
+    ]
+
+
+def test_word_ngrams_with_boundaries() -> None:
+    word = _FS2.add_boundaries(_FS2.word([_A, _B]))
+    assert word.ngrams(2) == [
+        (0, 2, _FS2.word([_FS2.BOS, _A])),
+        (1, 3, _FS2.word([_A, _B])),
+        (2, 4, _FS2.word([_B, _FS2.EOS])),
+    ]
+
+
+def test_word_ngrams_rejects_nonpositive_n() -> None:
+    with pytest.raises(ValueError):
+        _FS2.word([_A, _B]).ngrams(0)

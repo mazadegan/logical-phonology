@@ -132,6 +132,26 @@ class Word:
         """Project each segment onto a feature set. See ``project``."""
         return self.project(restricted_feature_set)
 
+    def ngrams(self, n: int) -> list[tuple[int, int, "Word"]]:
+        """Return all contiguous n-grams of this word.
+
+        Args:
+            n: The length of each n-gram. Must be positive.
+
+        Returns:
+            A list of `(start, end, subsequence)` tuples, where `end` is
+            exclusive.
+
+        Raises:
+            ValueError: If `n` is not positive.
+        """
+        if n <= 0:
+            raise ValueError("n must be positive")
+        return [
+            (i, i + n, self[i : i + n])
+            for i in range(max(len(self) - n + 1, 0))
+        ]
+
     def tier(self, nc: NaturalClass | NaturalClassUnion) -> "Word":
         """Return the subsequence of segments belonging to a natural class.
 
