@@ -20,7 +20,7 @@ from .errors import (
 )
 from .feature_system import FeatureSystem
 from .feature_value import NEG, POS, FeatureValue
-from .inventory import Inventory
+from .inventory import ExtensionEntry, Inventory
 from .loaders import load_inventory_from_file
 from .natural_class import NaturalClass
 from .natural_class_sequence import NaturalClassSequence
@@ -50,6 +50,7 @@ __all__ = [
     "InventoryFileError",
     "UnificationError",
     "Inventory",
+    "ExtensionEntry",
     "AliasError",
     "UntokenizableInputError",
     "AmbiguousTokenizationError",

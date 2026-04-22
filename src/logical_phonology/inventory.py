@@ -29,6 +29,19 @@ from .word import Word
 
 
 @dataclass(frozen=True)
+class ExtensionEntry:
+    """The intensions and minimal intensions for a single extension.
+
+    Attributes:
+        intensions: All natural classes that produce this extension.
+        minimal_intensions: The subset of intensions with fewest features.
+    """
+
+    intensions: list[NaturalClass]
+    minimal_intensions: list[NaturalClass]
+
+
+@dataclass(frozen=True)
 class Inventory:
     """A named segment inventory supporting tokenization and rendering.
 
@@ -524,3 +537,105 @@ class Inventory:
                 return sorted(matches, key=str)
 
         return []
+
+    def extensions_to_intensions(
+        self,
+        features: Collection[str] | None = None,
+        *,
+        filter_boundaries: bool = True,
+        max_features: int = 8,
+    ) -> dict[frozenset[Segment], ExtensionEntry]:
+        """
+        Map each non-empty extension to its intensions and minimal intensions.
+
+        Enumerates all natural classes over the given feature set, groups them
+        by the set of inventory segments they pick out, and identifies the
+        minimal intensions for each group. Uses bitmask evaluation for
+        efficiency.
+
+        Args:
+            features: Feature names to enumerate over. Defaults to all features
+                in this feature system.
+            filter_boundaries: If True (default), BOS/EOS are excluded.
+            max_features: Maximum number of features allowed. Defaults to 8.
+
+        Returns:
+            A dict mapping each non-empty extension (frozenset of Segments) to
+            an ExtensionEntry with its intensions and minimal intensions.
+
+        Raises:
+            UnknownFeatureError: If any feature is not in this feature system.
+            ValueError: If the feature count exceeds `max_features`.
+        """
+        feature_set = tuple(
+            sorted(
+                set(features)
+                if features is not None
+                else self.feature_system.valid_features
+            )
+        )
+        unknown = set(feature_set) - self.feature_system.valid_features
+        if unknown:
+            raise UnknownFeatureError(unknown)
+        if len(feature_set) > max_features:
+            raise ValueError(
+                f"Feature set size {len(feature_set)} exceeds max_features="
+                f"{max_features}. Pass a higher max_features to override."
+            )
+
+        universe = [
+            seg
+            for seg in self.segment_to_name
+            if (not filter_boundaries)
+            or seg not in (self.feature_system.BOS, self.feature_system.EOS)
+        ]
+        idx_to_seg = dict(enumerate(universe))
+        full_mask = (1 << len(universe)) - 1
+
+        literal_masks: dict[tuple[str, FeatureValue], int] = {}
+        for feature in feature_set:
+            pos_mask = 0
+            neg_mask = 0
+            for i, seg in enumerate(universe):
+                if feature in seg:
+                    if seg[feature] == FeatureValue.POS:
+                        pos_mask |= 1 << i
+                    elif seg[feature] == FeatureValue.NEG:
+                        neg_mask |= 1 << i
+            literal_masks[(feature, FeatureValue.POS)] = pos_mask
+            literal_masks[(feature, FeatureValue.NEG)] = neg_mask
+
+        extension_map: dict[int, list[NaturalClass]] = {}
+        for assignment in product(
+            (None, FeatureValue.POS, FeatureValue.NEG), repeat=len(feature_set)
+        ):
+            spec = {
+                f: v for f, v in zip(feature_set, assignment) if v is not None
+            }
+            mask = full_mask
+            for f, v in spec.items():
+                mask &= literal_masks[(f, v)]
+            if mask == 0:
+                continue
+            nc = self.feature_system.natural_class(spec)
+            extension_map.setdefault(mask, []).append(nc)
+
+        result: dict[frozenset[Segment], ExtensionEntry] = {}
+        for mask, intensions in extension_map.items():
+            extension = frozenset(
+                idx_to_seg[i] for i in range(len(universe)) if mask & (1 << i)
+            )
+            min_len = min(len(nc.feature_specification) for nc in intensions)
+            minimal = sorted(
+                (
+                    nc
+                    for nc in intensions
+                    if len(nc.feature_specification) == min_len
+                ),
+                key=str,
+            )
+            result[extension] = ExtensionEntry(
+                intensions=sorted(intensions, key=str),
+                minimal_intensions=minimal,
+            )
+        return result

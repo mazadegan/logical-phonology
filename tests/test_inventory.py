@@ -335,3 +335,46 @@ def test_min_intensions_ignores_duplicate_target_segments() -> None:
 
 def test_min_intensions_empty_feature_restriction_returns_none() -> None:
     assert _INV.min_intensions([_A], features=[]) == []
+
+
+# extensions_to_intensions
+
+def test_extensions_to_intensions_basic() -> None:
+    result = _INV.extensions_to_intensions(["F", "G"])
+    # {+F} picks out A and B
+    ext_pos_f = frozenset([_A, _B])
+    assert ext_pos_f in result
+    assert _FS.natural_class({"F": lp.POS}) in result[ext_pos_f].intensions
+
+
+def test_extensions_to_intensions_minimal() -> None:
+    result = _INV.extensions_to_intensions(["F", "G"])
+    ext_pos_f = frozenset([_A, _B])
+    entry = result[ext_pos_f]
+    # {+F} is minimal (1 feature); {+F,+G} and {+F,-G} are longer
+    assert all(
+        len(nc.feature_specification) <= len(m.feature_specification)
+        for nc in entry.intensions
+        for m in entry.minimal_intensions
+    )
+
+
+def test_extensions_to_intensions_excludes_empty_extension() -> None:
+    result = _INV.extensions_to_intensions(["F", "G"])
+    assert all(len(ext) > 0 for ext in result)
+
+
+def test_extensions_to_intensions_defaults_to_all_features() -> None:
+    result_explicit = _INV.extensions_to_intensions(["F", "G"])
+    result_default = _INV.extensions_to_intensions()
+    assert result_explicit == result_default
+
+
+def test_extensions_to_intensions_rejects_unknown_feature() -> None:
+    with pytest.raises(lp.UnknownFeatureError):
+        _INV.extensions_to_intensions(["F", "Z"])
+
+
+def test_extensions_to_intensions_max_features_guard() -> None:
+    with pytest.raises(ValueError):
+        _INV.extensions_to_intensions(["F", "G"], max_features=1)
