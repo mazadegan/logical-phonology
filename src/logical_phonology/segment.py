@@ -100,6 +100,32 @@ class Segment:
         """Unify this segment with another. See ``unify``."""
         return self.unify(other)
 
+    def intersect(self, other: "Segment") -> "Segment":
+        """A ∩ B = {cF | cF ∈ A ∧ cF ∈ B}
+
+        Returns a new segment containing only the valued features that appear
+        with the same value in both segments. Features absent from either
+        segment, or present with conflicting values, are dropped. Also
+        available as the `&` operator.
+
+        Args:
+            other: The segment to intersect with.
+
+        Returns:
+            A new Segment with only the features shared by both segments.
+        """
+        return Segment(
+            {
+                f: v
+                for f, v in self.features.items()
+                if f in other and other[f] == v
+            }
+        )
+
+    def __and__(self, other: "Segment") -> "Segment":
+        """Intersect this segment with another. See ``intersect``."""
+        return self.intersect(other)
+
     def project(self, restricted_feature_set: Collection[str]) -> "Segment":
         """Return a new segment containing only the specified features.
 

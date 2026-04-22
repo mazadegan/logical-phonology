@@ -240,6 +240,41 @@ def test_project_is_subset(
     assert all(f in restricted for f in result.features)
 
 
+def test_intersect_shared_features(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG, "F3": lp.POS})
+    s2 = fs.segment({"F1": lp.POS, "F2": lp.POS})
+    result = s1 & s2
+    assert result["F1"] == lp.POS
+    assert "F2" not in result  # conflicting values dropped
+    assert "F3" not in result  # absent from s2
+
+
+def test_intersect_disjoint(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS})
+    s2 = fs.segment({"F2": lp.NEG})
+    result = s1 & s2
+    assert len(result.features) == 0
+
+
+def test_intersect_identical(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    result = s1 & s1
+    assert result == s1
+
+
+@given(feature_spec_strategy, feature_spec_strategy)
+def test_intersect_is_subset_of_both(
+    spec1: dict[str, lp.FeatureValue],
+    spec2: dict[str, lp.FeatureValue],
+) -> None:
+    fs = lp.FeatureSystem(frozenset(["F1", "F2", "F3"]))
+    s1 = fs.segment(spec1)
+    s2 = fs.segment(spec2)
+    result = s1 & s2
+    assert all(f in s1 and s1[f] == v for f, v in result.features.items())
+    assert all(f in s2 and s2[f] == v for f, v in result.features.items())
+
+
 @given(feature_spec_strategy, feature_spec_strategy)
 def test_unify_contains_non_conflicting(
     spec1: dict[str, lp.FeatureValue],
