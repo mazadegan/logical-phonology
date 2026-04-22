@@ -156,6 +156,18 @@ class Segment:
         """Look up the value of a feature by name."""
         return self.features[key]
 
+    def subsumes(self, other: "Segment") -> bool:
+        """
+        Return True if every feature-value pair in this segment is also in other.
+
+        Args:
+            other: The segment to test against.
+
+        Returns:
+            True if this segment's feature bundle is a subset of other's.
+        """  # noqa: E501
+        return self.features.items() <= other.features.items()
+
     def __contains__(self, item: str) -> bool:
         """
         Return True if this segment has a value for the given feature name.

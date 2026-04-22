@@ -164,6 +164,26 @@ class Word:
         """
         return Word(tuple(s for s in self.segments if s in nc))
 
+    def minimal_pair_with(self, other: "Word") -> int | None:
+        """Return the index of the single differing position, or None.
+
+        Args:
+            other: The word to compare against.
+
+        Returns:
+            The index of the unique differing segment if the words differ at
+            exactly one position, or None if they have different lengths or
+            differ at zero or more than one position.
+        """
+        if len(self) != len(other):
+            return None
+        diffs = [
+            i
+            for i, (a, b) in enumerate(zip(self.segments, other.segments))
+            if a != b
+        ]
+        return diffs[0] if len(diffs) == 1 else None
+
     def as_segment(self) -> Segment:
         """Return the sole segment; raises ValueError if len != 1."""
         if len(self.segments) != 1:

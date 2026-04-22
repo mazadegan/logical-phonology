@@ -288,3 +288,27 @@ def test_unify_contains_non_conflicting(
     for f, v in s2.features.items():
         if f not in s1.features:
             assert result[f] == v
+
+
+def test_subsumes_subset(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS})
+    s2 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    assert s1.subsumes(s2)
+    assert not s2.subsumes(s1)
+
+
+def test_subsumes_identical(fs: lp.FeatureSystem) -> None:
+    s = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    assert s.subsumes(s)
+
+
+def test_subsumes_disjoint(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS})
+    s2 = fs.segment({"F2": lp.NEG})
+    assert not s1.subsumes(s2)
+
+
+def test_subsumes_conflicting_value(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS})
+    s2 = fs.segment({"F1": lp.NEG})
+    assert not s1.subsumes(s2)

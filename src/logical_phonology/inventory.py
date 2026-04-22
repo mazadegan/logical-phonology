@@ -219,12 +219,9 @@ class Inventory:
 
     @overload
     def iter_extension(
-        self, obj: NaturalClass, filter_boundaries: bool = True
-    ) -> Iterator[Segment]: ...
-
-    @overload
-    def iter_extension(
-        self, obj: NaturalClassUnion, filter_boundaries: bool = True
+        self,
+        obj: NaturalClass | NaturalClassUnion,
+        filter_boundaries: bool = True,
     ) -> Iterator[Segment]: ...
 
     @overload

@@ -218,3 +218,26 @@ def test_word_ngrams_with_boundaries() -> None:
 def test_word_ngrams_rejects_nonpositive_n() -> None:
     with pytest.raises(ValueError):
         _FS2.word([_A, _B]).ngrams(0)
+
+
+def test_minimal_pair_with_single_diff() -> None:
+    w1 = _FS2.word([_A, _B, _C])
+    w2 = _FS2.word([_A, _C, _C])
+    assert w1.minimal_pair_with(w2) == 1
+
+
+def test_minimal_pair_with_no_diff() -> None:
+    w = _FS2.word([_A, _B])
+    assert w.minimal_pair_with(w) is None
+
+
+def test_minimal_pair_with_multiple_diffs() -> None:
+    w1 = _FS2.word([_A, _B, _C])
+    w2 = _FS2.word([_C, _B, _A])
+    assert w1.minimal_pair_with(w2) is None
+
+
+def test_minimal_pair_with_length_mismatch() -> None:
+    w1 = _FS2.word([_A, _B])
+    w2 = _FS2.word([_A, _B, _C])
+    assert w1.minimal_pair_with(w2) is None
