@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Collection, Iterator, cast, overload
 
+from .natural_class import NaturalClass
+from .natural_class_union import NaturalClassUnion
 from .segment import Segment
 
 
@@ -129,6 +131,18 @@ class Word:
     def __matmul__(self, restricted_feature_set: Collection[str]) -> "Word":
         """Project each segment onto a feature set. See ``project``."""
         return self.project(restricted_feature_set)
+
+    def tier(self, nc: NaturalClass | NaturalClassUnion) -> "Word":
+        """Return the subsequence of segments belonging to a natural class.
+
+        Args:
+            nc: A `NaturalClass` or `NaturalClassUnion` to match against.
+
+        Returns:
+            A new Word containing only the segments of this word that belong
+            to `nc`, in their original relative order.
+        """
+        return Word(tuple(s for s in self.segments if s in nc))
 
     def as_segment(self) -> Segment:
         """Return the sole segment; raises ValueError if len != 1."""

@@ -181,3 +181,18 @@ def test_word_intersect() -> None:
 def test_word_intersect_length_mismatch() -> None:
     with pytest.raises(ValueError):
         _ = _FS2.word([_A]) & _FS2.word([_A, _B])
+
+
+_NC_POS_F = _FS2.natural_class({"F": lp.POS})
+_NC_NEG_F = _FS2.natural_class({"F": lp.NEG})
+_NC_POS_G = _FS2.natural_class({"G": lp.POS})
+
+
+def test_word_tier_nc() -> None:
+    word = _FS2.word([_A, _B, _C, _I])
+    assert word.tier(_NC_POS_F) == _FS2.word([_A, _B])
+
+
+def test_word_tier_union() -> None:
+    word = _FS2.word([_A, _B, _C, _I])
+    assert word.tier(_NC_NEG_F | _NC_POS_G) == _FS2.word([_A, _C])
