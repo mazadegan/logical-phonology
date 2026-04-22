@@ -379,3 +379,37 @@ def test_minimal_pairs_max_distance_2(inv: lp.Inventory) -> None:
 
 def test_minimal_pairs_max_distance_0(inv: lp.Inventory) -> None:
     assert inv.minimal_pairs(max_distance=0) == []
+
+
+def test_contrasts_for_contrasting_feature(inv: lp.Inventory) -> None:
+    # A={+F1,+F2}, B={+F1,-F2} — F2 contrasts
+    assert inv.contrasts_for("F1")
+    assert inv.contrasts_for("F2")
+
+
+def test_contrasts_for_non_contrasting_feature(fs: lp.FeatureSystem) -> None:
+    # all segments have +F1, so F1 doesn't contrast
+    inv = fs.inventory({
+        "A": fs.segment({"F1": lp.POS, "F2": lp.POS}),
+        "B": fs.segment({"F1": lp.POS, "F2": lp.NEG}),
+    })
+    assert not inv.contrasts_for("F1")
+    assert inv.contrasts_for("F2")
+
+
+def test_contrasts_for_measure_absence_false(fs: lp.FeatureSystem) -> None:
+    # A has +F1, B lacks F1 entirely — no contrast by default
+    inv = fs.inventory({
+        "A": fs.segment({"F1": lp.POS}),
+        "B": fs.segment({}),
+    })
+    assert not inv.contrasts_for("F1")
+
+
+def test_contrasts_for_measure_absence_true(fs: lp.FeatureSystem) -> None:
+    # same inventory, but measure_absence=True should detect the contrast
+    inv = fs.inventory({
+        "A": fs.segment({"F1": lp.POS}),
+        "B": fs.segment({}),
+    })
+    assert inv.contrasts_for("F1", measure_absence=True)

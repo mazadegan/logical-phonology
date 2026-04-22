@@ -542,6 +542,33 @@ class Inventory:
                     pairs.append((n1, n2, d))
         return pairs
 
+    def contrasts_for(
+        self, feature: str, measure_absence: bool = False
+    ) -> bool:
+        """Return True if the feature distinguishes any segment pair.
+
+        Args:
+            feature: The feature name to test.
+            measure_absence: If True, treat present-vs-absent as a contrast.
+                If False (default), only count +/- oppositions where both
+                segments specify the feature.
+
+        Returns:
+            True if at least one pair of named segments is distinguished by
+            this feature.
+        """
+        segments = [self[n] for n in self.user_names]
+        for i, s1 in enumerate(segments):
+            for s2 in segments[i + 1:]:
+                v1 = s1.features.get(feature)
+                v2 = s2.features.get(feature)
+                if v1 == v2:
+                    continue
+                if not measure_absence and (v1 is None or v2 is None):
+                    continue
+                return True
+        return False
+
     def extensions_to_intensions(
         self,
         features: Collection[str] | None = None,
