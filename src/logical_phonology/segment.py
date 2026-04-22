@@ -4,6 +4,7 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from logical_phonology.natural_class import NaturalClass
     from logical_phonology.word import Word
 
 from .errors import UnificationError
@@ -173,6 +174,14 @@ class Segment:
             for feature, value in sorted(self.features.items())
         ]
         return "{" + ",".join(parts) + "}"
+
+    def as_natural_class(self) -> "NaturalClass":
+        """
+        Return a NaturalClass matching exactly this segment's feature bundle.
+        """
+        from logical_phonology.natural_class import NaturalClass
+
+        return NaturalClass(dict(self.features))
 
     def as_word(self) -> "Word":
         """Wrap this segment in a length-1 Word."""

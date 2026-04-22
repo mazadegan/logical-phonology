@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Collection, Iterable, Mapping
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass, field
 from itertools import combinations, product
 from types import MappingProxyType
@@ -353,10 +353,8 @@ class Inventory:
         """
         return len(self.segment_to_name)
 
-    def segment(self, name: str) -> Segment:
+    def __getitem__(self, name: str) -> Segment:
         """Look up a segment by name.
-
-        Also available via the `[]` operator.
 
         Args:
             name: The symbol name to look up.
@@ -370,37 +368,6 @@ class Inventory:
         if name not in self:
             raise UnknownNameError(name)
         return self.name_to_segment[name]
-
-    def __getitem__(self, name: str) -> Segment:
-        """Look up a segment by name.
-
-        Also available via the ``segment()`` method.
-
-        Args:
-            name: The symbol name to look up.
-
-        Returns:
-            The Segment corresponding to the given name.
-
-        Raises:
-            UnknownNameError: If the name is not in this inventory.
-        """
-
-        return self.segment(name)
-
-    def segments(self, names: Iterable[str]) -> list[Segment]:
-        """Look up multiple segments by name.
-
-        Args:
-            names: Segment names to resolve in order.
-
-        Returns:
-            A list of segments corresponding to the provided names.
-
-        Raises:
-            UnknownNameError: If any name is not in this inventory.
-        """
-        return [self[name] for name in names]
 
     def name_of(self, seg: Segment) -> str:
         """Return the canonical name of a segment in this inventory.

@@ -15,15 +15,15 @@ def test_natural_class_unknown_feature(fs: lp.FeatureSystem) -> None:
     assert "F4" in exc_info.value.unknown
 
 
-def test_natural_class_from_segment(fs: lp.FeatureSystem) -> None:
+def test_as_natural_class(fs: lp.FeatureSystem) -> None:
     seg = fs.segment({"F1": lp.POS, "F2": lp.NEG})
-    assert fs.natural_class_from_segment(seg) == fs.natural_class(
+    assert seg.as_natural_class() == fs.natural_class(
         {"F1": lp.POS, "F2": lp.NEG}
     )
 
 
-def test_natural_class_from_boundary_segment(fs: lp.FeatureSystem) -> None:
-    assert fs.natural_class_from_segment(fs.BOS) == fs.BOS_NC
+def test_as_natural_class_boundary_segment(fs: lp.FeatureSystem) -> None:
+    assert fs.BOS.as_natural_class() == fs.BOS_NC
 
 
 def test_natural_class_from_string_feature_values(
@@ -126,13 +126,7 @@ def test_natural_class_subintensions_inclusion_flags(
     assert len(list(nc.subintensions(include_universal=True))) == 7
     assert len(list(nc.subintensions(include_self=True))) == 7
     assert (
-        len(
-            list(
-                nc.subintensions(
-                    include_universal=True, include_self=True
-                )
-            )
-        )
+        len(list(nc.subintensions(include_universal=True, include_self=True)))
         == 8
     )
 
