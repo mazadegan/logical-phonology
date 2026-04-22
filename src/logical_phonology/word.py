@@ -71,6 +71,53 @@ class Word:
             return Word(self.segments + (other,))
         return Word(self.segments + other.segments)
 
+    def _check_aligned(self, other: "Word") -> None:
+        if len(self) != len(other):
+            raise ValueError(
+                f"Words must have the same length ({len(self)} != {len(other)})"  # noqa: E501
+            )
+
+    def unify(self, other: "Word") -> "Word":
+        """Unify two words element-wise. Also available as the `|` operator."""
+        self._check_aligned(other)
+        return Word(
+            tuple(s.unify(t) for s, t in zip(self.segments, other.segments))
+        )
+
+    def __or__(self, other: "Word") -> "Word":
+        """Unify this word with another element-wise. See ``unify``."""
+        return self.unify(other)
+
+    def subtract(self, other: "Word") -> "Word":
+        """
+        Subtract two words element-wise. Also available as the `-` operator.
+        """
+        self._check_aligned(other)
+        return Word(
+            tuple(s.subtract(t) for s, t in zip(self.segments, other.segments))
+        )
+
+    def __sub__(self, other: "Word") -> "Word":
+        """
+        Subtract another word from this one element-wise. See ``subtract``.
+        """
+        return self.subtract(other)
+
+    def intersect(self, other: "Word") -> "Word":
+        """
+        Intersect two words element-wise. Also available as the `&` operator.
+        """
+        self._check_aligned(other)
+        return Word(
+            tuple(
+                s.intersect(t) for s, t in zip(self.segments, other.segments)
+            )
+        )
+
+    def __and__(self, other: "Word") -> "Word":
+        """Intersect this word with another element-wise. See ``intersect``."""
+        return self.intersect(other)
+
     def project(self, restricted_feature_set: Collection[str]) -> "Word":
         """
         Return a new Word with each segment projected onto the feature set.
