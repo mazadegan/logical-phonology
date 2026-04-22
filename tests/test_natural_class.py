@@ -107,8 +107,7 @@ def test_natural_class_extension(fs: lp.FeatureSystem) -> None:
         }
     )
     nc = fs.natural_class({"F1": lp.POS})
-    assert nc.extension(inv) == (inv["A"],)
-    assert nc.extension(inv, as_names=True) == ("A",)
+    assert nc.extension(inv) == (("A", inv["A"]),)
 
 
 def test_natural_class_subintensions_default(fs: lp.FeatureSystem) -> None:

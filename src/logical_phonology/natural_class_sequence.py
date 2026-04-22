@@ -114,26 +114,22 @@ class NaturalClassSequence:
         self,
         inv: Inventory,
         filter_boundaries: bool = True,
-        as_names: bool = False,
-    ) -> tuple[Word, ...] | tuple[str, ...]:
-        """
-        Return the materialized extension of this sequence over an inventory.
+    ) -> tuple[tuple[str, Word], ...]:
+        """Return the materialized extension of this sequence over an inventory
+        as (name, word) pairs.
 
         Args:
             inv: The inventory to evaluate the sequence over.
             filter_boundaries: If True (default), BOS and EOS pseudo-segments
                 are excluded from the results.
-            as_names: If True, return rendered word strings instead of `Word`
-                objects.
 
         Returns:
-            A tuple of matching words (default) or rendered word strings when
-            `as_names=True`.
+            A tuple of (name, word) pairs for each matching word.
         """
-        words = tuple(self.over(inv, filter_boundaries))
-        if as_names:
-            return tuple(inv.render(word) for word in words)
-        return words
+        return tuple(
+            (inv.render(word), word)
+            for word in self.over(inv, filter_boundaries)
+        )
 
     def __len__(self) -> int:
         """Return the number of natural classes in this sequence."""

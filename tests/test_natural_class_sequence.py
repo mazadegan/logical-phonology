@@ -187,9 +187,9 @@ def test_natural_class_sequence_extension(
         }
     )
     ncs = fs.natural_class({"F1": lp.POS}) + fs.natural_class({"F2": lp.NEG})
-    words = ncs.extension(inv)
-    assert all(isinstance(w, lp.Word) for w in words)
-    assert ncs.extension(inv, as_names=True) == ("AC", "AD", "CC", "CD")
+    pairs = ncs.extension(inv)
+    assert all(isinstance(w, lp.Word) for _, w in pairs)
+    assert tuple(name for name, _ in pairs) == ("AC", "AD", "CC", "CD")
 
 
 def test_ncs_add_chaining(fs: lp.FeatureSystem) -> None:

@@ -126,4 +126,5 @@ def test_union_over_and_extension() -> None:
     union = NC_POS_F | NC_NEG_G
     over = tuple(union.over(INV))
     assert all(isinstance(seg, lp.Segment) for seg in over)
-    assert union.extension(INV, as_names=True) == ("A", "B", "D")
+    names = tuple(name for name, _ in union.extension(INV))
+    assert names == ("A", "B", "D")

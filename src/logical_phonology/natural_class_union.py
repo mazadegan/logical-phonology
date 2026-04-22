@@ -44,24 +44,22 @@ class NaturalClassUnion:
         self,
         inv: Inventory,
         filter_boundaries: bool = True,
-        as_names: bool = False,
-    ) -> tuple[Segment, ...] | tuple[str, ...]:
-        """Return the materialized extension of this union over an inventory.
+    ) -> "tuple[tuple[str, Segment], ...]":
+        """Return the materialized extension of this union over an inventory
+        as (name, segment) pairs.
 
         Args:
             inv: The inventory to evaluate the union over.
             filter_boundaries: If True (default), BOS and EOS pseudo-segments
                 are excluded from the results.
-            as_names: If True, return inventory names instead of segments.
 
         Returns:
-            A tuple of matching segments (default) or matching names when
-            `as_names=True`.
+            A tuple of (name, segment) pairs for each matching segment.
         """
-        segments = tuple(self.over(inv, filter_boundaries))
-        if as_names:
-            return tuple(inv.name_of(seg) for seg in segments)
-        return segments
+        return tuple(
+            (inv.name_of(seg), seg)
+            for seg in self.over(inv, filter_boundaries)
+        )
 
     @overload
     def __or__(self, other: NaturalClass) -> NaturalClassUnion: ...
