@@ -156,6 +156,23 @@ class Segment:
         """Look up the value of a feature by name."""
         return self.features[key]
 
+    def distance(self, other: "Segment") -> int:
+        """Return the Hamming distance between two segments' feature bundles.
+
+        Counts features that differ in value between the two segments, plus
+        features present in one but absent in the other.
+
+        Args:
+            other: The segment to compare against.
+
+        Returns:
+            The number of feature-value pairs that differ.
+        """
+        all_features = self.features.keys() | other.features.keys()
+        return sum(
+            self.features.get(f) != other.features.get(f) for f in all_features
+        )
+
     def subsumes(self, other: "Segment") -> bool:
         """
         Return True if every feature-value pair in this segment is also in other.

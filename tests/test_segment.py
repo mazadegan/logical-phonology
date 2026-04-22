@@ -290,6 +290,35 @@ def test_unify_contains_non_conflicting(
             assert result[f] == v
 
 
+def test_distance_identical(fs: lp.FeatureSystem) -> None:
+    s = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    assert s.distance(s) == 0
+
+
+def test_distance_one_feature(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    s2 = fs.segment({"F1": lp.NEG, "F2": lp.NEG})
+    assert s1.distance(s2) == 1
+
+
+def test_distance_all_features(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS, "F2": lp.POS})
+    s2 = fs.segment({"F1": lp.NEG, "F2": lp.NEG})
+    assert s1.distance(s2) == 2
+
+
+def test_distance_partial_spec(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS})
+    s2 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    assert s1.distance(s2) == 1  # F2 absent in s1, present in s2
+
+
+def test_distance_symmetric(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    s2 = fs.segment({"F1": lp.NEG, "F2": lp.POS})
+    assert s1.distance(s2) == s2.distance(s1)
+
+
 def test_subsumes_subset(fs: lp.FeatureSystem) -> None:
     s1 = fs.segment({"F1": lp.POS})
     s2 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
