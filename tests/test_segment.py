@@ -177,7 +177,7 @@ def test_subtract_different_value(fs: lp.FeatureSystem) -> None:
 
 def test_project(fs: lp.FeatureSystem) -> None:
     s = fs.segment({"F1": lp.POS, "F2": lp.NEG, "F3": lp.POS})
-    result = s & frozenset(["F1", "F2"])
+    result = s @ frozenset(["F1", "F2"])
     assert "F1" in result
     assert "F2" in result
     assert "F3" not in result
@@ -235,7 +235,7 @@ def test_project_is_subset(
     fs = lp.FeatureSystem(frozenset(["F1", "F2", "F3"]))
     s = fs.segment(spec1)
     restricted = frozenset(spec2.keys())
-    result = s & restricted
+    result = s @ restricted
     assert all(f in s for f in result.features)
     assert all(f in restricted for f in result.features)
 

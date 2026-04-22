@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Iterator, cast, overload
+from typing import Collection, Iterator, cast, overload
 
 from .segment import Segment
 
@@ -70,6 +70,18 @@ class Word:
         if isinstance(other, Segment):
             return Word(self.segments + (other,))
         return Word(self.segments + other.segments)
+
+    def project(self, restricted_feature_set: Collection[str]) -> "Word":
+        """
+        Return a new Word with each segment projected onto the feature set.
+        """
+        return Word(
+            tuple(seg.project(restricted_feature_set) for seg in self.segments)
+        )
+
+    def __matmul__(self, restricted_feature_set: Collection[str]) -> "Word":
+        """Project each segment onto a feature set. See ``project``."""
+        return self.project(restricted_feature_set)
 
     def as_segment(self) -> Segment:
         """Return the sole segment; raises ValueError if len != 1."""
