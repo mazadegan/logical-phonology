@@ -292,3 +292,46 @@ def test_full_inventory_explosion_error() -> None:
 def test_len_returns_right_length(fs: lp.FeatureSystem) -> None:
     inv = fs.full_inventory()
     assert len(inv) == 3**2 + 2  # two-features, plus two boundary segments
+
+
+# min_intensions
+
+_FS = lp.FeatureSystem(frozenset(["F", "G"]))
+_A = _FS.segment({"F": lp.POS, "G": lp.POS})
+_B = _FS.segment({"F": lp.POS, "G": lp.NEG})
+_C = _FS.segment({"F": lp.NEG, "G": lp.POS})
+_D = _FS.segment({"F": lp.NEG, "G": lp.NEG})
+_INV = _FS.inventory({"A": _A, "B": _B, "C": _C, "D": _D})
+_NC_POS_F = _FS.natural_class({"F": lp.POS})
+_NC_POS_G = _FS.natural_class({"G": lp.POS})
+
+
+def test_min_intensions_unique() -> None:
+    assert _INV.min_intensions([_A, _B]) == [_NC_POS_F]
+
+
+def test_min_intensions_non_unique() -> None:
+    inv = _FS.inventory({"A": _A, "D": _D})
+    assert inv.min_intensions([_A]) == [_NC_POS_F, _NC_POS_G]
+
+
+def test_min_intensions_no_solution_with_restricted_features() -> None:
+    assert _INV.min_intensions([_A], features=["F"]) == []
+
+
+def test_min_intensions_rejects_empty_segments() -> None:
+    with pytest.raises(ValueError):
+        _INV.min_intensions([])
+
+
+def test_min_intensions_rejects_unknown_restriction_feature() -> None:
+    with pytest.raises(lp.UnknownFeatureError):
+        _INV.min_intensions([_A, _B], features=["F", "Z"])
+
+
+def test_min_intensions_ignores_duplicate_target_segments() -> None:
+    assert _INV.min_intensions([_A, _A, _B]) == _INV.min_intensions([_A, _B])
+
+
+def test_min_intensions_empty_feature_restriction_returns_none() -> None:
+    assert _INV.min_intensions([_A], features=[]) == []

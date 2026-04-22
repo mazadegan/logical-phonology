@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import Iterable, Mapping
+from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass, field
+from itertools import combinations, product
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Iterator, overload
 
@@ -12,10 +13,12 @@ from .errors import (
     AliasError,
     AmbiguousTokenizationError,
     DuplicateNameError,
+    UnknownFeatureError,
     UnknownNameError,
     UnknownSegmentError,
     UntokenizableInputError,
 )
+from .feature_value import FeatureValue
 
 if TYPE_CHECKING:
     from .feature_system import FeatureSystem
@@ -247,8 +250,6 @@ class Inventory:
     def _iter_ncs(
         self, ncs: NaturalClassSequence, filter_boundaries: bool = True
     ) -> Iterator[Word]:
-        from itertools import product
-
         extensions: list[list[Segment]] = []
         for nc in ncs.sequence:
             if isinstance(nc, NaturalClassUnion):
@@ -407,3 +408,119 @@ class Inventory:
         if seg not in self:
             raise UnknownSegmentError(seg)
         return self.segment_to_name[seg]
+
+    def min_intensions(
+        self,
+        segments: Collection[Segment],
+        features: Collection[str] | None = None,
+        *,
+        filter_boundaries: bool = True,
+        max_features: int = 8,
+    ) -> list[NaturalClass]:
+        """Return all minimal natural classes with an exact target extension.
+
+        The search space is derived from features common to all target
+        segments (same feature and same value). If `features` is provided, it
+        further restricts this common-feature set. Candidate classes are
+        evaluated with bit masks over the inventory and matched by exact
+        extension equality.
+
+        Args:
+            segments: Target extension as a collection of segments.
+            features: Optional subset filter over common features.
+            filter_boundaries: If True (default), BOS/EOS are excluded when
+                computing extensions.
+            max_features: Maximum number of unique features allowed for
+                enumeration.
+
+        Returns:
+            A list of minimal natural classes. The list is sorted by string
+            form for deterministic order and is empty if no class matches.
+
+        Raises:
+            ValueError: If `segments` is empty.
+            UnknownSegmentError: If any target segment is not in this inventory.
+            UnknownFeatureError: If any searched feature is unknown.
+            ValueError: If the searched feature count exceeds `max_features`.
+        """  # noqa: E501
+        segment_list = list(segments)
+        if not segment_list:
+            raise ValueError("segments must be non-empty")
+
+        for segment in segment_list:
+            if segment not in self:
+                raise UnknownSegmentError(segment)
+
+        common_items = set(segment_list[0].features.items())
+        for segment in segment_list[1:]:
+            common_items &= set(segment.features.items())
+        common_features = {feature for feature, _ in common_items}
+
+        if features is None:
+            feature_set = tuple(sorted(common_features))
+        else:
+            feature_filter = set(features)
+            unknown = feature_filter - self.feature_system.valid_features
+            if unknown:
+                raise UnknownFeatureError(unknown)
+            feature_set = tuple(sorted(common_features & feature_filter))
+
+        if len(feature_set) > max_features:
+            raise ValueError(
+                f"Feature set size {len(feature_set)} exceeds max_features="
+                f"{max_features}. Pass a higher max_features to override."
+            )
+
+        universe = [
+            seg
+            for seg in self.segment_to_name
+            if (not filter_boundaries)
+            or seg not in (self.feature_system.BOS, self.feature_system.EOS)
+        ]
+        seg_to_idx = {seg: i for i, seg in enumerate(universe)}
+        if any(seg not in seg_to_idx for seg in segment_list):
+            return []
+
+        target_mask = 0
+        for seg in segment_list:
+            target_mask |= 1 << seg_to_idx[seg]
+
+        literal_masks: dict[tuple[str, FeatureValue], int] = {}
+        for feature in feature_set:
+            pos_mask = 0
+            neg_mask = 0
+            for i, seg in enumerate(universe):
+                if feature in seg:
+                    if seg[feature] == FeatureValue.POS:
+                        pos_mask |= 1 << i
+                    elif seg[feature] == FeatureValue.NEG:
+                        neg_mask |= 1 << i
+            literal_masks[(feature, FeatureValue.POS)] = pos_mask
+            literal_masks[(feature, FeatureValue.NEG)] = neg_mask
+
+        full_mask = (1 << len(universe)) - 1
+
+        for size in range(0, len(feature_set) + 1):
+            matches: list[NaturalClass] = []
+            for subset in combinations(feature_set, size):
+                for values in product(
+                    (FeatureValue.POS, FeatureValue.NEG), repeat=size
+                ):
+                    mask = full_mask
+                    specification: dict[str, FeatureValue] = {}
+                    for feature, value in zip(subset, values):
+                        mask &= literal_masks[(feature, value)]
+                        if (mask & target_mask) != target_mask:
+                            break
+                        specification[feature] = value
+                    else:
+                        if mask == target_mask:
+                            matches.append(
+                                self.feature_system.natural_class(
+                                    specification
+                                )
+                            )
+            if matches:
+                return sorted(matches, key=str)
+
+        return []
