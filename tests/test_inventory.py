@@ -181,48 +181,34 @@ def test_render_tokenize_roundtrip_aliased(fs: lp.FeatureSystem) -> None:
     assert inv_alias.tokenize(inv_alias.render(word)) == word
 
 
-def test_iter_extension_over_natural_classes(
-    inv: lp.Inventory, fs: lp.FeatureSystem
-) -> None:
+def test_over_natural_classes(inv: lp.Inventory, fs: lp.FeatureSystem) -> None:
     nc1 = fs.natural_class({})
+    assert len(list(nc1.over(inv))) == 4  # boundaries filtered by default
     assert (
-        len(list(inv.iter_extension(nc1))) == 4
-    )  # 4 + boundaries filtered by default
-    assert (
-        len(list(inv.iter_extension(nc1, filter_boundaries=False))) == 6
-    )  # 4 + 2 boundaries
+        len(list(nc1.over(inv, filter_boundaries=False))) == 6
+    )  # includes boundaries
     nc2 = fs.natural_class({"F1": lp.POS})
-    assert (
-        len(list(inv.iter_extension(nc2))) == 2
-    )  # boundaries not specified for anything but "BOS/EOS"
+    assert len(list(nc2.over(inv))) == 2
     nc3 = fs.natural_class({"F1": lp.POS, "F2": lp.POS})
-    assert (
-        len(list(inv.iter_extension(nc3))) == 1
-    )  # Only one segment that is {+F1,+F2}
+    assert len(list(nc3.over(inv))) == 1  # only one segment with {+F1,+F2}
 
 
-def test_iter_extension_over_natural_class_sequences(
+def test_over_natural_class_sequences(
     inv: lp.Inventory, fs: lp.FeatureSystem
 ) -> None:
     ncs1 = lp.NaturalClassSequence((fs.natural_class({}),))
+    assert len(list(ncs1.over(inv))) == 4  # boundaries filtered (default)
     assert (
-        len(list(inv.iter_extension(ncs1))) == 4
-    )  # boundaries filtered (default)
-    assert (
-        len(list(inv.iter_extension(ncs1, filter_boundaries=False))) == 6
+        len(list(ncs1.over(inv, filter_boundaries=False))) == 6
     )  # includes boundaries
     ncs2 = fs.natural_class({}) + fs.natural_class({})
-    assert (
-        len(list(inv.iter_extension(ncs2))) == 16
-    )  #  (4 + boundaries filtered by default)**2
-    assert (
-        len(list(inv.iter_extension(ncs2, filter_boundaries=False))) == 36
-    )  #  (4 + 2 boundaries)**2
+    assert len(list(ncs2.over(inv))) == 16  # 4**2
+    assert len(list(ncs2.over(inv, filter_boundaries=False))) == 36  # 6**2
     ncs3 = fs.natural_class({"F1": lp.POS}) + fs.natural_class({"F1": lp.POS})
-    assert len(list(inv.iter_extension(ncs3))) == 4  #  2**2
+    assert len(list(ncs3.over(inv))) == 4  # 2**2
 
 
-def test_iter_extension_delegation_over(
+def test_over_returns_iterators(
     inv: lp.Inventory, fs: lp.FeatureSystem
 ) -> None:
     nc = fs.natural_class({})
@@ -334,6 +320,7 @@ def test_min_intensions_empty_feature_restriction_returns_none() -> None:
 
 
 # extensions_to_intensions
+
 
 def test_extensions_to_intensions_basic() -> None:
     result = _INV.extensions_to_intensions(["F", "G"])

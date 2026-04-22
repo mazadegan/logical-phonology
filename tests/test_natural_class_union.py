@@ -111,13 +111,10 @@ def test_ncs_multi_position_with_union() -> None:
     assert ncs.matches_at(word, 0)
 
 
-### Inventory.iter_extension with union ###
-
-
-def test_iter_extension_with_union() -> None:
+def test_over_with_union() -> None:
     union = NC_POS_F | NC_NEG_F
     ncs = lp.NaturalClassSequence((union,))
-    results = list(INV.iter_extension(ncs))
+    results = list(ncs.over(INV))
     # should include all segments with +F or -F (A, B, C, D but not U)
     assert len(results) == 4
 
