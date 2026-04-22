@@ -173,6 +173,25 @@ class Segment:
             self.features.get(f) != other.features.get(f) for f in all_features
         )
 
+    def minimal_pair_with(self, other: "Segment") -> str | None:
+        """
+        Return the differing feature name if exactly one feature differs, or None.
+
+        Args:
+            other: The segment to compare against.
+
+        Returns:
+            The name of the single differing feature, or None if the segments
+            differ in zero or more than one feature.
+        """  # noqa: E501
+        all_features = self.features.keys() | other.features.keys()
+        diffs = [
+            f
+            for f in all_features
+            if self.features.get(f) != other.features.get(f)
+        ]
+        return diffs[0] if len(diffs) == 1 else None
+
     def subsumes(self, other: "Segment") -> bool:
         """
         Return True if every feature-value pair in this segment is also in other.

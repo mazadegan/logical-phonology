@@ -290,6 +290,25 @@ def test_unify_contains_non_conflicting(
             assert result[f] == v
 
 
+def test_segment_minimal_pair_with_one_diff(fs: lp.FeatureSystem) -> None:
+    s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    s2 = fs.segment({"F1": lp.NEG, "F2": lp.NEG})
+    assert s1.minimal_pair_with(s2) == "F1"
+
+
+def test_segment_minimal_pair_with_no_diff(fs: lp.FeatureSystem) -> None:
+    s = fs.segment({"F1": lp.POS, "F2": lp.NEG})
+    assert s.minimal_pair_with(s) is None
+
+
+def test_segment_minimal_pair_with_multiple_diffs(
+    fs: lp.FeatureSystem,
+) -> None:
+    s1 = fs.segment({"F1": lp.POS, "F2": lp.POS})
+    s2 = fs.segment({"F1": lp.NEG, "F2": lp.NEG})
+    assert s1.minimal_pair_with(s2) is None
+
+
 def test_distance_identical(fs: lp.FeatureSystem) -> None:
     s = fs.segment({"F1": lp.POS, "F2": lp.NEG})
     assert s.distance(s) == 0

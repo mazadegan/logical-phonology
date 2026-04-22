@@ -361,3 +361,21 @@ def test_extensions_to_intensions_rejects_unknown_feature() -> None:
 def test_extensions_to_intensions_max_features_guard() -> None:
     with pytest.raises(ValueError):
         _INV.extensions_to_intensions(["F", "G"], max_features=1)
+
+
+def test_minimal_pairs_default(inv: lp.Inventory) -> None:
+    pairs = inv.minimal_pairs()
+    # A={+F1,+F2}, B={+F1,-F2}, C={-F1,+F2}, D={-F1,-F2}
+    # distance-1 pairs: (A,B)=F2, (A,C)=F1, (B,D)=F1, (C,D)=F2
+    assert len(pairs) == 4
+    assert all(d == 1 for _, _, d in pairs)
+
+
+def test_minimal_pairs_max_distance_2(inv: lp.Inventory) -> None:
+    pairs = inv.minimal_pairs(max_distance=2)
+    # adds (A,D) and (B,C) at distance 2
+    assert len(pairs) == 6
+
+
+def test_minimal_pairs_max_distance_0(inv: lp.Inventory) -> None:
+    assert inv.minimal_pairs(max_distance=0) == []

@@ -520,6 +520,28 @@ class Inventory:
 
         return []
 
+    def minimal_pairs(
+        self, max_distance: int = 1
+    ) -> list[tuple[str, str, int]]:
+        """Return all segment pairs within a given feature distance.
+
+        Args:
+            max_distance: Maximum Hamming distance between segment pairs.
+                Defaults to 1 (classic minimal pairs).
+
+        Returns:
+            A list of (name1, name2, distance) tuples for each pair of named
+            segments whose Hamming distance is at most `max_distance`.
+        """
+        pairs: list[tuple[str, str, int]] = []
+        names = list(self.user_names)
+        for i, n1 in enumerate(names):
+            for n2 in names[i + 1 :]:
+                d = self[n1].distance(self[n2])
+                if d <= max_distance:
+                    pairs.append((n1, n2, d))
+        return pairs
+
     def extensions_to_intensions(
         self,
         features: Collection[str] | None = None,
