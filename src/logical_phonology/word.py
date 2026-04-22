@@ -184,6 +184,42 @@ class Word:
             if self[i : i + len(ncs)] in ncs
         ]
 
+    def find_after(self, pos: int, ncs: "NaturalClassSequence") -> int | None:
+        """Return the index of the first match at or after pos, or None.
+
+        Args:
+            pos: The position to start searching from (inclusive).
+            ncs: The natural class sequence to search for.
+
+        Returns:
+            The index of the first matching position, or None if no match found.
+        """  # noqa: E501
+        for i in range(max(pos, 0), len(self) - len(ncs) + 1):
+            if self[i : i + len(ncs)] in ncs:
+                return i
+        return None
+
+    def find_before(
+        self, pos: int | None, ncs: "NaturalClassSequence"
+    ) -> int | None:
+        """Return the index of the last match before pos, or None.
+
+        Args:
+            pos: Search only positions before this index (exclusive).
+                If None, searches the entire word.
+            ncs: The natural class sequence to search for.
+
+        Returns:
+            The index of the last matching position, or None if no match found.
+        """
+        end = len(self) - len(ncs) + 1
+        if pos is not None:
+            end = min(end, pos)
+        for i in range(end - 1, -1, -1):
+            if self[i : i + len(ncs)] in ncs:
+                return i
+        return None
+
     def minimal_pair_with(self, other: "Word") -> int | None:
         """Return the index of the single differing position, or None.
 

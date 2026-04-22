@@ -42,42 +42,6 @@ class NaturalClassSequence:
         """
         return word[position : position + len(self)] in self
 
-    def find_first(self, word: Word, from_pos: int = 0) -> int | None:
-        """Return the position of the first match at or after from_pos.
-
-        Args:
-            word: The word to search.
-            from_pos: The position to start searching from (inclusive).
-
-        Returns:
-            The index of the first matching position, or None if no match found.
-        """  # noqa: E501
-        for i in range(max(from_pos, 0), len(word) - len(self) + 1):
-            if self.matches_at(word, i):
-                return i
-        return None
-
-    def find_last(
-        self, word: Word, before_pos: int | None = None
-    ) -> int | None:
-        """Return the position of the last match before before_pos.
-
-        Args:
-            word: The word to search.
-            before_pos: Search only positions before this index (exclusive).
-                If None, searches the entire word.
-
-        Returns:
-            The index of the last matching position, or None if no match found.
-        """  # noqa: E501
-        end = len(word) - len(self) + 1
-        if before_pos is not None:
-            end = min(end, before_pos)
-        for i in range(end - 1, -1, -1):
-            if self.matches_at(word, i):
-                return i
-        return None
-
     def over(
         self, inv: Inventory, filter_boundaries: bool = True
     ) -> Iterator[Word]:
