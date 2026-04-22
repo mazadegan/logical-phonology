@@ -148,6 +148,12 @@ class Segment:
         ]
         return "{" + ",".join(parts) + "}"
 
+    def as_word(self) -> "Word":
+        """Wrap this segment in a length-1 Word."""
+        from logical_phonology.word import Word
+
+        return Word((self,))
+
     def __add__(self, other: "Segment | Word") -> "Word":
         """Concatenate this segment with another segment or word.
 

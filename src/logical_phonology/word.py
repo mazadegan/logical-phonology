@@ -71,6 +71,14 @@ class Word:
             return Word(self.segments + (other,))
         return Word(self.segments + other.segments)
 
+    def as_segment(self) -> Segment:
+        """Return the sole segment; raises ValueError if len != 1."""
+        if len(self.segments) != 1:
+            raise ValueError(
+                f"as_segment() requires a length-1 Word, got length {len(self.segments)}"  # noqa: E501
+            )
+        return self.segments[0]
+
     def __str__(self) -> str:
         """Return the canonical string representation of the word.
 
