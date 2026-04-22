@@ -32,13 +32,7 @@ class NaturalClassUnion:
             An iterator over all segments in the inventory that belong to this
             union.
         """
-        for seg in inv.segment_to_name:
-            if seg in self:
-                if not filter_boundaries or seg not in (
-                    inv.feature_system.BOS,
-                    inv.feature_system.EOS,
-                ):
-                    yield seg
+        return inv.iter_extension(self, filter_boundaries)
 
     def extension(
         self,

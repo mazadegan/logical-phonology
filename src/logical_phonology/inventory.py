@@ -224,31 +224,49 @@ class Inventory:
 
     @overload
     def iter_extension(
+        self, obj: NaturalClassUnion, filter_boundaries: bool = True
+    ) -> Iterator[Segment]: ...
+
+    @overload
+    def iter_extension(
         self, obj: NaturalClassSequence, filter_boundaries: bool = True
     ) -> Iterator[Word]: ...
 
     def iter_extension(
         self,
-        obj: NaturalClass | NaturalClassSequence,
+        obj: NaturalClass | NaturalClassUnion | NaturalClassSequence,
         filter_boundaries: bool = True,
     ) -> Iterator[Segment] | Iterator[Word]:
-        """Iterate over all members of a natural class or natural class
-        sequence.
+        """Iterate over all members of a natural class, union, or sequence.
 
         Args:
-            obj: A NaturalClass or NaturalClassSequence to evaluate.
+            obj: A NaturalClass, NaturalClassUnion, or NaturalClassSequence.
             filter_boundaries: If True (default), BOS and EOS pseudo-segments
                 are excluded from results.
 
         Returns:
-            An iterator over Segments if `obj` is a NaturalClass, or an
-            iterator over Words if `obj` is a NaturalClassSequence.
+            An iterator over Segments if `obj` is a NaturalClass or
+            NaturalClassUnion, or an iterator over Words if `obj` is a
+            NaturalClassSequence.
         """
-        if isinstance(obj, NaturalClass):
-            return self._iter_nc(obj, filter_boundaries)
-        return self._iter_ncs(obj, filter_boundaries)
+        if isinstance(obj, NaturalClassSequence):
+            return self._iter_ncs(obj, filter_boundaries)
+        if isinstance(obj, NaturalClassUnion):
+            return self._iter_ncu(obj, filter_boundaries)
+        return self._iter_nc(obj, filter_boundaries)
 
     ### These private methods are needed to satisfy mypy because generators ###
+    def _iter_ncu(
+        self, ncu: NaturalClassUnion, filter_boundaries: bool = True
+    ) -> Iterator[Segment]:
+        for seg in self.segment_to_name:
+            if seg in ncu:
+                if not filter_boundaries or seg not in (
+                    self.feature_system.BOS,
+                    self.feature_system.EOS,
+                ):
+                    yield seg
+
     def _iter_nc(
         self, nc: NaturalClass, filter_boundaries: bool = True
     ) -> Iterator[Segment]:
