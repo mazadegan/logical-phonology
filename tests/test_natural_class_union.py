@@ -101,7 +101,7 @@ def test_ncs_find_all_with_union() -> None:
     union = NC_POS_F | NC_NEG_F
     ncs = lp.NaturalClassSequence((union,))
     word = FS.word([A, U, C])
-    assert ncs.find_all(word) == [0, 2]
+    assert word.find_all(ncs) == [0, 2]
 
 
 def test_ncs_multi_position_with_union() -> None:

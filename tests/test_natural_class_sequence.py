@@ -83,8 +83,8 @@ def test_find_all(fs: lp.FeatureSystem) -> None:
             fs.segment({"F1": lp.POS}),
         ]
     )
-    assert ncs1.find_all(w) == [0, 2]
-    assert ncs2.find_all(w) == [0]
+    assert w.find_all(ncs1) == [0, 2]
+    assert w.find_all(ncs2) == [0]
 
 
 def test_matches_at_with_boundaries(fs: lp.FeatureSystem) -> None:
@@ -107,8 +107,8 @@ def test_find_all_with_boundaries(fs: lp.FeatureSystem) -> None:
             ]
         )
     )
-    assert ncs1.find_all(w) == [3]
-    assert ncs2.find_all(w) == [2]
+    assert w.find_all(ncs1) == [3]
+    assert w.find_all(ncs2) == [2]
 
 
 def test_find_first(fs: lp.FeatureSystem) -> None:

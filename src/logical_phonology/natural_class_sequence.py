@@ -42,22 +42,6 @@ class NaturalClassSequence:
         """
         return word[position : position + len(self)] in self
 
-    def find_all(self, word: Word) -> list[int]:
-        """Return all positions in the word where the sequence matches.
-
-        Args:
-            word: The word to search.
-
-        Returns:
-            A list of positions where this natural class sequence matches
-            as a substring of the word.
-        """
-        return [
-            i
-            for i in range(len(word) - len(self) + 1)
-            if self.matches_at(word, i)
-        ]
-
     def find_first(self, word: Word, from_pos: int = 0) -> int | None:
         """Return the position of the first match at or after from_pos.
 

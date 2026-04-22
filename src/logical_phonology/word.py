@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Collection, Iterator, cast, overload
+from typing import TYPE_CHECKING, Collection, Iterator, cast, overload
 
 from .natural_class import NaturalClass
 from .natural_class_union import NaturalClassUnion
 from .segment import Segment
+
+if TYPE_CHECKING:
+    from .natural_class_sequence import NaturalClassSequence
 
 
 @dataclass(frozen=True)
@@ -163,6 +168,21 @@ class Word:
             to `nc`, in their original relative order.
         """
         return Word(tuple(s for s in self.segments if s in nc))
+
+    def find_all(self, ncs: "NaturalClassSequence") -> list[int]:
+        """Return start indices of all matches of a natural class sequence.
+
+        Args:
+            ncs: The natural class sequence to search for.
+
+        Returns:
+            A list of start indices where `ncs` matches in this word.
+        """
+        return [
+            i
+            for i in range(len(self) - len(ncs) + 1)
+            if self[i : i + len(ncs)] in ncs
+        ]
 
     def minimal_pair_with(self, other: "Word") -> int | None:
         """Return the index of the single differing position, or None.
