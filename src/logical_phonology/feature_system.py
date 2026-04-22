@@ -2,8 +2,6 @@ from collections.abc import Collection, Iterator, Mapping
 from dataclasses import dataclass
 from typing import overload
 
-from logical_phonology.natural_class_union import NaturalClassUnion
-
 from .errors import (
     CombinatoricExplosionError,
     ReservedFeatureError,
@@ -13,7 +11,6 @@ from .errors import (
 from .feature_value import FeatureValue, FeatureValueInput, FeatureValueLiteral
 from .inventory import Inventory
 from .natural_class import NaturalClass
-from .natural_class_sequence import NaturalClassSequence
 from .segment import Segment
 from .word import Word
 
@@ -233,30 +230,6 @@ class FeatureSystem:
                     "Feature values must be FeatureValue or '+'/'-' strings"
                 )
         return NaturalClass(normalized)
-
-    def natural_class_union(
-        self, classes: list[NaturalClass]
-    ) -> NaturalClassUnion:
-        """
-        Construct a NaturalClassUnion from a list of NaturalClass objects.
-        """
-        from logical_phonology.natural_class_union import NaturalClassUnion
-
-        return NaturalClassUnion(tuple(classes))
-
-    def natural_class_sequence(
-        self, classes: list[NaturalClass | NaturalClassUnion]
-    ) -> NaturalClassSequence:
-        """Construct a NaturalClassSequence from an ordered list of natural
-        classes.
-
-        Args:
-            classes: An ordered list of NaturalClass objects.
-
-        Returns:
-            A new NaturalClassSequence containing the given natural classes.
-        """
-        return NaturalClassSequence(tuple(classes))
 
     def inventory(
         self, name_to_segment: dict[str, Segment], allow_aliases: bool = True

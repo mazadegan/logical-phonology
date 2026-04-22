@@ -14,6 +14,7 @@ from .segment import Segment
 
 if TYPE_CHECKING:
     from .inventory import Inventory
+    from .natural_class_sequence import NaturalClassSequence
 
 
 @dataclass(frozen=True)
@@ -173,9 +174,7 @@ class NaturalClass:
         """
         parts = [
             f"{value}{feature}"
-            for feature, value in sorted(
-                self.feature_specification.items()
-            )
+            for feature, value in sorted(self.feature_specification.items())
         ]
         return "[{" + ",".join(parts) + "}]"
 
@@ -190,3 +189,11 @@ class NaturalClass:
         if isinstance(other, NaturalClassUnion):
             return NaturalClassUnion((self,) + other.classes)
         return NaturalClassUnion((self, other))
+
+    def __add__(
+        self, other: "NaturalClass | NaturalClassUnion"
+    ) -> "NaturalClassSequence":
+        """Return a sequence of this natural class followed by another."""
+        from .natural_class_sequence import NaturalClassSequence
+
+        return NaturalClassSequence((self, other))

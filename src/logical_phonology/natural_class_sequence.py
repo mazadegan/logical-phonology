@@ -179,6 +179,14 @@ class NaturalClassSequence:
             return NaturalClassSequence(cast(tuple[NaturalClass, ...], result))
         return cast(NaturalClass, result)
 
+    def __add__(
+        self, other: "NaturalClass | NaturalClassUnion | NaturalClassSequence"
+    ) -> "NaturalClassSequence":
+        """Return a new sequence with the other class or sequence appended."""
+        if isinstance(other, NaturalClassSequence):
+            return NaturalClassSequence(self.sequence + other.sequence)
+        return NaturalClassSequence(self.sequence + (other,))
+
     def __str__(self) -> str:
         """Return a canonical bracketed representation of this sequence.
 

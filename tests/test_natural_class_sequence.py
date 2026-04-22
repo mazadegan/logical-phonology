@@ -18,9 +18,7 @@ def fs() -> lp.FeatureSystem:
 
 
 def test_natural_class_sequence_membership(fs: lp.FeatureSystem) -> None:
-    ncs = fs.natural_class_sequence(
-        [fs.natural_class({"F1": lp.POS}), fs.natural_class({"F1": lp.NEG})]
-    )
+    ncs = fs.natural_class({"F1": lp.POS}) + fs.natural_class({"F1": lp.NEG})
     w1 = fs.word([])  # length failure (too short)
     w2 = fs.word(
         [fs.segment({}), fs.segment({}), fs.segment({})]
@@ -44,7 +42,7 @@ def test_natural_class_sequence_membership(fs: lp.FeatureSystem) -> None:
 
 
 def test_empty_natural_class_sequence(fs: lp.FeatureSystem) -> None:
-    ncs = fs.natural_class_sequence([])
+    ncs = lp.NaturalClassSequence(())
     assert fs.word([]) in ncs
 
 
@@ -59,13 +57,8 @@ def test_empty_natural_class_matches_all(
 
 
 def test_matches_at(fs: lp.FeatureSystem) -> None:
-    ncs1 = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
-    ncs2 = fs.natural_class_sequence(
-        [
-            fs.natural_class({"F1": lp.POS}),
-            fs.natural_class({"F1": lp.NEG}),
-        ]
-    )
+    ncs1 = lp.NaturalClassSequence((fs.natural_class({"F1": lp.POS}),))
+    ncs2 = fs.natural_class({"F1": lp.POS}) + fs.natural_class({"F1": lp.NEG})
     w = fs.word(
         [
             fs.segment({"F1": lp.POS}),
@@ -81,13 +74,8 @@ def test_matches_at(fs: lp.FeatureSystem) -> None:
 
 
 def test_find_all(fs: lp.FeatureSystem) -> None:
-    ncs1 = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
-    ncs2 = fs.natural_class_sequence(
-        [
-            fs.natural_class({"F1": lp.POS}),
-            fs.natural_class({"F1": lp.NEG}),
-        ]
-    )
+    ncs1 = lp.NaturalClassSequence((fs.natural_class({"F1": lp.POS}),))
+    ncs2 = fs.natural_class({"F1": lp.POS}) + fs.natural_class({"F1": lp.NEG})
     w = fs.word(
         [
             fs.segment({"F1": lp.POS}),
@@ -100,9 +88,7 @@ def test_find_all(fs: lp.FeatureSystem) -> None:
 
 
 def test_matches_at_with_boundaries(fs: lp.FeatureSystem) -> None:
-    ncs = fs.natural_class_sequence(
-        [fs.natural_class({"BOS": lp.POS}), fs.natural_class({"F1": lp.POS})]
-    )
+    ncs = fs.natural_class({"BOS": lp.POS}) + fs.natural_class({"F1": lp.POS})
     w = fs.add_boundaries(
         fs.word([fs.segment({"F1": lp.POS}), fs.segment({"F1": lp.NEG})])
     )
@@ -111,10 +97,8 @@ def test_matches_at_with_boundaries(fs: lp.FeatureSystem) -> None:
 
 
 def test_find_all_with_boundaries(fs: lp.FeatureSystem) -> None:
-    ncs1 = fs.natural_class_sequence([fs.natural_class({"EOS": lp.POS})])
-    ncs2 = fs.natural_class_sequence(
-        [fs.natural_class({"F1": lp.NEG}), fs.natural_class({"EOS": lp.POS})]
-    )
+    ncs1 = lp.NaturalClassSequence((fs.natural_class({"EOS": lp.POS}),))
+    ncs2 = fs.natural_class({"F1": lp.NEG}) + fs.natural_class({"EOS": lp.POS})
     w = fs.add_boundaries(
         fs.word(
             [
@@ -128,7 +112,7 @@ def test_find_all_with_boundaries(fs: lp.FeatureSystem) -> None:
 
 
 def test_find_first(fs: lp.FeatureSystem) -> None:
-    ncs = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
+    ncs = lp.NaturalClassSequence((fs.natural_class({"F1": lp.POS}),))
     w = fs.word(
         [
             fs.segment({"F1": lp.NEG}),
@@ -144,7 +128,7 @@ def test_find_first(fs: lp.FeatureSystem) -> None:
 
 
 def test_find_last(fs: lp.FeatureSystem) -> None:
-    ncs = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
+    ncs = lp.NaturalClassSequence((fs.natural_class({"F1": lp.POS}),))
     w = fs.word(
         [
             fs.segment({"F1": lp.NEG}),
@@ -160,16 +144,14 @@ def test_find_last(fs: lp.FeatureSystem) -> None:
 
 
 def test_find_first_no_match(fs: lp.FeatureSystem) -> None:
-    ncs = fs.natural_class_sequence([fs.natural_class({"F1": lp.POS})])
+    ncs = lp.NaturalClassSequence((fs.natural_class({"F1": lp.POS}),))
     w = fs.word([fs.segment({"F1": lp.NEG}), fs.segment({"F1": lp.NEG})])
     assert ncs.find_first(w) is None
     assert ncs.find_last(w) is None
 
 
 def test_find_first_longer_than_word(fs: lp.FeatureSystem) -> None:
-    ncs = fs.natural_class_sequence(
-        [fs.natural_class({"F1": lp.POS}), fs.natural_class({"F1": lp.POS})]
-    )
+    ncs = fs.natural_class({"F1": lp.POS}) + fs.natural_class({"F1": lp.POS})
     w = fs.word([fs.segment({"F1": lp.POS})])
     assert ncs.find_first(w) is None
     assert ncs.find_last(w) is None
@@ -179,7 +161,7 @@ def test_natural_class_sequence_str_single_matches_natural_class(
     fs: lp.FeatureSystem,
 ) -> None:
     nc = fs.natural_class({"F1": lp.POS, "F2": lp.NEG})
-    ncs = fs.natural_class_sequence([nc])
+    ncs = lp.NaturalClassSequence((nc,))
     assert str(ncs) == str(nc)
 
 
@@ -189,7 +171,7 @@ def test_natural_class_sequence_str_with_union(
     nc1 = fs.natural_class({"F1": lp.POS})
     nc2 = fs.natural_class({"F2": lp.NEG})
     union = nc1 | nc2
-    ncs = fs.natural_class_sequence([union, nc1])
+    ncs = union + nc1
     assert str(ncs) == "[{+F1}|{-F2} {+F1}]"
 
 
@@ -204,9 +186,28 @@ def test_natural_class_sequence_extension(
             "D": fs.segment({"F1": lp.NEG, "F2": lp.NEG}),
         }
     )
-    ncs = fs.natural_class_sequence(
-        [fs.natural_class({"F1": lp.POS}), fs.natural_class({"F2": lp.NEG})]
-    )
+    ncs = fs.natural_class({"F1": lp.POS}) + fs.natural_class({"F2": lp.NEG})
     words = ncs.extension(inv)
     assert all(isinstance(w, lp.Word) for w in words)
     assert ncs.extension(inv, as_names=True) == ("AC", "AD", "CC", "CD")
+
+
+def test_ncs_add_chaining(fs: lp.FeatureSystem) -> None:
+    nc1 = fs.natural_class({"F1": lp.POS})
+    nc2 = fs.natural_class({"F1": lp.NEG})
+    nc3 = fs.natural_class({"F2": lp.POS})
+    ncs = nc1 + nc2 + nc3
+    assert len(ncs.sequence) == 3
+    assert ncs.sequence[0] == nc1
+    assert ncs.sequence[1] == nc2
+    assert ncs.sequence[2] == nc3
+
+
+def test_ncs_add_ncs(fs: lp.FeatureSystem) -> None:
+    nc1 = fs.natural_class({"F1": lp.POS})
+    nc2 = fs.natural_class({"F1": lp.NEG})
+    nc3 = fs.natural_class({"F2": lp.POS})
+    nc4 = fs.natural_class({"F2": lp.NEG})
+    ncs1 = nc1 + nc2
+    ncs2 = nc3 + nc4
+    assert ncs1 + ncs2 == nc1 + nc2 + nc3 + nc4

@@ -204,25 +204,21 @@ def test_iter_extension_over_natural_classes(
 def test_iter_extension_over_natural_class_sequences(
     inv: lp.Inventory, fs: lp.FeatureSystem
 ) -> None:
-    ncs1 = fs.natural_class_sequence([fs.natural_class({})])
+    ncs1 = lp.NaturalClassSequence((fs.natural_class({}),))
     assert (
         len(list(inv.iter_extension(ncs1))) == 4
     )  # boundaries filtered (default)
     assert (
         len(list(inv.iter_extension(ncs1, filter_boundaries=False))) == 6
     )  # includes boundaries
-    ncs2 = fs.natural_class_sequence(
-        [fs.natural_class({}), fs.natural_class({})]
-    )
+    ncs2 = fs.natural_class({}) + fs.natural_class({})
     assert (
         len(list(inv.iter_extension(ncs2))) == 16
     )  #  (4 + boundaries filtered by default)**2
     assert (
         len(list(inv.iter_extension(ncs2, filter_boundaries=False))) == 36
     )  #  (4 + 2 boundaries)**2
-    ncs3 = fs.natural_class_sequence(
-        [fs.natural_class({"F1": lp.POS}), fs.natural_class({"F1": lp.POS})]
-    )
+    ncs3 = fs.natural_class({"F1": lp.POS}) + fs.natural_class({"F1": lp.POS})
     assert len(list(inv.iter_extension(ncs3))) == 4  #  2**2
 
 
@@ -230,7 +226,7 @@ def test_iter_extension_delegation_over(
     inv: lp.Inventory, fs: lp.FeatureSystem
 ) -> None:
     nc = fs.natural_class({})
-    ncs = fs.natural_class_sequence([nc])
+    ncs = lp.NaturalClassSequence((nc,))
     assert isinstance(nc.over(inv), Iterator)
     assert isinstance(ncs.over(inv), Iterator)
 

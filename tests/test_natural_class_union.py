@@ -85,28 +85,28 @@ def test_union_str() -> None:
 
 def test_ncs_matches_at_with_union() -> None:
     union = NC_POS_F | NC_NEG_F
-    ncs = FS.natural_class_sequence([union])
+    ncs = lp.NaturalClassSequence((union,))
     word = FS.word([A])
     assert ncs.matches_at(word, 0)
 
 
 def test_ncs_matches_at_union_false_for_underspecified() -> None:
     union = NC_POS_F | NC_NEG_F
-    ncs = FS.natural_class_sequence([union])
+    ncs = lp.NaturalClassSequence((union,))
     word = FS.word([U])
     assert not ncs.matches_at(word, 0)
 
 
 def test_ncs_find_all_with_union() -> None:
     union = NC_POS_F | NC_NEG_F
-    ncs = FS.natural_class_sequence([union])
+    ncs = lp.NaturalClassSequence((union,))
     word = FS.word([A, U, C])
     assert ncs.find_all(word) == [0, 2]
 
 
 def test_ncs_multi_position_with_union() -> None:
     union = NC_POS_F | NC_NEG_F
-    ncs = FS.natural_class_sequence([union, NC_POS_G])
+    ncs = union + NC_POS_G
     word = FS.word([A, C])  # A has +F (in union), C has +G
     assert ncs.matches_at(word, 0)
 
@@ -116,7 +116,7 @@ def test_ncs_multi_position_with_union() -> None:
 
 def test_iter_extension_with_union() -> None:
     union = NC_POS_F | NC_NEG_F
-    ncs = FS.natural_class_sequence([union])
+    ncs = lp.NaturalClassSequence((union,))
     results = list(INV.iter_extension(ncs))
     # should include all segments with +F or -F (A, B, C, D but not U)
     assert len(results) == 4

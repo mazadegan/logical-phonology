@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Iterator, overload
 if TYPE_CHECKING:
     from logical_phonology.inventory import Inventory
     from logical_phonology.natural_class import NaturalClass
+    from logical_phonology.natural_class_sequence import NaturalClassSequence
     from logical_phonology.segment import Segment
 
 
@@ -75,6 +76,16 @@ class NaturalClassUnion:
         if isinstance(other, NaturalClassUnion):
             return NaturalClassUnion(self.classes + other.classes)
         return NaturalClassUnion(self.classes + (other,))
+
+    def __add__(
+        self, other: "NaturalClass | NaturalClassUnion"
+    ) -> "NaturalClassSequence":
+        """
+        Return a sequence of this union followed by another class or union.
+        """
+        from .natural_class_sequence import NaturalClassSequence
+
+        return NaturalClassSequence((self, other))
 
     def __str__(self) -> str:
         """Return a canonical bracketed representation of this union."""
