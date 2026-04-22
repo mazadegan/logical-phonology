@@ -1,4 +1,4 @@
-from collections.abc import Collection, Mapping, Sequence
+from collections.abc import Collection, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, overload
 
@@ -369,3 +369,57 @@ class FeatureSystem:
             segments[name] = seg
 
         return Inventory(self, segments)
+
+    def enumerate_classes(
+        self,
+        features: Collection[str] | None = None,
+        include_empty: bool = False,
+        max_features: int = 8,
+    ) -> "Iterator[NaturalClass]":
+        """Yield all natural classes definable over a feature set.
+
+        Each feature can be absent, positive, or negative, producing up to
+        3^n classes over n unique features. Features are deduplicated and
+        sorted for deterministic ordering.
+
+        Args:
+            features: The feature names to build classes over. Defaults to
+                all features in this feature system.
+            include_empty: If True, include the empty class (no feature
+                specifications). Defaults to False.
+            max_features: Maximum number of unique features allowed.
+                Defaults to 8.
+
+        Yields:
+            NaturalClass objects over the given feature set.
+
+        Raises:
+            UnknownFeatureError: If any feature is not in this feature system.
+            ValueError: If the number of unique features exceeds `max_features`.
+        """  # noqa: E501
+        from itertools import product
+
+        feature_names = tuple(
+            sorted(
+                set(features if features is not None else self.valid_features)
+            )
+        )
+        unknown = set(feature_names) - self.valid_features
+        if unknown:
+            raise UnknownFeatureError(unknown)
+        if len(feature_names) > max_features:
+            raise ValueError(
+                f"Feature set size {len(feature_names)} exceeds max_features="
+                f"{max_features}. Pass a higher max_features to override."
+            )
+
+        values = (None, FeatureValue.POS, FeatureValue.NEG)
+        for assignment in product(values, repeat=len(feature_names)):
+            if not include_empty and all(v is None for v in assignment):
+                continue
+            spec = {
+                f: v
+                for f, v in zip(feature_names, assignment)
+                if v is not None
+            }
+            yield self.natural_class(spec)
