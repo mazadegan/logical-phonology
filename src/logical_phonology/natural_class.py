@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from itertools import combinations
 from types import MappingProxyType
@@ -39,6 +39,33 @@ class NaturalClass:
             "feature_specification",
             MappingProxyType(dict(self.feature_specification)),
         )
+
+    @classmethod
+    def covering(cls, segments: Sequence[Segment]) -> "NaturalClass":
+        """Return the smallest natural class covering all given segments.
+
+        Computed as the generalized intersection of the segments' feature
+        bundles: the result contains only feature-value pairs shared by every
+        input segment. The returned class is guaranteed to contain all input
+        segments, and is the most specific such class expressible in feature
+        logic.
+
+        Args:
+            segments: A non-empty sequence of segments to cover.
+
+        Returns:
+            The smallest NaturalClass whose extension includes all input
+            segments.
+
+        Raises:
+            ValueError: If `segments` is empty.
+        """
+        if not segments:
+            raise ValueError("segments must be non-empty")
+        common_items = set(segments[0].features.items())
+        for segment in segments[1:]:
+            common_items &= set(segment.features.items())
+        return cls(dict(common_items))
 
     def over(
         self, inv: Inventory, filter_boundaries: bool = True
