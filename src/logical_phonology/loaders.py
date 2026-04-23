@@ -18,15 +18,17 @@ def load_inventory_from_file(
 ) -> tuple[FeatureSystem, Inventory]:
     """Load a feature inventory from a CSV or TSV file.
 
-    The file must have segment names in the first row and feature names in the
-    first column. Cell values may be '+', '-', '0', or empty for
-    underspecified features.
+    The file must have a header row whose first cell is the symbol column
+    label (e.g. 'ipa') and whose remaining cells are feature names. Each
+    subsequent row has a symbol name in the first cell and feature values
+    (+, -, 0, or empty for unspecified) in the remaining cells.
 
     Args:
         path: Path to the inventory file.
         delimiter: Column delimiter. Defaults to ',' for CSV; use '\\t' for
             TSV.
-        strict: If True, require every data row to have the same number of columns as the header row.
+        strict: If True, require every data row to have the same number of
+            columns as the header row.
 
     Returns:
         A `(FeatureSystem, Inventory)` pair loaded from the file.
@@ -36,7 +38,7 @@ def load_inventory_from_file(
         InventoryFileError: If the file cannot be read or contains invalid
             structure.
         ReservedFeatureError: If the file defines reserved feature names.
-    """  # noqa: E501
+    """
     path = Path(path)
     try:
         with path.open(newline="") as f:
@@ -49,40 +51,23 @@ def load_inventory_from_file(
     if not rows:
         raise InventoryFileError(f"'{path}' is empty.")
     if len(rows[0]) < 2:
-        raise InventoryFileError(f"'{path}' has no segment columns.")
+        raise InventoryFileError(f"'{path}' has no feature columns.")
 
     header = [cell.strip() for cell in rows[0]]
-    if header[0] != "":
-        raise InventoryFileError(f"'{path}' must have an empty top-left cell.")
+    features = header[1:]
 
-    raw_segments = header[1:]
-    if any(not seg for seg in raw_segments):
+    if any(not f for f in features):
         raise InventoryFileError(
-            f"'{path}' contains an empty segment name in the header row."
+            f"'{path}' contains an empty feature name in the header row."
         )
-    if len(set(raw_segments)) != len(raw_segments):
+    if len(set(features)) != len(features):
         raise InventoryFileError(
-            f"'{path}' contains duplicate segment names in the header row."
+            f"'{path}' contains duplicate feature names in the header row."
         )
 
     data_rows = rows[1:]
     if not data_rows:
-        raise InventoryFileError(f"'{path}' has no feature rows.")
-
-    features: list[str] = []
-    seen_features: set[str] = set()
-    for row in data_rows:
-        feature = row[0].strip() if row else ""
-        if not feature:
-            raise InventoryFileError(
-                f"'{path}' contains a row with no feature name."
-            )
-        if feature in seen_features:
-            raise InventoryFileError(
-                f"'{path}' contains duplicate feature name '{feature}'."
-            )
-        seen_features.add(feature)
-        features.append(feature)
+        raise InventoryFileError(f"'{path}' has no segment rows.")
 
     try:
         fs = FeatureSystem(frozenset(features))
@@ -92,35 +77,45 @@ def load_inventory_from_file(
         ) from e
 
     if strict:
-        expected_len = len(raw_segments) + 1
+        expected_len = len(features) + 1
         for row in data_rows:
             if len(row) != expected_len:
-                feature = row[0].strip() if row else ""
+                name = row[0].strip() if row else ""
                 raise InventoryFileError(
-                    f"Row '{feature}' has {len(row) - 1} values. "
-                    f"Expected {len(raw_segments)}."
+                    f"Row '{name}' has {len(row) - 1} values. "
+                    f"Expected {len(features)}."
                 )
 
-    segment_specs: dict[str, dict[str, FeatureValue]] = {
-        seg: {} for seg in raw_segments
-    }
+    seen_names: set[str] = set()
+    segment_specs: dict[str, dict[str, FeatureValue]] = {}
 
     for row in data_rows:
-        feature = row[0].strip()
+        name = row[0].strip() if row else ""
+        if not name:
+            raise InventoryFileError(
+                f"'{path}' contains a row with no symbol name."
+            )
+        if name in seen_names:
+            raise InventoryFileError(
+                f"'{path}' contains duplicate symbol name '{name}'."
+            )
+        seen_names.add(name)
+        spec: dict[str, FeatureValue] = {}
         values = row[1:]
-        for seg_index, seg in enumerate(raw_segments):
-            val = values[seg_index].strip() if seg_index < len(values) else ""
+        for i, feature in enumerate(features):
+            val = values[i].strip() if i < len(values) else ""
             if val in ("", "0"):
                 continue
             if val in ("+", "-"):
-                segment_specs[seg][feature] = FeatureValue.from_str(val)
+                spec[feature] = FeatureValue.from_str(val)
                 continue
             raise InventoryFileError(
-                f"Invalid value '{val}' for feature '{feature}' and segment "
-                f"'{seg}' in '{path}'."
+                f"Invalid value '{val}' for feature '{feature}' and symbol "
+                f"'{name}' in '{path}'."
             )
+        segment_specs[name] = spec
 
     inventory = fs.inventory(
-        {seg: fs.segment(spec) for seg, spec in segment_specs.items()}
+        {name: fs.segment(spec) for name, spec in segment_specs.items()}
     )
     return fs, inventory

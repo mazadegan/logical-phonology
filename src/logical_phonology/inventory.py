@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import csv
 from collections import defaultdict
 from collections.abc import Collection, Mapping
 from dataclasses import dataclass, field
 from itertools import combinations, product
+from pathlib import Path
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Iterator, overload
 
@@ -568,6 +570,30 @@ class Inventory:
                     continue
                 return True
         return False
+
+    def save(self, path: "Path | str", delimiter: str = ",") -> None:
+        """Save this inventory to a CSV or TSV file.
+
+        Writes a header row with 'ipa' followed by sorted feature names, then
+        one row per user-named segment with +/-/0 values for each feature.
+
+        Args:
+            path: Path to write the file to.
+            delimiter: Column delimiter. Defaults to ',' for CSV; use '\\t'
+                for TSV.
+        """
+        path = Path(path)
+        features = sorted(self.feature_system.valid_features)
+        with path.open("w", newline="") as f:
+            writer = csv.writer(f, delimiter=delimiter)
+            writer.writerow(["ipa"] + features)
+            for name in sorted(self.user_names):
+                seg = self[name]
+                row = [name] + [
+                    str(seg.features[feat]) if feat in seg.features else "0"
+                    for feat in features
+                ]
+                writer.writerow(row)
 
     def extensions_to_intensions(
         self,
