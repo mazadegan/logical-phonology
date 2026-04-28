@@ -156,6 +156,22 @@ def test_segment_features_immutable(fs: lp.FeatureSystem) -> None:
         segment.features["F1"] = lp.NEG  # type: ignore
 
 
+def test_segment_iterates_over_full_feature_system(fs: lp.FeatureSystem) -> None:
+    segment = fs.segment({"F2": lp.NEG})
+    assert list(segment) == [(0, "F1"), (lp.NEG, "F2"), (0, "F3")]
+
+
+def test_segment_iterates_specified_values_when_fully_specified(
+    fs: lp.FeatureSystem,
+) -> None:
+    segment = fs.segment({"F1": lp.POS, "F2": lp.NEG, "F3": lp.POS})
+    assert list(segment) == [
+        (lp.POS, "F1"),
+        (lp.NEG, "F2"),
+        (lp.POS, "F3"),
+    ]
+
+
 def test_subtract(fs: lp.FeatureSystem) -> None:
     s1 = fs.segment({"F1": lp.POS, "F2": lp.NEG})
     s2 = fs.segment({"F1": lp.POS})

@@ -162,6 +162,42 @@ class Inventory:
         """
         return "".join(self.name_of(seg) for seg in word)
 
+    def _repr_html_(self) -> str:
+        features = sorted(self.feature_system.valid_features)
+        names = sorted(self.user_names)
+        header = "".join(
+            f'<th style="padding:4px 8px;border-bottom:2px solid #ccc;text-align:center">{n}</th>'
+            for n in names
+        )
+        rows = []
+        for feat in features:
+            cells = []
+            for name in names:
+                val = self[name].features.get(feat)
+                if val is None:
+                    cells.append(
+                        '<td style="padding:4px 8px;color:#aaa;text-align:center">0</td>'
+                    )
+                elif str(val) == "+":
+                    cells.append(
+                        '<td style="padding:4px 8px;color:#2a9d3f;text-align:center;font-weight:bold">+</td>'
+                    )
+                else:
+                    cells.append(
+                        '<td style="padding:4px 8px;color:#e03434;text-align:center;font-weight:bold">−</td>'
+                    )
+            rows.append(
+                f'<tr><td style="padding:4px 8px;font-family:monospace;border-right:1px solid #ccc">{feat}</td>'
+                + "".join(cells)
+                + "</tr>"
+            )
+        return (
+            '<table style="border-collapse:collapse;font-family:monospace">'
+            f'<thead><tr><th style="padding:4px 8px;border-bottom:2px solid #ccc;border-right:1px solid #ccc"></th>{header}</tr></thead>'
+            f'<tbody>{"".join(rows)}</tbody>'
+            "</table>"
+        )
+
     def tokenize(
         self, input_str: str, allow_ambiguity: bool = False
     ) -> Word | list[Word]:

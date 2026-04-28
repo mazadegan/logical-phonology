@@ -1,4 +1,4 @@
-from collections.abc import Collection, Mapping
+from collections.abc import Collection, Iterator, Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
 from typing import TYPE_CHECKING
@@ -23,11 +23,31 @@ class Segment:
     """
 
     features: Mapping[str, FeatureValue]
+    feature_space: frozenset[str] | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(
             self, "features", MappingProxyType(dict(self.features))
         )
+        if self.feature_space is not None:
+            object.__setattr__(
+                self, "feature_space", frozenset(self.feature_space)
+            )
+
+    def __iter__(self) -> Iterator[tuple[FeatureValue | int, str]]:
+        """Iterate as (value, feature) over this segment's full feature space.
+
+        If the segment is underspecified for a feature, yields `(0, feature)`.
+        When `feature_space` is unavailable, iterates over the segment's own
+        specified features only.
+        """
+        features = (
+            self.feature_space
+            if self.feature_space is not None
+            else self.features.keys()
+        )
+        for feature in sorted(features):
+            yield (self.features.get(feature, 0), feature)
 
     def subtract(self, other: "Segment") -> "Segment":
         """A \\ B = {cF | cF ∈ A ∧ cF ∉ B}
@@ -42,12 +62,14 @@ class Segment:
         Returns:
             A new Segment with the result of the subtraction.
         """
+        feature_space = self.feature_space or other.feature_space
         return Segment(
             {
                 k: v
                 for k, v in self.features.items()
                 if k not in other or other[k] != v
-            }
+            },
+            feature_space,
         )
 
     def __sub__(self, other: "Segment") -> "Segment":
@@ -74,7 +96,8 @@ class Segment:
             if f not in self.features:
                 result[f] = v
             # if f in self.features and value differs, skip (lax)
-        return Segment(result)
+        feature_space = self.feature_space or other.feature_space
+        return Segment(result, feature_space)
 
     def unify_strict(self, other: "Segment") -> "Segment":
         """Same as `unify`, but raises UnificationError on conflicting features.
@@ -95,7 +118,8 @@ class Segment:
                 result[f] = v
             elif self.features[f] != v:
                 raise UnificationError(f, self.features[f], v)
-        return Segment(result)
+        feature_space = self.feature_space or other.feature_space
+        return Segment(result, feature_space)
 
     def __or__(self, other: "Segment") -> "Segment":
         """Unify this segment with another. See ``unify``."""
@@ -115,12 +139,14 @@ class Segment:
         Returns:
             A new Segment with only the features shared by both segments.
         """
+        feature_space = self.feature_space or other.feature_space
         return Segment(
             {
                 f: v
                 for f, v in self.features.items()
                 if f in other and other[f] == v
-            }
+            },
+            feature_space,
         )
 
     def __and__(self, other: "Segment") -> "Segment":
@@ -140,7 +166,8 @@ class Segment:
         """  # noqa: E501
         allowed = set(restricted_feature_set)
         return Segment(
-            {k: v for k, v in self.features.items() if k in allowed}
+            {k: v for k, v in self.features.items() if k in allowed},
+            self.feature_space,
         )
 
     def __matmul__(self, restricted_feature_set: Collection[str]) -> "Segment":
@@ -222,6 +249,25 @@ class Segment:
             for feature, value in sorted(self.features.items())
         ]
         return "{" + ",".join(parts) + "}"
+
+    def _repr_html_(self) -> str:
+        badges: list[str] = []
+        for feature, value in sorted(self.features.items()):
+            if str(value) == "+":
+                bg, fg = "#d4edda", "#2a9d3f"
+            else:
+                bg, fg = "#fde8e8", "#e03434"
+            badges.append(
+                f'<span style="background:{bg};color:{fg};font-family:monospace;'
+                f"font-size:0.9em;padding:2px 7px;border-radius:4px;margin:2px;"
+                f'display:inline-block">{value}{feature}</span>'
+            )
+        bracket = 'style="font-family:monospace;font-size:1.1em;color:#555;vertical-align:middle"'
+        return (
+            f"<span {bracket}>{{</span>"
+            + "".join(badges)
+            + f"<span {bracket}>}}</span>"
+        )
 
     def as_natural_class(self) -> "NaturalClass":
         """

@@ -144,7 +144,7 @@ class FeatureSystem:
                 raise TypeError(
                     "Feature values must be FeatureValue or '+'/'-' strings"
                 )
-        return Segment(normalized)
+        return Segment(normalized, self.valid_features)
 
     def word(self, segments: list[Segment]) -> Word:
         """Construct a Word from a list of segments.

@@ -174,6 +174,25 @@ class NaturalClass:
         ]
         return "[{" + ",".join(parts) + "}]"
 
+    def _repr_html_(self) -> str:
+        badges = []
+        for feature, value in sorted(self.feature_specification.items()):
+            if str(value) == "+":
+                bg, fg = "#d4edda", "#2a9d3f"
+            else:
+                bg, fg = "#fde8e8", "#e03434"
+            badges.append(
+                f'<span style="background:{bg};color:{fg};font-family:monospace;'
+                f'font-size:0.9em;padding:2px 7px;border-radius:4px;margin:2px;'
+                f'display:inline-block">{value}{feature}</span>'
+            )
+        bracket = 'style="font-family:monospace;font-size:1.1em;color:#555;vertical-align:middle"'
+        return (
+            f'<span {bracket}>[{{</span>'
+            + "".join(badges)
+            + f'<span {bracket}>}}]</span>'
+        )
+
     @overload
     def __or__(self, other: NaturalClass) -> NaturalClassUnion: ...
     @overload

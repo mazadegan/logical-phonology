@@ -79,10 +79,12 @@ def test_load_inventory_rejects_invalid_values(tmp_path: Path) -> None:
 
 def test_save_roundtrip(tmp_path: Path) -> None:
     fs = lp.FeatureSystem(frozenset(["F1", "F2"]))
-    inv = fs.inventory({
-        "A": fs.segment({"F1": lp.POS}),
-        "B": fs.segment({"F1": lp.NEG, "F2": lp.POS}),
-    })
+    inv = fs.inventory(
+        {
+            "A": fs.segment({"F1": lp.POS}),
+            "B": fs.segment({"F1": lp.NEG, "F2": lp.POS}),
+        }
+    )
     path = tmp_path / "out.csv"
     inv.save(path)
     fs2, inv2 = lp.load_inventory_from_file(path)
@@ -105,5 +107,5 @@ def test_save_tsv(tmp_path: Path) -> None:
     inv = fs.inventory({"A": fs.segment({"F1": lp.POS})})
     path = tmp_path / "out.tsv"
     inv.save(path, delimiter="\t")
-    fs2, inv2 = lp.load_inventory_from_file(path, delimiter="\t")
+    _, inv2 = lp.load_inventory_from_file(path, delimiter="\t")
     assert inv2["A"] == inv["A"]
