@@ -12,12 +12,9 @@
     * [add\_boundaries](#logical_phonology.feature_system.FeatureSystem.add_boundaries)
     * [remove\_boundaries](#logical_phonology.feature_system.FeatureSystem.remove_boundaries)
     * [natural\_class](#logical_phonology.feature_system.FeatureSystem.natural_class)
-    * [natural\_class\_from\_segment](#logical_phonology.feature_system.FeatureSystem.natural_class_from_segment)
-    * [natural\_class\_from\_segments](#logical_phonology.feature_system.FeatureSystem.natural_class_from_segments)
-    * [natural\_class\_union](#logical_phonology.feature_system.FeatureSystem.natural_class_union)
-    * [natural\_class\_sequence](#logical_phonology.feature_system.FeatureSystem.natural_class_sequence)
     * [inventory](#logical_phonology.feature_system.FeatureSystem.inventory)
     * [full\_inventory](#logical_phonology.feature_system.FeatureSystem.full_inventory)
+    * [enumerate\_classes](#logical_phonology.feature_system.FeatureSystem.enumerate_classes)
 
 <a id="logical_phonology.feature_system"></a>
 
@@ -245,88 +242,6 @@ to match boundary pseudo-segments.
 - `UnknownFeatureError` - If any feature name is not in `valid_features`
   and is not a reserved feature.
 
-<a id="logical_phonology.feature_system.FeatureSystem.natural_class_from_segment"></a>
-
-#### natural\_class\_from\_segment
-
-```python
-def natural_class_from_segment(seg: Segment) -> NaturalClass
-```
-
-Construct a NaturalClass from a segment's feature bundle.
-
-The resulting natural class matches all segments that are supersets of
-the given segment specification.
-
-**Arguments**:
-
-- `seg` - The segment whose feature bundle defines the natural class.
-  
-
-**Returns**:
-
-  A NaturalClass with the same feature specification as `seg`.
-
-<a id="logical_phonology.feature_system.FeatureSystem.natural_class_from_segments"></a>
-
-#### natural\_class\_from\_segments
-
-```python
-def natural_class_from_segments(segments: Sequence[Segment]) -> NaturalClass
-```
-
-Construct a NaturalClass from features shared by all segments.
-
-This returns the maximal natural class that contains every segment in
-`segments`, computed as the intersection of their feature-value pairs.
-
-**Arguments**:
-
-- `segments` - A non-empty ordered sequence of segments.
-  
-
-**Returns**:
-
-  A NaturalClass whose specification consists of all feature-value
-  pairs shared by every input segment.
-  
-
-**Raises**:
-
-- `ValueError` - If `segments` is empty.
-
-<a id="logical_phonology.feature_system.FeatureSystem.natural_class_union"></a>
-
-#### natural\_class\_union
-
-```python
-def natural_class_union(classes: list[NaturalClass]) -> NaturalClassUnion
-```
-
-Construct a NaturalClassUnion from a list of NaturalClass objects.
-
-<a id="logical_phonology.feature_system.FeatureSystem.natural_class_sequence"></a>
-
-#### natural\_class\_sequence
-
-```python
-def natural_class_sequence(
-        classes: list[NaturalClass | NaturalClassUnion]
-) -> NaturalClassSequence
-```
-
-Construct a NaturalClassSequence from an ordered list of natural
-classes.
-
-**Arguments**:
-
-- `classes` - An ordered list of NaturalClass objects.
-  
-
-**Returns**:
-
-  A new NaturalClassSequence containing the given natural classes.
-
 <a id="logical_phonology.feature_system.FeatureSystem.inventory"></a>
 
 #### inventory
@@ -394,4 +309,40 @@ human-readable names via `Inventory.extend()`.
 
 - `CombinatoricExplosionError` - If the number of features exceeds
   `max_feature_set_length`.
+
+<a id="logical_phonology.feature_system.FeatureSystem.enumerate_classes"></a>
+
+#### enumerate\_classes
+
+```python
+def enumerate_classes(features: Collection[str] | None = None,
+                      include_empty: bool = False,
+                      max_features: int = 8) -> "Iterator[NaturalClass]"
+```
+
+Yield all natural classes definable over a feature set.
+
+Each feature can be absent, positive, or negative, producing up to
+3^n classes over n unique features. Features are deduplicated and
+sorted for deterministic ordering.
+
+**Arguments**:
+
+- `features` - The feature names to build classes over. Defaults to
+  all features in this feature system.
+- `include_empty` - If True, include the empty class (no feature
+  specifications). Defaults to False.
+- `max_features` - Maximum number of unique features allowed.
+  Defaults to 8.
+  
+
+**Yields**:
+
+  NaturalClass objects over the given feature set.
+  
+
+**Raises**:
+
+- `UnknownFeatureError` - If any feature is not in this feature system.
+- `ValueError` - If the number of unique features exceeds `max_features`.
 

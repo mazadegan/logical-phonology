@@ -2,6 +2,7 @@
 
 * [logical\_phonology.natural\_class](#logical_phonology.natural_class)
   * [NaturalClass](#logical_phonology.natural_class.NaturalClass)
+    * [covering](#logical_phonology.natural_class.NaturalClass.covering)
     * [over](#logical_phonology.natural_class.NaturalClass.over)
     * [extension](#logical_phonology.natural_class.NaturalClass.extension)
     * [subintensions](#logical_phonology.natural_class.NaturalClass.subintensions)
@@ -9,6 +10,7 @@
     * [\_\_hash\_\_](#logical_phonology.natural_class.NaturalClass.__hash__)
     * [\_\_str\_\_](#logical_phonology.natural_class.NaturalClass.__str__)
     * [\_\_or\_\_](#logical_phonology.natural_class.NaturalClass.__or__)
+    * [\_\_add\_\_](#logical_phonology.natural_class.NaturalClass.__add__)
 
 <a id="logical_phonology.natural_class"></a>
 
@@ -35,6 +37,38 @@ Use `FeatureSystem.natural_class()` to construct.
 
 - `feature_specification` - An immutable mapping of feature names to
   FeatureValues defining the class.
+
+<a id="logical_phonology.natural_class.NaturalClass.covering"></a>
+
+#### covering
+
+```python
+@classmethod
+def covering(cls, segments: Sequence[Segment]) -> "NaturalClass"
+```
+
+Return the smallest natural class covering all given segments.
+
+Computed as the generalized intersection of the segments' feature
+bundles: the result contains only feature-value pairs shared by every
+input segment. The returned class is guaranteed to contain all input
+segments, and is the most specific such class expressible in feature
+logic.
+
+**Arguments**:
+
+- `segments` - A non-empty sequence of segments to cover.
+  
+
+**Returns**:
+
+  The smallest NaturalClass whose extension includes all input
+  segments.
+  
+
+**Raises**:
+
+- `ValueError` - If `segments` is empty.
 
 <a id="logical_phonology.natural_class.NaturalClass.over"></a>
 
@@ -63,26 +97,24 @@ Iterate over all segments in this natural class over a given inventory.
 #### extension
 
 ```python
-def extension(inv: Inventory,
-              filter_boundaries: bool = True,
-              as_names: bool = False) -> tuple[Segment, ...] | tuple[str, ...]
+def extension(
+        inv: Inventory,
+        filter_boundaries: bool = True) -> tuple[tuple[str, Segment], ...]
 ```
 
 Return the materialized extension of this natural class over an
-inventory.
+inventory as (name, segment) pairs.
 
 **Arguments**:
 
 - `inv` - The inventory to evaluate the natural class over.
 - `filter_boundaries` - If True (default), BOS and EOS pseudo-segments
   are excluded from the results.
-- `as_names` - If True, return inventory names instead of segments.
   
 
 **Returns**:
 
-  A tuple of matching segments (default) or matching names when
-  `as_names=True`.
+  A tuple of (name, segment) pairs for each matching segment.
 
 <a id="logical_phonology.natural_class.NaturalClass.subintensions"></a>
 
@@ -172,4 +204,15 @@ def __or__(other: NaturalClass | NaturalClassUnion) -> NaturalClassUnion
 ```
 
 Return a union of this natural class with another class or union.
+
+<a id="logical_phonology.natural_class.NaturalClass.__add__"></a>
+
+#### \_\_add\_\_
+
+```python
+def __add__(
+        other: "NaturalClass | NaturalClassUnion") -> "NaturalClassSequence"
+```
+
+Return a sequence of this natural class followed by another.
 

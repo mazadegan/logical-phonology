@@ -6,6 +6,7 @@
     * [over](#logical_phonology.natural_class_union.NaturalClassUnion.over)
     * [extension](#logical_phonology.natural_class_union.NaturalClassUnion.extension)
     * [\_\_or\_\_](#logical_phonology.natural_class_union.NaturalClassUnion.__or__)
+    * [\_\_add\_\_](#logical_phonology.natural_class_union.NaturalClassUnion.__add__)
     * [\_\_str\_\_](#logical_phonology.natural_class_union.NaturalClassUnion.__str__)
 
 <a id="logical_phonology.natural_class_union"></a>
@@ -58,25 +59,24 @@ Iterate over all segments in this union over a given inventory.
 #### extension
 
 ```python
-def extension(inv: Inventory,
-              filter_boundaries: bool = True,
-              as_names: bool = False) -> tuple[Segment, ...] | tuple[str, ...]
+def extension(
+        inv: Inventory,
+        filter_boundaries: bool = True) -> "tuple[tuple[str, Segment], ...]"
 ```
 
-Return the materialized extension of this union over an inventory.
+Return the materialized extension of this union over an inventory
+as (name, segment) pairs.
 
 **Arguments**:
 
 - `inv` - The inventory to evaluate the union over.
 - `filter_boundaries` - If True (default), BOS and EOS pseudo-segments
   are excluded from the results.
-- `as_names` - If True, return inventory names instead of segments.
   
 
 **Returns**:
 
-  A tuple of matching segments (default) or matching names when
-  `as_names=True`.
+  A tuple of (name, segment) pairs for each matching segment.
 
 <a id="logical_phonology.natural_class_union.NaturalClassUnion.__or__"></a>
 
@@ -87,6 +87,17 @@ def __or__(other: NaturalClass | NaturalClassUnion) -> NaturalClassUnion
 ```
 
 Return a new union combining this union with another class or union.
+
+<a id="logical_phonology.natural_class_union.NaturalClassUnion.__add__"></a>
+
+#### \_\_add\_\_
+
+```python
+def __add__(
+        other: "NaturalClass | NaturalClassUnion") -> "NaturalClassSequence"
+```
+
+Return a sequence of this union followed by another class or union.
 
 <a id="logical_phonology.natural_class_union.NaturalClassUnion.__str__"></a>
 

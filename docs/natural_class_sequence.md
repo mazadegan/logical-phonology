@@ -3,14 +3,12 @@
 * [logical\_phonology.natural\_class\_sequence](#logical_phonology.natural_class_sequence)
   * [NaturalClassSequence](#logical_phonology.natural_class_sequence.NaturalClassSequence)
     * [matches\_at](#logical_phonology.natural_class_sequence.NaturalClassSequence.matches_at)
-    * [find\_all](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_all)
-    * [find\_first](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_first)
-    * [find\_last](#logical_phonology.natural_class_sequence.NaturalClassSequence.find_last)
     * [over](#logical_phonology.natural_class_sequence.NaturalClassSequence.over)
     * [extension](#logical_phonology.natural_class_sequence.NaturalClassSequence.extension)
     * [\_\_len\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__len__)
     * [\_\_contains\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__contains__)
     * [\_\_getitem\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__getitem__)
+    * [\_\_add\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__add__)
     * [\_\_str\_\_](#logical_phonology.natural_class_sequence.NaturalClassSequence.__str__)
 
 <a id="logical_phonology.natural_class_sequence"></a>
@@ -60,67 +58,6 @@ Return True if the sequence matches the word starting at position.
   True if the subsequence of the word starting at `position` matches
   this natural class sequence, False otherwise.
 
-<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.find_all"></a>
-
-#### find\_all
-
-```python
-def find_all(word: Word) -> list[int]
-```
-
-Return all positions in the word where the sequence matches.
-
-**Arguments**:
-
-- `word` - The word to search.
-  
-
-**Returns**:
-
-  A list of positions where this natural class sequence matches
-  as a substring of the word.
-
-<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.find_first"></a>
-
-#### find\_first
-
-```python
-def find_first(word: Word, from_pos: int = 0) -> int | None
-```
-
-Return the position of the first match at or after from_pos.
-
-**Arguments**:
-
-- `word` - The word to search.
-- `from_pos` - The position to start searching from (inclusive).
-  
-
-**Returns**:
-
-  The index of the first matching position, or None if no match found.
-
-<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.find_last"></a>
-
-#### find\_last
-
-```python
-def find_last(word: Word, before_pos: int | None = None) -> int | None
-```
-
-Return the position of the last match before before_pos.
-
-**Arguments**:
-
-- `word` - The word to search.
-- `before_pos` - Search only positions before this index (exclusive).
-  If None, searches the entire word.
-  
-
-**Returns**:
-
-  The index of the last matching position, or None if no match found.
-
 <a id="logical_phonology.natural_class_sequence.NaturalClassSequence.over"></a>
 
 #### over
@@ -149,25 +86,22 @@ Iterate over all words matching this sequence over a given inventory.
 
 ```python
 def extension(inv: Inventory,
-              filter_boundaries: bool = True,
-              as_names: bool = False) -> tuple[Word, ...] | tuple[str, ...]
+              filter_boundaries: bool = True) -> tuple[tuple[str, Word], ...]
 ```
 
-Return the materialized extension of this sequence over an inventory.
+Return the materialized extension of this sequence over an inventory
+as (name, word) pairs.
 
 **Arguments**:
 
 - `inv` - The inventory to evaluate the sequence over.
 - `filter_boundaries` - If True (default), BOS and EOS pseudo-segments
   are excluded from the results.
-- `as_names` - If True, return rendered word strings instead of `Word`
-  objects.
   
 
 **Returns**:
 
-  A tuple of matching words (default) or rendered word strings when
-  `as_names=True`.
+  A tuple of (name, word) pairs for each matching word.
 
 <a id="logical_phonology.natural_class_sequence.NaturalClassSequence.__len__"></a>
 
@@ -221,6 +155,18 @@ Return a natural class by index or a subsequence by slice.
 
   A NaturalClass if index is an integer, or a new
   NaturalClassSequence if index is a slice.
+
+<a id="logical_phonology.natural_class_sequence.NaturalClassSequence.__add__"></a>
+
+#### \_\_add\_\_
+
+```python
+def __add__(
+    other: "NaturalClass | NaturalClassUnion | NaturalClassSequence"
+) -> "NaturalClassSequence"
+```
+
+Return a new sequence with the other class or sequence appended.
 
 <a id="logical_phonology.natural_class_sequence.NaturalClassSequence.__str__"></a>
 

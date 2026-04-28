@@ -1,6 +1,7 @@
 # Table of Contents
 
 * [logical\_phonology.inventory](#logical_phonology.inventory)
+  * [ExtensionEntry](#logical_phonology.inventory.ExtensionEntry)
   * [Inventory](#logical_phonology.inventory.Inventory)
     * [render](#logical_phonology.inventory.Inventory.render)
     * [tokenize](#logical_phonology.inventory.Inventory.tokenize)
@@ -8,14 +9,33 @@
     * [extend](#logical_phonology.inventory.Inventory.extend)
     * [\_\_contains\_\_](#logical_phonology.inventory.Inventory.__contains__)
     * [\_\_len\_\_](#logical_phonology.inventory.Inventory.__len__)
-    * [segment](#logical_phonology.inventory.Inventory.segment)
     * [\_\_getitem\_\_](#logical_phonology.inventory.Inventory.__getitem__)
-    * [segments](#logical_phonology.inventory.Inventory.segments)
     * [name\_of](#logical_phonology.inventory.Inventory.name_of)
+    * [min\_intensions](#logical_phonology.inventory.Inventory.min_intensions)
+    * [minimal\_pairs](#logical_phonology.inventory.Inventory.minimal_pairs)
+    * [contrasts\_for](#logical_phonology.inventory.Inventory.contrasts_for)
+    * [save](#logical_phonology.inventory.Inventory.save)
+    * [extensions\_to\_intensions](#logical_phonology.inventory.Inventory.extensions_to_intensions)
 
 <a id="logical_phonology.inventory"></a>
 
 # logical\_phonology.inventory
+
+<a id="logical_phonology.inventory.ExtensionEntry"></a>
+
+## ExtensionEntry Objects
+
+```python
+@dataclass(frozen=True)
+class ExtensionEntry()
+```
+
+The intensions and minimal intensions for a single extension.
+
+**Attributes**:
+
+- `intensions` - All natural classes that produce this extension.
+- `minimal_intensions` - The subset of intensions with fewest features.
 
 <a id="logical_phonology.inventory.Inventory"></a>
 
@@ -122,24 +142,24 @@ positions is used to find all valid segmentations.
 
 ```python
 def iter_extension(
-        obj: NaturalClass | NaturalClassSequence,
+        obj: NaturalClass | NaturalClassUnion | NaturalClassSequence,
         filter_boundaries: bool = True) -> Iterator[Segment] | Iterator[Word]
 ```
 
-Iterate over all members of a natural class or natural class
-sequence.
+Iterate over all members of a natural class, union, or sequence.
 
 **Arguments**:
 
-- `obj` - A NaturalClass or NaturalClassSequence to evaluate.
+- `obj` - A NaturalClass, NaturalClassUnion, or NaturalClassSequence.
 - `filter_boundaries` - If True (default), BOS and EOS pseudo-segments
   are excluded from results.
   
 
 **Returns**:
 
-  An iterator over Segments if `obj` is a NaturalClass, or an
-  iterator over Words if `obj` is a NaturalClassSequence.
+  An iterator over Segments if `obj` is a NaturalClass or
+  NaturalClassUnion, or an iterator over Words if `obj` is a
+  NaturalClassSequence.
 
 <a id="logical_phonology.inventory.Inventory.extend"></a>
 
@@ -204,32 +224,6 @@ Counts unique segments, not names — aliases are not double-counted.
 Use ``len(self.name_to_segment)`` if you want the total number of
 names including aliases and canonical forms.
 
-<a id="logical_phonology.inventory.Inventory.segment"></a>
-
-#### segment
-
-```python
-def segment(name: str) -> Segment
-```
-
-Look up a segment by name.
-
-Also available via the `[]` operator.
-
-**Arguments**:
-
-- `name` - The symbol name to look up.
-  
-
-**Returns**:
-
-  The Segment corresponding to the given name.
-  
-
-**Raises**:
-
-- `UnknownNameError` - If the name is not in this inventory.
-
 <a id="logical_phonology.inventory.Inventory.__getitem__"></a>
 
 #### \_\_getitem\_\_
@@ -240,8 +234,6 @@ def __getitem__(name: str) -> Segment
 
 Look up a segment by name.
 
-Also available via the ``segment()`` method.
-
 **Arguments**:
 
 - `name` - The symbol name to look up.
@@ -255,30 +247,6 @@ Also available via the ``segment()`` method.
 **Raises**:
 
 - `UnknownNameError` - If the name is not in this inventory.
-
-<a id="logical_phonology.inventory.Inventory.segments"></a>
-
-#### segments
-
-```python
-def segments(names: Iterable[str]) -> list[Segment]
-```
-
-Look up multiple segments by name.
-
-**Arguments**:
-
-- `names` - Segment names to resolve in order.
-  
-
-**Returns**:
-
-  A list of segments corresponding to the provided names.
-  
-
-**Raises**:
-
-- `UnknownNameError` - If any name is not in this inventory.
 
 <a id="logical_phonology.inventory.Inventory.name_of"></a>
 
@@ -307,4 +275,148 @@ bundle (e.g. `{-Syllabic}`).
 **Raises**:
 
 - `UnknownSegmentError` - If the segment is not in this inventory.
+
+<a id="logical_phonology.inventory.Inventory.min_intensions"></a>
+
+#### min\_intensions
+
+```python
+def min_intensions(segments: Collection[Segment],
+                   features: Collection[str] | None = None,
+                   *,
+                   filter_boundaries: bool = True,
+                   max_features: int = 8) -> list[NaturalClass]
+```
+
+Return all minimal natural classes with an exact target extension.
+
+The search space is derived from features common to all target
+segments (same feature and same value). If `features` is provided, it
+further restricts this common-feature set. Candidate classes are
+evaluated with bit masks over the inventory and matched by exact
+extension equality.
+
+**Arguments**:
+
+- `segments` - Target extension as a collection of segments.
+- `features` - Optional subset filter over common features.
+- `filter_boundaries` - If True (default), BOS/EOS are excluded when
+  computing extensions.
+- `max_features` - Maximum number of unique features allowed for
+  enumeration.
+  
+
+**Returns**:
+
+  A list of minimal natural classes. The list is sorted by string
+  form for deterministic order and is empty if no class matches.
+  
+
+**Raises**:
+
+- `ValueError` - If `segments` is empty.
+- `UnknownSegmentError` - If any target segment is not in this inventory.
+- `UnknownFeatureError` - If any searched feature is unknown.
+- `ValueError` - If the searched feature count exceeds `max_features`.
+
+<a id="logical_phonology.inventory.Inventory.minimal_pairs"></a>
+
+#### minimal\_pairs
+
+```python
+def minimal_pairs(max_distance: int = 1) -> list[tuple[str, str, int]]
+```
+
+Return all segment pairs within a given feature distance.
+
+**Arguments**:
+
+- `max_distance` - Maximum Hamming distance between segment pairs.
+  Defaults to 1 (classic minimal pairs).
+  
+
+**Returns**:
+
+  A list of (name1, name2, distance) tuples for each pair of named
+  segments whose Hamming distance is at most `max_distance`.
+
+<a id="logical_phonology.inventory.Inventory.contrasts_for"></a>
+
+#### contrasts\_for
+
+```python
+def contrasts_for(feature: str, measure_absence: bool = False) -> bool
+```
+
+Return True if the feature distinguishes any segment pair.
+
+**Arguments**:
+
+- `feature` - The feature name to test.
+- `measure_absence` - If True, treat present-vs-absent as a contrast.
+  If False (default), only count +/- oppositions where both
+  segments specify the feature.
+  
+
+**Returns**:
+
+  True if at least one pair of named segments is distinguished by
+  this feature.
+
+<a id="logical_phonology.inventory.Inventory.save"></a>
+
+#### save
+
+```python
+def save(path: "Path | str", delimiter: str = ",") -> None
+```
+
+Save this inventory to a CSV or TSV file.
+
+Writes a header row with 'ipa' followed by sorted feature names, then
+one row per user-named segment with +/-/0 values for each feature.
+
+**Arguments**:
+
+- `path` - Path to write the file to.
+- `delimiter` - Column delimiter. Defaults to ',' for CSV; use '\t'
+  for TSV.
+
+<a id="logical_phonology.inventory.Inventory.extensions_to_intensions"></a>
+
+#### extensions\_to\_intensions
+
+```python
+def extensions_to_intensions(
+        features: Collection[str] | None = None,
+        *,
+        filter_boundaries: bool = True,
+        max_features: int = 8) -> dict[frozenset[Segment], ExtensionEntry]
+```
+
+Map each non-empty extension to its intensions and minimal intensions.
+
+Enumerates all natural classes over the given feature set, groups them
+by the set of inventory segments they pick out, and identifies the
+minimal intensions for each group. Uses bitmask evaluation for
+efficiency.
+
+**Arguments**:
+
+- `features` - Feature names to enumerate over. Defaults to all features
+  in this feature system.
+- `filter_boundaries` - If True (default), BOS/EOS are excluded.
+- `max_features` - Maximum number of features allowed. Defaults to 8.
+  
+
+**Returns**:
+
+  A dict mapping each non-empty extension (frozenset of Segments) to
+  an ExtensionEntry with its intensions and minimal intensions.
+  
+
+**Raises**:
+
+- `UnknownFeatureError` - If any feature is not in this feature system.
+- `ValueError` - If the feature count exceeds `max_features`.
 
