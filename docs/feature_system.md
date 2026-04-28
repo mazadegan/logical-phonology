@@ -272,6 +272,8 @@ Construct an Inventory from a mapping of names to segments.
 - `AliasError` - If aliases are detected and `allow_aliases=False`.
 - `DuplicateNameError` - If any name collides with a reserved or
   canonical form name.
+- `TypeError` - If mapping keys are not strings or values are not
+  Segment objects.
 
 <a id="logical_phonology.feature_system.FeatureSystem.full_inventory"></a>
 

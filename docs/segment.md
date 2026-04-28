@@ -50,7 +50,7 @@ possible but bypasses feature validation.
 #### \_\_iter\_\_
 
 ```python
-def __iter__() -> Iterator[tuple[FeatureValue | int, str]]
+def __iter__() -> Iterator[tuple[str | int, str]]
 ```
 
 Iterate as (value, feature) over this segment's full feature space.
