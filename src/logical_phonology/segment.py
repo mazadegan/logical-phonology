@@ -34,7 +34,7 @@ class Segment:
                 self, "feature_space", frozenset(self.feature_space)
             )
 
-    def __iter__(self) -> Iterator[tuple[FeatureValue | int, str]]:
+    def __iter__(self) -> Iterator[tuple[str | int, str]]:
         """Iterate as (value, feature) over this segment's full feature space.
 
         If the segment is underspecified for a feature, yields `(0, feature)`.
@@ -47,7 +47,8 @@ class Segment:
             else self.features.keys()
         )
         for feature in sorted(features):
-            yield (self.features.get(feature, 0), feature)
+            val = self.features.get(feature, 0)
+            yield (val.value if isinstance(val, FeatureValue) else val, feature)
 
     def subtract(self, other: "Segment") -> "Segment":
         """A \\ B = {cF | cF ∈ A ∧ cF ∉ B}

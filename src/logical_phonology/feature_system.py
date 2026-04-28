@@ -250,7 +250,31 @@ class FeatureSystem:
             AliasError: If aliases are detected and `allow_aliases=False`.
             DuplicateNameError: If any name collides with a reserved or
                 canonical form name.
+            TypeError: If mapping keys are not strings or values are not
+                Segment objects.
         """
+        bad_names = [name for name in name_to_segment if not isinstance(name, str)]
+        if bad_names:
+            preview = ", ".join(repr(n) for n in bad_names[:3])
+            raise TypeError(
+                "Inventory names must be strings; got invalid name(s): "
+                f"{preview}"
+            )
+
+        bad_segments = {
+            name: type(seg).__name__
+            for name, seg in name_to_segment.items()
+            if not isinstance(seg, Segment)
+        }
+        if bad_segments:
+            preview = ", ".join(
+                f"{name!r}: {typ}" for name, typ in list(bad_segments.items())[:3]
+            )
+            raise TypeError(
+                "Inventory values must be Segment objects; got invalid "
+                f"entry/entries: {preview}"
+            )
+
         return Inventory(self, name_to_segment, allow_aliases=allow_aliases)
 
     def full_inventory(self, max_feature_set_length: int = 8) -> Inventory:
